@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { supabase } from './lib/supabase';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -46,7 +47,6 @@ import BlogDetailModal from './components/BlogDetailModal';
 import ProviderServicesModal from './components/ProviderServicesModal';
 import SessionTimeoutModal from './components/SessionTimeoutModal';
 import RealTimeNews from './components/RealTimeNews';
-import AIVoiceChat from './components/AIVoiceChat';
 import NewOfferings from './components/NewOfferings';
 
 // Page components
@@ -192,7 +192,6 @@ const App: React.FC = () => {
   const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
   const [isProviderServicesModalOpen, setIsProviderServicesModalOpen] = useState(false);
   const [providerServiceFilter, setProviderServiceFilter] = useState<string | undefined>(undefined);
-  const [isAIVoiceChatOpen, setIsAIVoiceChatOpen] = useState(false);
   
   const [isSessionWarningOpen, setIsSessionWarningOpen] = useState(false);
   const [sessionCountdown, setSessionCountdown] = useState(60);
@@ -862,9 +861,9 @@ The other fields should follow these rules:
   const renderPage = () => {
     switch(page) {
       case 'about':
-          return <AboutPage />;
+          return <AboutPage onExploreProperties={() => setIsAuthModalOpen(true)} />;
       case 'services':
-          return <ServicesPage onServiceClick={handleOpenProviderServices} />;
+          return <ServicesPage onServiceClick={() => setIsAuthModalOpen(true)} />;
       case 'contact':
           return <ContactPage />;
       case 'pricing':
@@ -884,9 +883,13 @@ The other fields should follow these rules:
 
                   <NewOfferings onRentCarClick={() => setPage('rent-a-car')} />
                   
-                  <section id="just-listed" className="py-12 lg:py-16 bg-white">
+                  <section id="just-listed" className="py-24 bg-brand-light relative z-10 -mt-8 rounded-t-[3xl]">
                   <div className="container mx-auto px-4 sm:px-6">
-                      <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-12">Just Listed</h2>
+                      <div className="flex flex-col items-center mb-16">
+                          <div className="w-12 h-1 bg-brand-secondary mb-6"></div>
+                          <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading">Just Listed</h2>
+                          <p className="mt-4 text-slate-500 font-light text-center max-w-2xl text-lg">Discover the newest properties added to our exclusive collection. Your next investment starts here.</p>
+                      </div>
                       <PropertyList 
                           properties={recentProperties}
                           currentUser={currentUser}
@@ -906,9 +909,13 @@ The other fields should follow these rules:
                   </div>
                   </section>
 
-                  <section id="featured-listings" className="py-12 lg:py-16 relative">
+                  <section id="featured-listings" className="py-24 bg-white">
                   <div className="container mx-auto px-4 sm:px-6">
-                      <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-12">{t.app.featuredListings}</h2>
+                      <div className="flex flex-col items-center mb-16">
+                          <div className="w-12 h-1 bg-brand-secondary mb-6"></div>
+                          <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading">{t.app.featuredListings}</h2>
+                          <p className="mt-4 text-slate-500 font-light text-center max-w-2xl text-lg">Curated selections that represent the pinnacle of luxury, comfort, and value across the continent.</p>
+                      </div>
                       <PropertyList 
                       properties={featuredProperties}
                       currentUser={currentUser}
@@ -928,23 +935,30 @@ The other fields should follow these rules:
                   </div>
                   </section>
 
-                  <section className="py-12 lg:py-16 bg-white">
-                      <div className="container mx-auto px-4 sm:px-6">
-                          <div className="text-center mb-12">
-                              <h2 className="text-3xl md:text-4xl font-bold text-brand-dark dark:text-white">{t.app.exploreByLifestyle}</h2>
-                              <p className="text-center text-slate-500 dark:text-slate-400 mt-4 max-w-2xl mx-auto">{t.app.exploreByLifestyleSubtitle}</p>
+                  <section className="py-24 bg-brand-dark text-white relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-secondary rounded-full filter blur-[120px] opacity-10 -mr-[400px] -mt-[400px]"></div>
+                      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-primary rounded-full filter blur-[100px] opacity-10 -ml-[300px] -mb-[300px]"></div>
+                      
+                      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+                          <div className="text-center mb-16">
+                              <h2 className="text-4xl md:text-5xl font-black font-heading tracking-tight mb-6">{t.app.exploreByLifestyle}</h2>
+                              <p className="text-center text-slate-300 font-light mt-4 max-w-2xl mx-auto text-lg">{t.app.exploreByLifestyleSubtitle}</p>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                           {CATEGORIES.map(category => (
-                              <CategoryCard key={category.titleKey} title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} Icon={category.Icon} />
+                              <div key={category.titleKey} className="transform hover:-translate-y-2 transition-all duration-300">
+                                <CategoryCard title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} Icon={category.Icon} />
+                              </div>
                           ))}
                           </div>
                       </div>
                   </section>
 
-                  <section id="all-listings" className="py-12 lg:py-16 relative">
+                  <section id="all-listings" className="py-24 bg-brand-light">
                   <div className="container mx-auto px-4 sm:px-6">
-                      <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-4">{t.app.findYourProperty}</h2>
+                      <div className="flex flex-col items-center mb-12">
+                          <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading mb-6">{t.app.findYourProperty}</h2>
+                      </div>
                       <div className="flex justify-center items-center gap-4 mb-10">
                           <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>{t.app.allListings}</button>
                           <button onClick={() => setActiveTab('saved')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>
@@ -1049,6 +1063,27 @@ The other fields should follow these rules:
                   <FinancialServices />
                   <NeighborhoodSection onOpenExplorer={handleOpenNeighborhoodExplorer} />
                   <BlogSection posts={blogPosts} onPostClick={handleBlogClick} isLoading={isLoadingBlog}/>
+                  
+                  {/* Home Page Call to Action */}
+                  <section className="py-24 bg-brand-light relative overflow-hidden text-center sm:text-left">
+                      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-secondary rounded-full filter blur-[100px] opacity-20 -mr-48 -mt-48"></div>
+                      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary rounded-full filter blur-[100px] opacity-20 -ml-48 -mb-48"></div>
+                      <div className="container mx-auto px-6 relative z-10 max-w-5xl">
+                          <div className="bg-brand-dark rounded-[3rem] p-12 md:p-20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-12 text-white">
+                              <div className="text-left flex-1">
+                                  <h2 className="text-4xl md:text-5xl font-black font-heading mb-6">Experience Premium Real Estate Today</h2>
+                                  <p className="text-lg md:text-xl font-light text-slate-300 max-w-xl">
+                                      Join thousands of property seekers, investors, and homeowners experiencing the simplest and most powerful estate platform in Africa. Create your account in minutes.
+                                  </p>
+                              </div>
+                              <div className="flex-shrink-0 w-full md:w-auto">
+                                  <button onClick={() => setPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
+                                      Sign Up Now <ArrowRightIcon className="w-6 h-6"/>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </section>
               </>
           );
       }
@@ -1092,17 +1127,6 @@ The other fields should follow these rules:
       />
       <Chatbot />
       
-      <div className="fixed bottom-20 right-4 sm:right-6 z-50">
-          <button
-              onClick={() => setIsAIVoiceChatOpen(true)}
-              className="bg-brand-gold text-brand-dark rounded-full p-4 shadow-lg hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 transition-transform duration-200 border-4 border-white"
-              aria-label="Start AI Voice Chat"
-          >
-              <ChatBubbleLeftRightIcon className="w-8 h-8" />
-          </button>
-      </div>
-      <AIVoiceChat isOpen={isAIVoiceChatOpen} onClose={() => setIsAIVoiceChatOpen(false)} />
-
       {selectedProperty && <MortgageCalculator isOpen={isCalculatorOpen} onClose={() => setIsCalculatorOpen(false)} propertyPrice={selectedProperty.price} propertyTitle={selectedProperty.title} />}
       {selectedProperty && <ScheduleTourModal isOpen={isTourModalOpen} onClose={() => setIsTourModalOpen(false)} propertyTitle={selectedProperty.title} propertyId={selectedProperty.id} agentName={selectedProperty.agent.name} onSubmit={handleScheduleTour} />}
       {selectedProperty && <PropertyDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} property={selectedProperty} currentUser={currentUser} onOpenAgentContact={(mode, name) => { setAgentContactMode(mode); setAgentContactName(name); setIsAgentContactModalOpen(true); }} onOpenVRTour={handleOpenVRTour} onMessageAgent={handleMessageAgent} onLeaveReview={handleLeaveReview} />}

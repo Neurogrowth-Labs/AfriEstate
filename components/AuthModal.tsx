@@ -20,7 +20,7 @@ interface AuthModalProps {
 // --- Helper Components ---
 const InputField: React.FC<{label: string, id?: string, type?: string, value: string, name?: string, onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, icon?: React.ElementType, onIconClick?: () => void, disabled?: boolean, placeholder?: string, containerClassName?: string, note?: string, required?: boolean}> = ({ label, id, type = 'text', value, name, onChange, icon: Icon, onIconClick, disabled, placeholder, containerClassName, note, required=true }) => (
     <div className={containerClassName}>
-        <label htmlFor={id || name} className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{label}</label>
+        <label htmlFor={id || name} className="block text-sm font-bold text-slate-700 mb-2">{label}</label>
         <div className="relative">
             {type === 'textarea' ? ( <textarea id={id || name} name={name || id} value={value} onChange={onChange} disabled={disabled} placeholder={placeholder} required={required} className="input-base" rows={2}></textarea>
             ) : ( <input id={id || name} name={name || id} type={type} value={value} onChange={onChange} disabled={disabled} placeholder={placeholder} required={required} className="input-base" /> )}
@@ -32,22 +32,22 @@ const InputField: React.FC<{label: string, id?: string, type?: string, value: st
 
 const FileInput: React.FC<{ label: string; file: File | null; onFileChange: (file: File | null) => void; acceptedTypes: string, required?: boolean }> = ({ label, file, onFileChange, acceptedTypes, required=false }) => (
     <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">{label}</label>
+        <label className="block text-sm font-bold text-slate-700 mb-2">{label}</label>
         <div className="mt-1">
-            <label htmlFor={label} className="relative cursor-pointer glass-panel rounded-lg font-medium text-brand-primary hover:text-brand-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-slate-800 focus-within:ring-brand-primary border border-slate-300 dark:border-slate-600 p-3 flex justify-center items-center gap-2">
+            <label htmlFor={label} className="relative cursor-pointer bg-slate-50 hover:bg-slate-100 rounded-xl font-medium text-brand-primary border-2 border-dashed border-slate-200 hover:border-brand-primary transition-colors p-4 flex justify-center items-center gap-2">
                 <ArrowUpTrayIcon className="w-5 h-5" />
                 <span className="text-sm">{file ? 'Change file' : 'Upload file'}</span>
                 <input id={label} name={label} type="file" className="sr-only" onChange={(e) => onFileChange(e.target.files ? e.target.files[0] : null)} accept={acceptedTypes} required={required} />
             </label>
-            {file && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Selected: {file.name}</p>}
+            {file && <p className="text-xs text-slate-500 mt-2 truncate font-medium">Selected: {file.name}</p>}
         </div>
     </div>
 );
 
 const Checkbox: React.FC<{id: string, name: string, checked: boolean, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, children: React.ReactNode}> = ({id, name, checked, onChange, children}) => (
-    <label htmlFor={id} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-        <input type="checkbox" id={id} name={name} checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary" />
-        {children}
+    <label htmlFor={id} className="flex items-center gap-3 text-sm text-slate-600 cursor-pointer group">
+        <input type="checkbox" id={id} name={name} checked={checked} onChange={onChange} className="h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer transition-colors" />
+        <span className="group-hover:text-brand-dark transition-colors">{children}</span>
     </label>
 );
 
@@ -65,18 +65,20 @@ const SocialLogins: React.FC<{onLoginSuccess: () => void}> = ({ onLoginSuccess }
 );
 
 const SignupOptionCard: React.FC<{icon: React.ElementType, title: string, description: string, onClick: () => void}> = ({ icon: Icon, title, description, onClick }) => (
-    <button onClick={onClick} className="w-full text-left p-4 border border-slate-300 dark:border-slate-700 rounded-lg flex items-center gap-4 hover:bg-brand-light dark:hover:bg-slate-800 hover:border-brand-primary transition-all">
-        <div className="glass-card p-3 rounded-lg"><Icon className="w-6 h-6 text-brand-primary"/></div>
+    <button onClick={onClick} className="w-full text-left p-5 border-2 border-slate-100 rounded-xl flex items-center gap-5 hover:border-brand-primary hover:shadow-lg transition-all duration-300 group bg-white">
+        <div className="bg-brand-light p-4 rounded-xl group-hover:bg-brand-primary transition-colors duration-300">
+            <Icon className="w-7 h-7 text-brand-primary group-hover:text-brand-secondary transition-colors duration-300"/>
+        </div>
         <div>
-            <h3 className="font-bold text-slate-800 dark:text-white">{title}</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>
+            <h3 className="font-heading font-bold text-lg text-brand-dark group-hover:text-brand-primary transition-colors">{title}</h3>
+            <p className="text-sm text-slate-500 font-light mt-1">{description}</p>
         </div>
     </button>
 );
 
 const FormSection: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
-    <fieldset className="space-y-4">
-        <legend className="text-base font-semibold text-brand-dark dark:text-white border-b border-slate-200 dark:border-slate-700 w-full pb-2 mb-2">{title}</legend>
+    <fieldset className="space-y-4 mb-6">
+        <legend className="text-sm font-bold uppercase tracking-widest text-brand-secondary border-b-2 border-slate-100 w-full pb-3 mb-4">{title}</legend>
         {children}
     </fieldset>
 );
@@ -192,11 +194,11 @@ const LoginView: React.FC<{onLoginSuccess: () => void, onSwitchToSignup: () => v
 
             <button 
                 onClick={handleGoogleLogin} 
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-slate-100 hover:border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all duration-300"
                 type="button"
             >
-                <GoogleIcon className="w-5 h-5"/>
-                Google
+                <GoogleIcon className="w-6 h-6"/>
+                Continue with Google
             </button>
             <div className="pt-2 flex items-center justify-center gap-2">
                 <span className="text-sm text-slate-500">Not an investor/user yet?</span>
@@ -207,12 +209,18 @@ const LoginView: React.FC<{onLoginSuccess: () => void, onSwitchToSignup: () => v
 };
 
 const SignupView: React.FC<{ onSwitchToLogin: () => void; onSignupRole: (role: 'user'|'agent'|'investor') => void; }> = ({ onSwitchToLogin, onSignupRole }) => (
-    <div className="animate-fade-in space-y-4 text-center py-4">
-        <p className="text-center text-slate-500 pb-2">Choose your account type to sign up.</p>
-        <div className="space-y-3">
-            <SignupOptionCard icon={UserIcon} title="Property Seeker" description="Browse, save, and tour properties." onClick={() => onSignupRole('user')} />
-            <SignupOptionCard icon={BuildingStorefrontIcon} title="Agent / Agency" description="List and manage your properties." onClick={() => onSignupRole('agent')} />
-            <SignupOptionCard icon={BanknotesIcon} title="Investor" description="Access exclusive investment deals." onClick={() => onSignupRole('investor')} />
+    <div className="animate-fade-in space-y-4 text-center py-2">
+        <p className="text-center text-slate-500 font-light mb-6">Select your journey to begin transforming your real estate experience.</p>
+        <div className="space-y-4">
+            <div className="transform hover:-translate-y-1 transition-all duration-300">
+                <SignupOptionCard icon={UserIcon} title="Property Seeker" description="Browse, save, and tour premium properties." onClick={() => onSignupRole('user')} />
+            </div>
+            <div className="transform hover:-translate-y-1 transition-all duration-300">
+                <SignupOptionCard icon={BuildingStorefrontIcon} title="Agent / Agency" description="List and manage your exclusive portfolio." onClick={() => onSignupRole('agent')} />
+            </div>
+            <div className="transform hover:-translate-y-1 transition-all duration-300">
+                <SignupOptionCard icon={BanknotesIcon} title="Investor" description="Access exclusive co-investment deals." onClick={() => onSignupRole('investor')} />
+            </div>
         </div>
         
         <div className="relative flex items-center justify-center pt-4">
@@ -233,11 +241,11 @@ const SignupView: React.FC<{ onSwitchToLogin: () => void; onSignupRole: (role: '
                     console.error('Google signup error', error);
                 }
             }} 
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors mt-4"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-slate-100 hover:border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all duration-300 mt-6"
             type="button"
         >
-            <GoogleIcon className="w-5 h-5"/>
-            Google
+            <GoogleIcon className="w-6 h-6"/>
+            Continue with Google
         </button>
 
         <p className="text-center text-sm text-slate-500 pt-4">Already have an account? <button type="button" onClick={onSwitchToLogin} className="font-semibold text-brand-primary hover:underline focus:outline-none">Log In</button></p>
@@ -569,22 +577,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
     };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100] p-4 animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 bg-brand-dark/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 sm:p-6 animate-fade-in" onClick={onClose}>
         <div 
-            className="glass-panel rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 opacity-0 animate-fade-in-scale" 
+            className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl flex overflow-hidden transform transition-all duration-500 opacity-0 animate-fade-in-scale relative" 
             onClick={e => e.stopPropagation()}
         >
-            <header className="flex justify-between items-center p-5 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="text-xl font-bold text-brand-dark dark:text-white">
-                    {currentTitle}
-                </h2>
-                <button onClick={onClose} className="p-1 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <CloseIcon className="w-6 h-6" />
-                </button>
-            </header>
+            <div className="hidden lg:block lg:w-1/2 relative bg-brand-dark overflow-hidden group">
+                <img src="https://images.unsplash.com/photo-1600607687931-cebf102c7371?w=800&q=80" alt="Luxury Estate" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-80 transition-all duration-1000 ease-in-out" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-brand-primary mix-blend-color opacity-20 group-hover:opacity-0 transition-opacity duration-1000"></div>
+                <div className="absolute bottom-12 left-12 right-12 text-white transform group-hover:-translate-y-2 transition-transform duration-700">
+                   <div className="w-12 h-1 bg-brand-secondary mb-6 transform origin-left group-hover:scale-x-150 transition-transform duration-500"></div>
+                   <h3 className="text-4xl font-heading font-black mb-4 drop-shadow-lg leading-tight">Unlock Africa's<br/><span className="text-brand-secondary">Potential</span></h3>
+                   <p className="text-slate-200 font-light drop-shadow-md text-lg leading-relaxed">Join the continent's most exclusive real estate network. Buy, sell, or invest with unprecedented clarity.</p>
+                </div>
+            </div>
             
-            <div className="p-6 max-h-[75vh] overflow-y-auto bg-white">
-                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative mb-4 text-sm" role="alert">{error}</div>}
+            <div className="w-full lg:w-1/2 flex flex-col max-h-[85vh]">
+                <header className="flex justify-between items-center p-8 sm:px-12 sm:pt-12 pb-4">
+                    <h2 className="text-3xl font-heading font-black text-brand-dark">
+                        {currentTitle}
+                    </h2>
+                    <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-brand-dark hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                        <CloseIcon className="w-6 h-6" />
+                    </button>
+                </header>
+                
+                <div className="px-8 pb-8 sm:px-12 sm:pb-12 overflow-y-auto flex-1 custom-scrollbar">
+                    {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded shadow-sm mb-6 text-sm flex items-center gap-3 animate-fade-in" role="alert"><svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path></svg> <span>{error}</span></div>}
 
                 {view === 'login' && <LoginView onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => switchView('signup')} onSwitchToForgotPassword={() => switchView('forgotPassword')} setError={setError} />}
                 {view === 'signup' && <SignupView onSwitchToLogin={() => switchView('login')} onSignupRole={handleSignupRole} />}
@@ -596,22 +616,42 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                 {view === 'forgotPassword' && <ForgotPasswordView onResetSent={() => switchView('resetConfirmation')} onBackToLogin={() => switchView('login')} setError={setError} />}
                 {view === 'resetConfirmation' && <ResetConfirmationView onSwitchToLogin={() => switchView('login')} />}
                 {view === 'confirmEmail' && <ConfirmEmailView onSwitchToLogin={() => switchView('login')} />}
+                </div>
             </div>
         </div>
         <style>{`
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-            .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-            .animate-fade-in-scale { animation: fadeInScale 0.3s ease-out forwards; }
+            @keyframes fadeIn { from { opacity: 0; backdrop-filter: blur(0px); } to { opacity: 1; backdrop-filter: blur(8px); } }
+            @keyframes fadeInScale { from { opacity: 0; transform: scale(0.98) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+            .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+            .animate-fade-in-scale { animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
             
             .input-base {
-                @apply w-full px-4 py-2.5 glass-panel border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-slate-800 dark:text-slate-200 transition-colors placeholder:text-slate-400 disabled:bg-slate-100 dark:disabled:bg-slate-800;
+                @apply w-full px-5 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:ring-0 focus:border-brand-primary text-brand-dark transition-all duration-300 placeholder:text-slate-400;
             }
+            
+            .input-base:focus {
+                box-shadow: 0 4px 20px -5px rgba(15, 45, 37, 0.1);
+            }
+            
             .btn-primary {
-                @apply w-full bg-brand-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300 disabled:bg-slate-400 disabled:cursor-not-allowed transform hover:scale-[1.02];
+                @apply w-full bg-brand-primary text-white px-5 py-4 rounded-xl font-bold tracking-wide hover:bg-brand-dark transition-all duration-300 disabled:bg-slate-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl active:translate-y-0 active:shadow-md;
             }
             .btn-secondary {
-                @apply bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-5 py-3 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all;
+                @apply bg-brand-light text-brand-dark px-5 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all duration-300;
+            }
+            
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background-color: #e2e8f0;
+                border-radius: 20px;
+            }
+            .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+                background-color: #cbd5e1;
             }
         `}</style>
     </div>

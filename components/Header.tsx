@@ -96,7 +96,7 @@ const Header: React.FC<HeaderProps> = (props) => {
                 <span className="text-xs font-semibold hidden sm:inline">{currencyOptions[currency].symbol}</span>
             </button>
             {isCurrencyOpen && (
-                <div className="absolute top-full right-0 mt-2 w-40 glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
+                <div className="absolute top-full right-0 mt-2 w-48 max-h-60 overflow-y-auto custom-scrollbar glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
                     {Object.entries(currencyOptions).map(([code, details]) => (
                          <button 
                             key={code}

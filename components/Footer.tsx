@@ -92,7 +92,7 @@ const Footer: React.FC<FooterProps> = ({ onAboutClick, onContactClick, onBlogCli
                     <span>▲</span>
                 </button>
                  {isCurrencyOpen && (
-                    <div className="absolute bottom-full mb-2 w-full bg-slate-700 rounded-lg shadow-xl border border-slate-600 py-1 z-10">
+                    <div className="absolute bottom-full mb-2 w-full max-h-60 overflow-y-auto custom-scrollbar bg-slate-700 rounded-lg shadow-xl border border-slate-600 py-1 z-10">
                         {Object.entries(currencyOptions).map(([code, details]) => (
                              <button 
                                 key={code}

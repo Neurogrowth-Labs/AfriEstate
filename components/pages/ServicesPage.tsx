@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { BanknotesIcon, ShieldCheckIcon, TruckIcon, HomeIcon as HomeServiceIcon, CpuChipIcon, CheckBadgeIcon, UserGroupIcon } from '../icons/ActionIcons';
-import { TrophyIcon } from '../icons/AgentDashboardIcons';
+import React, { useState, useEffect, useRef } from 'react';
+import { BanknotesIcon, ShieldCheckIcon, TruckIcon, HomeIcon as HomeServiceIcon, CpuChipIcon, CheckBadgeIcon, UserGroupIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { TrophyIcon } from '@heroicons/react/24/outline';
 
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
@@ -14,6 +14,40 @@ const ChevronUpIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
   </svg>
 );
+
+const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
+  const [isVisible, setVisible] = useState(false);
+  const domRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            setVisible(true);
+        }
+      });
+    });
+    
+    if (domRef.current) {
+        observer.observe(domRef.current);
+    }
+    return () => {
+        if (domRef.current) observer.unobserve(domRef.current);
+    }
+  }, []);
+
+  return (
+    <div
+      ref={domRef}
+      className={`transition-all duration-1000 ease-out transform ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
 
 interface ServicesPageProps {
   onServiceClick: (service: string) => void;
@@ -29,45 +63,49 @@ const ServiceDetailCard: React.FC<{
     serviceKey: string;
     onCtaClick: (service: string) => void;
 }> = ({ icon: Icon, title, subheading, description, features, ctaText, serviceKey, onCtaClick }) => (
-    <div className="glass-panel p-8 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
-        <Icon className="w-10 h-10 text-brand-gold mb-4" />
-        <h3 className="text-2xl font-bold text-brand-dark dark:text-white">{title}</h3>
-        <p className="text-sm font-semibold text-brand-primary mt-1">{subheading}</p>
-        <p className="text-slate-600 dark:text-slate-300 mt-4">{description}</p>
-        <ul className="mt-4 space-y-2">
+    <div className="bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-slate-100 group flex flex-col h-full">
+        <div className="w-16 h-16 rounded-2xl bg-brand-light flex items-center justify-center mb-8 group-hover:bg-brand-primary transition-colors duration-500">
+            <Icon className="w-8 h-8 text-brand-primary group-hover:text-brand-secondary transition-colors duration-500" />
+        </div>
+        <h3 className="text-3xl font-heading font-bold text-brand-dark mb-2">{title}</h3>
+        <p className="text-sm font-bold tracking-widest uppercase text-brand-secondary mb-6">{subheading}</p>
+        <p className="text-slate-600 leading-relaxed font-light mb-8 flex-grow">{description}</p>
+        <ul className="mb-10 space-y-4">
             {features.map((feature, i) => (
                 <li key={i} className="flex items-start">
-                    <CheckBadgeIcon className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-600 dark:text-slate-300">{feature}</span>
+                    <CheckBadgeIcon className="w-6 h-6 text-brand-success mr-3 flex-shrink-0" />
+                    <span className="text-slate-700 font-light">{feature}</span>
                 </li>
             ))}
         </ul>
-        <button onClick={() => onCtaClick(serviceKey)} className="mt-6 w-full bg-brand-primary text-white font-semibold py-2.5 rounded-lg hover:bg-opacity-90 transition-colors">
-            {ctaText}
+        <button onClick={() => onCtaClick(serviceKey)} className="w-full bg-brand-light text-brand-dark font-bold py-4 rounded-xl hover:bg-brand-primary hover:text-white transition-all duration-300 flex items-center justify-center gap-2">
+            {ctaText} <ArrowRightIcon className="w-5 h-5"/>
         </button>
     </div>
 );
 
 const ProcessStep: React.FC<{ number: string, title: string, description: string }> = ({ number, title, description }) => (
-    <div className="relative pl-8">
-        <div className="absolute top-0 left-0 w-8 h-8 glass-card text-brand-primary dark:text-brand-gold font-bold text-lg rounded-full flex items-center justify-center">
+    <div className="relative pl-12">
+        <div className="absolute top-0 left-0 w-10 h-10 bg-brand-primary text-brand-secondary font-bold text-xl rounded-full flex items-center justify-center shadow-lg">
             {number}
         </div>
-        <h3 className="font-bold text-slate-800 dark:text-white">{title}</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{description}</p>
+        <h3 className="font-bold text-xl text-brand-dark mb-2 font-heading">{title}</h3>
+        <p className="text-slate-500 leading-relaxed font-light">{description}</p>
     </div>
 );
 
 const FaqItem: React.FC<{ question: string, children: React.ReactNode }> = ({ question, children }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
-        <div className="border-b border-slate-200 dark:border-slate-700">
-            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center text-left py-4">
-                <h4 className="font-semibold text-slate-800 dark:text-white">{question}</h4>
-                {isOpen ? <ChevronUpIcon className="w-5 h-5 text-brand-primary" /> : <ChevronDownIcon className="w-5 h-5 text-slate-400" />}
+        <div className="border-b border-slate-200">
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center text-left py-6 group">
+                <h4 className="font-bold text-lg text-brand-dark group-hover:text-brand-primary transition-colors">{question}</h4>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-brand-primary text-white' : 'bg-brand-light text-brand-dark group-hover:bg-slate-200'}`}>
+                    {isOpen ? <ChevronUpIcon className="w-5 h-5" /> : <ChevronDownIcon className="w-5 h-5" />}
+                </div>
             </button>
-            <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
-                <div className="pb-4 text-slate-600 dark:text-slate-300 text-sm">
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'}`}>
+                <div className="text-slate-600 font-light leading-relaxed">
                     {children}
                 </div>
             </div>
@@ -77,182 +115,214 @@ const FaqItem: React.FC<{ question: string, children: React.ReactNode }> = ({ qu
 
 const ServicesPage: React.FC<ServicesPageProps> = ({ onServiceClick }) => {
   return (
-    <div className="animate-fade-in bg-slate-50 dark:bg-slate-900">
-      {/* H1 and Intro */}
-      <section className="glass-panel py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-brand-dark dark:text-white">Our Services</h1>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            At AfriEstate, we go beyond listings. Our goal is to provide a comprehensive suite of services that empower you at every stage of your real estate journey, ensuring a seamless, secure, and successful experience.
-          </p>
+    <div className="bg-brand-light text-brand-dark overflow-hidden font-sans">
+      {/* Hero Section */}
+      <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+            alt="Premium Real Estate Services" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-brand-dark/80 mix-blend-multiply"></div>
+        </div>
+        
+        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto mt-16">
+          <FadeInSection>
+            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight font-heading mb-6">
+              Exceptional <span className="text-brand-secondary">Services</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-300 mt-6 max-w-3xl mx-auto font-light leading-relaxed">
+              Empowering every stage of your real estate journey with comprehensive, secure, and world-class solutions.
+            </p>
+          </FadeInSection>
         </div>
       </section>
 
       {/* Main Content Area */}
-      <div className="py-16">
-        <div className="container mx-auto px-6 space-y-20">
+      <div className="py-24">
+        <div className="container mx-auto px-6 space-y-32 max-w-7xl">
           
           {/* What We Offer */}
           <section>
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-4">What We Offer</h2>
-            <p className="text-center text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-12">
-              From securing financing to managing your rental, our integrated services are designed to simplify complexity and maximize your opportunities.
-            </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <ServiceDetailCard
-                icon={BanknotesIcon}
-                title="Home Loans & Mortgages"
-                subheading="What This Service Does"
-                description="We connect you with trusted lenders to find competitive mortgage rates, helping you get pre-approved to make your offer stronger and your purchase smoother."
-                features={[
-                  "Access to a network of verified lenders.",
-                  "Get pre-approved to understand your budget.",
-                  "Streamline your application process."
-                ]}
-                ctaText="Explore Lenders"
-                serviceKey="Financial Services"
-                onCtaClick={onServiceClick}
-              />
-              <ServiceDetailCard
-                icon={HomeServiceIcon}
-                title="Comprehensive Rental Services"
-                subheading="Why It Matters"
-                description="Our services for tenants and landlords ensure a safe and reliable rental experience, from secure deposit management to streamlined online rent payments and tenant verification."
-                features={[
-                  "Secure digital deposit management.",
-                  "Automated and easy online rent collection.",
-                  "Reliable tenant screening and verification."
-                ]}
-                ctaText="Find Property Managers"
-                serviceKey="Property Management"
-                onCtaClick={onServiceClick}
-              />
-              <ServiceDetailCard
-                icon={ShieldCheckIcon}
-                title="Property & Contents Insurance"
-                subheading="The Results We Deliver"
-                description="Protect your most valuable asset. Our network of insurance partners provides competitive quotes for home and contents insurance, giving you peace of mind from day one."
-                features={[
-                  "Compare quotes from top insurers.",
-                  "Protect your property and belongings.",
-                  "Ensure financial security against the unexpected."
-                ]}
-                ctaText="Get an Insurance Quote"
-                serviceKey="Insurance"
-                onCtaClick={onServiceClick}
-              />
-              <ServiceDetailCard
-                icon={TruckIcon}
-                title="Professional Moving Services"
-                subheading="Making Your Move Easy"
-                description="The journey doesn't end with the transaction. We help you get settled by providing access to quotes from reliable, vetted moving companies to make your transition seamless."
-                features={[
-                  "Get quotes from trusted moving partners.",
-                  "Ensure a stress-free moving day.",
-                  "Services for local and long-distance moves."
-                ]}
-                ctaText="Find Movers"
-                serviceKey="Moving Services"
-                onCtaClick={onServiceClick}
-              />
+            <FadeInSection>
+              <div className="text-center mb-16">
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <div className="w-12 h-1 bg-brand-secondary"></div>
+                    <span className="text-brand-secondary font-bold tracking-widest uppercase text-sm">What We Offer</span>
+                    <div className="w-12 h-1 bg-brand-secondary"></div>
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-bold font-heading text-brand-dark mb-6">Integrated Solutions</h2>
+                  <p className="text-xl text-slate-500 font-light max-w-2xl mx-auto">
+                    From securing financing to managing your rental, our services are designed to simplify complexity and maximize opportunity.
+                  </p>
+              </div>
+            </FadeInSection>
+            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 xl:gap-12">
+              <FadeInSection delay={100}>
+                <ServiceDetailCard
+                  icon={BanknotesIcon}
+                  title="Home Loans"
+                  subheading="Financial Services"
+                  description="We connect you with trusted lenders to find competitive mortgage rates, getting you pre-approved to make your offer stronger."
+                  features={["Verified lender network", "Pre-approval assessment", "Streamlined application process"]}
+                  ctaText="Explore Lenders"
+                  serviceKey="Financial Services"
+                  onCtaClick={onServiceClick}
+                />
+              </FadeInSection>
+              <FadeInSection delay={200}>
+                <ServiceDetailCard
+                  icon={HomeServiceIcon}
+                  title="Property Management"
+                  subheading="Rental Services"
+                  description="Tenant and landlord solutions ensuring a safe and reliable rental experience, from deposit management to online rent payments."
+                  features={["Secure deposit management", "Automated rent collection", "Reliable tenant screening"]}
+                  ctaText="Find Property Managers"
+                  serviceKey="Property Management"
+                  onCtaClick={onServiceClick}
+                />
+              </FadeInSection>
+              <FadeInSection delay={300}>
+                <ServiceDetailCard
+                  icon={ShieldCheckIcon}
+                  title="Asset Insurance"
+                  subheading="Property Protection"
+                  description="Protect your most valuable asset. Our insurance partners provide competitive quotes for comprehensive home and contents insurance."
+                  features={["Compare top insurer quotes", "Comprehensive belongings protection", "Financial security assurance"]}
+                  ctaText="Get an Insurance Quote"
+                  serviceKey="Insurance"
+                  onCtaClick={onServiceClick}
+                />
+              </FadeInSection>
+              <FadeInSection delay={400}>
+                <ServiceDetailCard
+                  icon={TruckIcon}
+                  title="Moving & Logistics"
+                  subheading="Relocation Services"
+                  description="We help you get settled by providing access to quotes from reliable, vetted moving companies making your transition seamless."
+                  features={["Trusted moving partners", "Stress-free logistics planning", "Local & long-distance support"]}
+                  ctaText="Find Movers"
+                  serviceKey="Moving Services"
+                  onCtaClick={onServiceClick}
+                />
+              </FadeInSection>
             </div>
           </section>
 
-          {/* Our Process */}
-          <section>
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-12">Our Process</h2>
-            <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-10 relative">
-              <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
-              <ProcessStep number="1" title="Discovery" description="We start by understanding your unique needs, goals, and financial situation through an initial consultation."/>
-              <ProcessStep number="2" title="Strategy & Planning" description="We develop a customized plan, whether it's finding the right loan, managing a property, or planning your move."/>
-              <ProcessStep number="3" title="Execution" description="Our network of professionals gets to work, handling applications, verifications, and logistics with efficiency."/>
-              <ProcessStep number="4" title="Delivery & Support" description="We ensure a smooth final delivery of the service and provide ongoing support to guarantee your satisfaction."/>
-            </div>
-          </section>
+          {/* Our Process & Why Choose Us (Side by Side on Large Screens) */}
+          <section className="grid lg:grid-cols-2 gap-16 items-start">
+              {/* Our Process */}
+              <div>
+                <FadeInSection>
+                    <h2 className="text-4xl font-bold font-heading text-brand-dark mb-12">Our Proven Process</h2>
+                    <div className="space-y-12 relative">
+                    <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-brand-gold/30"></div>
+                    <ProcessStep number="1" title="Discovery" description="We begin by understanding your unique needs, goals, and financial situation through an initial consultation."/>
+                    <ProcessStep number="2" title="Strategy" description="We develop a customized plan, whether for securing loans, managing properties, or relocating."/>
+                    <ProcessStep number="3" title="Execution" description="Our professional network gets to work, handling complex applications and logistics efficiently."/>
+                    <ProcessStep number="4" title="Delivery" description="We ensure a smooth final delivery of the service with ongoing support to guarantee satisfaction."/>
+                    </div>
+                </FadeInSection>
+              </div>
 
-          {/* Why Choose Us */}
-          <section>
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-12">Why Choose AfriEstate</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-                <div className="glass-panel p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                    <TrophyIcon className="w-8 h-8 text-brand-gold mb-3"/>
-                    <h3 className="font-bold text-lg">Experience & Credibility</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Our platform is built on years of real estate expertise, featuring a curated network of vetted professionals and verified listings to ensure you're in safe hands.</p>
-                </div>
-                <div className="glass-panel p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                    <CpuChipIcon className="w-8 h-8 text-brand-gold mb-3"/>
-                    <h3 className="font-bold text-lg">Innovation-Driven</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">We use cutting-edge AI to provide personalized property matches, market insights, and tools that give you a competitive edge in the market.</p>
-                </div>
-                <div className="glass-panel p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                    <UserGroupIcon className="w-8 h-8 text-brand-gold mb-3"/>
-                    <h3 className="font-bold text-lg">Client-Centric Approach</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Your success is our success. Our platform and services are designed from the ground up to be user-friendly, transparent, and supportive.</p>
-                </div>
-            </div>
-          </section>
-
-          {/* Client Results */}
-          <section className="bg-brand-primary text-white rounded-lg p-10">
-              <h2 className="text-3xl font-bold text-center mb-8">Client Results</h2>
-              <div className="grid md:grid-cols-3 gap-8 text-center">
-                  <div>
-                      <p className="text-5xl font-extrabold">30%</p>
-                      <p className="mt-2 font-semibold">Faster Transaction Time</p>
-                  </div>
-                  <div>
-                      <p className="text-5xl font-extrabold">2,500+</p>
-                      <p className="mt-2 font-semibold">Verified Professionals</p>
-                  </div>
-                  <div>
-                      <p className="text-5xl font-extrabold">98%</p>
-                      <p className="mt-2 font-semibold">Client Satisfaction Rate</p>
-                  </div>
+              {/* Why Choose Us */}
+              <div>
+                <FadeInSection delay={200}>
+                    <h2 className="text-4xl font-bold font-heading text-brand-dark mb-12">The AfriEstate Advantage</h2>
+                    <div className="space-y-8">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 flex gap-6 items-start">
+                            <TrophyIcon className="w-12 h-12 text-brand-secondary flex-shrink-0"/>
+                            <div>
+                                <h3 className="font-bold text-xl mb-2 font-heading">Credentialed Expertise</h3>
+                                <p className="text-slate-500 font-light leading-relaxed">Built on years of expertise with a curated network of vetted professionals ensuring you are in safe hands.</p>
+                            </div>
+                        </div>
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 flex gap-6 items-start">
+                            <CpuChipIcon className="w-12 h-12 text-brand-secondary flex-shrink-0"/>
+                            <div>
+                                <h3 className="font-bold text-xl mb-2 font-heading">Innovation Driven</h3>
+                                <p className="text-slate-500 font-light leading-relaxed">Leveraging cutting-edge AI for personalized matches, market insights, and tools that provide a competitive edge.</p>
+                            </div>
+                        </div>
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 flex gap-6 items-start">
+                            <UserGroupIcon className="w-12 h-12 text-brand-secondary flex-shrink-0"/>
+                            <div>
+                                <h3 className="font-bold text-xl mb-2 font-heading">Client-Centric</h3>
+                                <p className="text-slate-500 font-light leading-relaxed">Your success is our success. Everything is designed to be user-friendly, transparent, and immensely supportive.</p>
+                            </div>
+                        </div>
+                    </div>
+                </FadeInSection>
               </div>
           </section>
 
-          {/* FAQ */}
-          <section>
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-8">Frequently Asked Questions</h2>
-            <div className="max-w-3xl mx-auto glass-panel p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                <FaqItem question="Are your service providers vetted?">
-                    Yes, absolutely. Every professional in our network undergoes a thorough verification process, including credential checks and reviews, to ensure they meet our high standards of quality and reliability.
-                </FaqItem>
-                <FaqItem question="How do I get started with a home loan application?">
-                    Simply use our "Explore Lenders" tool. You can compare rates and start a pre-approval process directly through our platform, which streamlines the initial application for you.
-                </FaqItem>
-                <FaqItem question="What are the fees for using your services?">
-                    Browsing and connecting with providers is free. The providers themselves have their own fee structures. For services like rental management, we offer transparent, competitive pricing which is clearly outlined.
-                </FaqItem>
-                 <FaqItem question="Can I use my own service providers?">
-                    Of course. Our network is here for your convenience, but you are always free to use your own preferred professionals for any part of your real estate journey.
-                </FaqItem>
-                <FaqItem question="Is my data secure when using your financial services?">
-                    Yes. We use industry-standard encryption and security protocols to protect all sensitive information shared through our platform. Your privacy and security are our top priorities.
-                </FaqItem>
-            </div>
+          {/* Client Results Banner */}
+          <section className="relative overflow-hidden rounded-[3rem] text-white">
+              <div className="absolute inset-0 bg-brand-primary"></div>
+              <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-secondary rounded-full filter blur-[120px] opacity-20 -mr-[400px] -mt-[400px]"></div>
+              
+              <div className="relative z-10 py-20 px-6">
+                <FadeInSection>
+                    <h2 className="text-4xl font-bold font-heading text-center mb-16">Metrics of Excellence</h2>
+                    <div className="grid md:grid-cols-3 gap-12 text-center max-w-5xl mx-auto">
+                        <div>
+                            <p className="text-6xl font-black text-brand-secondary mb-4 drop-shadow-md">30%</p>
+                            <p className="text-xl font-light text-slate-200 uppercase tracking-widest">Faster Processing</p>
+                        </div>
+                        <div>
+                            <p className="text-6xl font-black text-brand-secondary mb-4 drop-shadow-md">2.5k+</p>
+                            <p className="text-xl font-light text-slate-200 uppercase tracking-widest">Verified Partners</p>
+                        </div>
+                        <div>
+                            <p className="text-6xl font-black text-brand-secondary mb-4 drop-shadow-md">98%</p>
+                            <p className="text-xl font-light text-slate-200 uppercase tracking-widest">Client Satisfaction</p>
+                        </div>
+                    </div>
+                </FadeInSection>
+              </div>
           </section>
-          
-          {/* CTA */}
-          <section className="text-center">
-            <h2 className="text-3xl font-bold text-brand-dark dark:text-white">Ready to work with us?</h2>
-            <p className="mt-3 text-slate-500 dark:text-slate-400">Contact our team today to get started.</p>
-            <button onClick={() => onServiceClick('Legal Services')} className="mt-6 bg-brand-primary text-white font-semibold px-8 py-3 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg">
-                Book a Consultation
-            </button>
+
+          {/* FAQ & CTA Section */}
+          <section className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <FadeInSection>
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-1 bg-brand-primary"></div>
+                    <span className="text-brand-primary font-bold tracking-widest uppercase text-sm">Insights</span>
+                </div>
+                <h2 className="text-4xl font-bold font-heading text-brand-dark mb-10">Frequently Asked</h2>
+                <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                    <FaqItem question="Are your service providers vetted?">
+                        Absolutely. Every professional in our network undergoes a rigorous verification process, including credential checks and continuous peer reviews.
+                    </FaqItem>
+                    <FaqItem question="How do I start a home loan application?">
+                        Use our "Explore Lenders" tool to compare rates and initiate a secure pre-approval process directly through our unified platform.
+                    </FaqItem>
+                    <FaqItem question="What are the fee structures?">
+                        Browsing and initial connections are completely free. Individual service providers maintain competitive, transparent fee structures clearly outlined before commitment.
+                    </FaqItem>
+                     <FaqItem question="Is my data encrypted?">
+                        We deploy bank-grade encryption and stringent privacy protocols to protect all sensitive information shared through AfriEstate.
+                    </FaqItem>
+                </div>
+              </FadeInSection>
+            </div>
+            
+            <div className="text-center bg-white p-16 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-gold/10 rounded-full blur-2xl"></div>
+                <FadeInSection delay={200}>
+                    <h2 className="text-4xl font-bold font-heading text-brand-dark mb-6">Ready to Elevate?</h2>
+                    <p className="text-lg text-slate-500 font-light mb-10 max-w-md mx-auto">Contact our dedicated team today to begin your world-class real estate journey.</p>
+                    <button onClick={() => onServiceClick('Legal Services')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl w-full sm:w-auto">
+                        Book a Consultation
+                    </button>
+                </FadeInSection>
+            </div>
           </section>
 
         </div>
       </div>
-       <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-          }
-        `}</style>
     </div>
   );
 };
