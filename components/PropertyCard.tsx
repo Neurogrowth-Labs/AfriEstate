@@ -146,9 +146,9 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     <div className="glass-card rounded-xl overflow-hidden group flex flex-col">
       <div className="relative overflow-hidden group/image">
         <button onClick={() => onOpenDetailModal(property)} className="absolute inset-0 z-0"></button>
-        <img src={property.images[currentImageIndex] || 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src={(property.images && property.images.length > 0) ? property.images[currentImageIndex] : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" />
         
-        {property.images.length > 1 && (
+        {property.images && property.images.length > 1 && (
             <>
                 <button onClick={handlePrevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-white text-brand-dark p-1.5 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity z-10 hover:bg-slate-100 shadow-sm border border-slate-200">
                     <ChevronLeftIcon className="w-4 h-4 text-brand-dark" />

@@ -89,9 +89,6 @@ const Hero: React.FC<HeroProps> = (props) => {
             </div>
             
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button className="bg-brand-primary text-white font-bold text-lg px-8 py-4 rounded-full hover:bg-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center gap-2">
-                    Start Browsing <ArrowRightIcon className="w-5 h-5"/>
-                </button>
                 <div className="text-white text-sm opacity-80 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse"></span>
                     Over 10,000 Verified Listings

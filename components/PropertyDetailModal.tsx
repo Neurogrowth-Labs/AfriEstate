@@ -94,7 +94,8 @@ const valuationSchema = {
 };
 
 const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({ isOpen, onClose, property, currentUser, onOpenAgentContact, onOpenVRTour, onMessageAgent, onLeaveReview }) => {
-  const [activeImage, setActiveImage] = useState(property.images[0]);
+  const images = property.images && property.images.length > 0 ? property.images : ['https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'];
+  const [activeImage, setActiveImage] = useState(images[0]);
   const [isValuating, setIsValuating] = useState(false);
   const [valuation, setValuation] = useState<ValuationResult | null>(null);
   const [valuationError, setValuationError] = useState<string | null>(null);
@@ -118,7 +119,7 @@ const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({ isOpen, onClo
   useEffect(() => {
     const initModal = async () => {
       if (isOpen) {
-        setActiveImage(property.images[0]);
+        setActiveImage(images[0]);
         // FIX: getReviewsForAgent is an async function. We need to await its result before setting state.
         const agentReviews = await getReviewsForAgent(property.agent.name);
         setReviews(agentReviews);
@@ -133,15 +134,15 @@ const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({ isOpen, onClo
   }, [isOpen, property]);
   
   const handlePrevImage = () => {
-      const currentIndex = property.images.indexOf(activeImage);
-      const prevIndex = currentIndex === 0 ? property.images.length - 1 : currentIndex - 1;
-      setActiveImage(property.images[prevIndex]);
+      const currentIndex = images.indexOf(activeImage);
+      const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+      setActiveImage(images[prevIndex]);
   };
 
   const handleNextImage = () => {
-      const currentIndex = property.images.indexOf(activeImage);
-      const nextIndex = currentIndex === property.images.length - 1 ? 0 : currentIndex + 1;
-      setActiveImage(property.images[nextIndex]);
+      const currentIndex = images.indexOf(activeImage);
+      const nextIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+      setActiveImage(images[nextIndex]);
   };
 
    useEffect(() => {
@@ -283,7 +284,7 @@ Text to translate:
             <div className="space-y-6">
                 <div className="space-y-4">
                     <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-slate-200 relative group">
-                        {property.images.length > 1 && (
+                        {images.length > 1 && (
                             <>
                                 <button onClick={handlePrevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                     <ChevronLeftIcon className="w-6 h-6" />
@@ -307,7 +308,7 @@ Text to translate:
                         )}
                     </div>
                     <div className="grid grid-cols-5 gap-2">
-                        {property.images.slice(0, 5).map((img, index) => (
+                        {images.slice(0, 5).map((img, index) => (
                             <button key={index} onClick={() => setActiveImage(img)} className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden ring-2 ring-offset-2 transition-all ${activeImage === img ? 'ring-brand-primary' : 'ring-transparent'}`}>
                                  <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                             </button>
