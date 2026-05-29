@@ -6,7 +6,7 @@
     <title>AfriEstate - Real Estate Marketplace</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -15,7 +15,7 @@
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
-              heading: ['Plus Jakarta Sans', 'sans-serif'],
+              heading: ['Playfair Display', 'serif'],
             },
             fontSize: {
               'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -53,12 +53,13 @@
               'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
             },
             colors: {
-              'brand-primary': '#7d9789',
-              'brand-secondary': '#acbcae',
-              'brand-accent': '#dae2d9',
-              'brand-gold': '#c19541',
-              'brand-light': '#faf9f5',
-              'brand-dark': '#2c3931',
+              'brand-primary': '#0F2D25',
+              'brand-secondary': '#C9A35D',
+              'brand-accent': '#1FA971',
+              'brand-gold': '#C9A35D',
+              'brand-light': '#FAF8F5',
+              'brand-dark': '#1D1D1D',
+              'brand-success': '#1FA971',
             },
           },
         },
@@ -73,6 +74,12 @@
         }
         body {
           @apply font-sans min-h-screen overflow-x-hidden bg-brand-light text-brand-dark dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          @apply font-heading;
+        }
+        button {
+          @apply font-sans font-semibold;
         }
 
         .mono-text {
