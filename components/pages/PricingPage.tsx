@@ -136,71 +136,20 @@ const PricingPage: React.FC<PricingPageProps> = ({ onPlanSelect }) => {
             <p className="mt-3 text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Each plan comes with a powerful, tailored dashboard to help you achieve your goals.</p>
             <div className="mt-10 grid md:grid-cols-3 gap-8 items-center">
                 <div>
-                    <img src="https://picsum.photos/seed/user-dash/600/400" alt="User Dashboard" className="rounded-lg shadow-xl" />
-                    <h3 className="font-bold text-lg mt-4 text-brand-dark dark:text-white">Seeker Dashboard</h3>
+                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="User Dashboard" className="rounded-lg shadow-xl" />
+                    <p className="mt-4 font-semibold text-slate-700 dark:text-slate-200">Basic Analytics</p>
                 </div>
-                 <div>
-                    <img src="https://picsum.photos/seed/agent-dash/600/400" alt="Agent Dashboard" className="rounded-lg shadow-xl" />
-                    <h3 className="font-bold text-lg mt-4 text-brand-dark dark:text-white">Agent Dashboard</h3>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="Agent Dashboard" className="rounded-lg shadow-xl border border-brand-primary" />
+                    <p className="mt-4 font-semibold text-brand-primary">Advanced CRM</p>
                 </div>
-                 <div>
-                    <img src="https://picsum.photos/seed/investor-dash/600/400" alt="Investor Dashboard" className="rounded-lg shadow-xl" />
-                    <h3 className="font-bold text-lg mt-4 text-brand-dark dark:text-white">Investor Dashboard</h3>
-                </div>
-            </div>
-        </div>
-      </section>
-
-      {/* Feature Comparison */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-10">Feature Comparison</h2>
-            <div className="max-w-4xl mx-auto glass-panel rounded-lg shadow-md overflow-hidden border border-slate-200 dark:border-slate-700">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left min-w-[600px]">
-                        <thead className="bg-slate-50 dark:bg-slate-700/50">
-                            <tr>
-                                <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 w-2/5">Feature</th>
-                                <th className="p-4 text-center font-semibold text-slate-600 dark:text-slate-300">Seeker (Free)</th>
-                                <th className="p-4 text-center font-semibold text-slate-600 dark:text-slate-300">Agent</th>
-                                <th className="p-4 text-center font-semibold text-slate-600 dark:text-slate-300">Investor Pro</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                            {featureComparison.map(({ feature, user, agent, investor }) => (
-                                <tr key={feature}>
-                                    <td className="p-4 font-medium text-slate-800 dark:text-slate-200">{feature}</td>
-                                    <td className="p-4 text-center">{user ? <CheckBadgeIcon className="w-6 h-6 text-green-500 mx-auto" /> : <span className="text-slate-400">-</span>}</td>
-                                    <td className="p-4 text-center">{agent ? <CheckBadgeIcon className="w-6 h-6 text-green-500 mx-auto" /> : <span className="text-slate-400">-</span>}</td>
-                                    <td className="p-4 text-center">{investor ? <CheckBadgeIcon className="w-6 h-6 text-green-500 mx-auto" /> : <span className="text-slate-400">-</span>}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="Investor Dashboard" className="rounded-lg shadow-xl" />
+                    <p className="mt-4 font-semibold text-slate-700 dark:text-slate-200">Financial Tools</p>
                 </div>
             </div>
         </div>
       </section>
-
-      {/* FAQ */}
-      <section className="py-16 glass-panel">
-        <div className="container mx-auto px-6 max-w-3xl">
-            <h2 className="text-3xl font-bold text-center text-brand-dark dark:text-white mb-10">Frequently Asked Questions</h2>
-            <div>
-                {faqs.map(faq => <FaqItem key={faq.q} question={faq.q}>{faq.a}</FaqItem>)}
-            </div>
-        </div>
-      </section>
-
-      <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-          }
-        `}</style>
     </div>
   );
 };

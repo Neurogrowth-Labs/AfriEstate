@@ -296,11 +296,11 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({ isOpen, onClose, 
                          <div>
                             <label htmlFor="images" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Image URL</label>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Enter one URL. More can be added later.</p>
-                            <input type="text" name="images" value={property.images[0] || ''} onChange={(e) => setProperty(p => ({...p, images: [e.target.value]}))} placeholder="https://picsum.photos/seed/new/800/600" className="mt-1 w-full input"/>
+                            <input type="text" name="images" value={property.images[0] || ''} onChange={(e) => setProperty(p => ({...p, images: [e.target.value]}))} placeholder="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" className="mt-1 w-full input"/>
                         </div>
-                         <div>
-                            <label htmlFor="vrTourUrl" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Virtual Tour URL</label>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Link to a YouTube video or VR host.</p>
+                        <div>
+                            <label htmlFor="vrTourUrl" className="block text-sm font-medium text-slate-700 dark:text-slate-200">VR Tour URL (Optional)</label>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Youtube VR/Matterport embed link.</p>
                             <input type="text" name="vrTourUrl" value={property.vrTourUrl || ''} onChange={handleChange} placeholder="https://youtube.com/embed/..." className="mt-1 w-full input"/>
                         </div>
                     </div>

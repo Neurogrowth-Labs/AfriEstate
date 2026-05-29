@@ -23,7 +23,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the vibrant Arts District, you're steps away from top-rated restaurants, theaters, and public transport. The neighborhood is known for its lively atmosphere and creative energy.",
     amenities: ['Gym', 'Rooftop Deck', 'In-unit Laundry', 'Doorman', 'Pet Friendly'],
     images: [
-    '/images/loft_interior_1779978697203.png',
+    'https://images.unsplash.com/photo-1502672260266-1c1de24220e8?w=800&q=80',
 ],
     virtualTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     vrTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1&mute=1&loop=1',
@@ -63,7 +63,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "The University Park neighborhood is bustling with student life. You'll find plenty of cafes, libraries, and late-night eateries. The campus shuttle stop is right outside the building.",
     amenities: ['Furnished', 'Utilities Included', 'High-speed Internet', 'Study Lounge'],
     images: [
-    '/images/interior_beanbags_1779978650034.png',
+    'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
 ],
     agent: { name: 'Campus Rentals', phone: '555-987-6543', verified: true, rating: 4.7, reviewCount: 150 },
     featured: true,
@@ -87,7 +87,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "A family-friendly area with a strong sense of community. The property is near the newly built community center, which features a library and sports facilities.",
     amenities: ['Garden', 'Secure Parking', 'Patio', 'Alarm System'],
     images: [
-    '/images/house_suburbs_1779978598551.png',
+    'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80',
 ],
     agent: { name: 'Peter Van der Merwe', phone: '555-222-3333', verified: true, rating: 4.8, reviewCount: 45 },
     featured: true,
@@ -118,7 +118,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "New Dawn is an up-and-coming neighborhood with significant investment in public parks and infrastructure. A new light rail station is planned to open next year just two blocks away.",
     amenities: ['Community Pool', 'Playground', 'On-site Security', 'Gym'],
     images: [
-    '/images/apartment_dining_1779978782850.png',
+    'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&q=80',
 ],
     agent: { name: 'Future Homes Inc.', phone: '555-444-5555', verified: false, rating: 4.5, reviewCount: 112 },
     featured: false,
@@ -142,7 +142,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Nestled in the heart of the Cape Winelands, this property offers tranquility and privacy, yet is only a 15-minute drive from the historic town of Stellenbosch.",
     amenities: ['Acreage', 'Barn', 'Fireplace', 'Mountain View', 'Swimming Pool'],
     images: [
-    '/images/modern_house_tan_1779978632706.png',
+    'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80',
 ],
     agent: { name: 'Peter Van der Merwe', phone: '555-666-7777', verified: true, rating: 4.9, reviewCount: 38 },
     featured: false,
@@ -166,7 +166,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Situated on the busiest commercial street in Urbanville, this location guarantees high foot traffic and visibility. It's surrounded by corporate offices and luxury condos.",
     amenities: ['High-traffic Area', 'Storefront', 'Ample Parking', 'Central AC'],
     images: [
-    '/images/interior_beanbags_1779978650034.png',
+    'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80',
 ],
     agent: { name: 'Commercial Kings', phone: '555-888-9999', verified: true, rating: 4.6, reviewCount: 91 },
     featured: false,
@@ -191,7 +191,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Green Valley is known for its excellent school district, numerous parks, and family-friendly community events. The local grocery store and community center are just a short walk away.",
     amenities: ['Swimming Pool', 'Fenced Yard', 'Garage', 'Modern Kitchen', 'Patio'],
     images: [
-    '/images/modern_house_tan_1779978632706.png',
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
 ],
     agent: { name: 'Susan Miller', phone: '555-111-2222', verified: false, rating: 4.8, reviewCount: 67 },
     featured: false,
@@ -215,7 +215,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the 'Silicon Triangle' district of Collegia, this building is surrounded by tech startups and incubators, making it ideal for networking and internships.",
     amenities: ['High-speed Internet', 'Study Lounge', 'Bike Storage', 'In-unit Laundry'],
     images: [
-    '/images/apartment_block_1779978678706.png',
+    'https://images.unsplash.com/photo-1529290076292-698f121d58c8?w=800&q=80',
 ],
     agent: { name: 'Campus Rentals', phone: '555-987-6543', verified: true, rating: 4.7, reviewCount: 150 },
     featured: false,
@@ -239,7 +239,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the exclusive Carbon Beach area, this property is surrounded by celebrity homes and offers the ultimate in coastal living. World-class dining and shopping are just moments away.",
     amenities: ['Swimming Pool', 'Ocean View', 'Private Theater', 'Wine Cellar', 'Garage', 'Gated Community'],
     images: [
-    '/images/coastal_mansion_1779978805301.png',
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
 ],
     vrTourUrl: 'https://www.youtube.com/embed/A45gAEQRd_A?rel=0&autoplay=1&mute=1&loop=1',
     agent: { name: 'Luxury Living', phone: '555-101-2020', verified: true, rating: 5.0, reviewCount: 25 },
@@ -265,7 +265,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "This rapidly growing area is seeing significant commercial and residential development. A new highway interchange is planned a mile away, promising excellent future accessibility.",
     amenities: ['Acreage', 'Zoned Commercial', 'Utilities Available'],
     images: [
-    '/images/house_pool_1779978750296.png',
+    'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=800&q=80',
 ],
     agent: { name: 'Future Homes Inc.', phone: '555-444-5555', verified: false, rating: 4.5, reviewCount: 112 },
     featured: false,
@@ -289,7 +289,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the prestigious financial district, enjoy close proximity to fine dining, luxury shopping, and cultural landmarks. Unmatched convenience and status.",
     amenities: ['Rooftop Deck', 'Doorman', 'Gym', 'Mountain View', 'Private Elevator'],
     images: [
-    '/images/luxury_kitchen_living_1779978720358.png',
+    'https://images.unsplash.com/photo-1600607687920-4e2a09c15468?w=800&q=80',
 ],
     agent: { name: 'Jane Doe', phone: '555-123-4567', verified: true, rating: 4.9, reviewCount: 82 },
     featured: false,
@@ -314,7 +314,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "The waterfront is Urbanville's premier destination for tourism and business, ensuring high occupancy rates and premium room prices.",
     amenities: ['Water View', 'Conference Center', 'Rooftop Pool', 'Fine Dining Restaurant', 'Spa & Wellness Center'],
     images: [
-    '/images/spa_wellness_1779978823248.png',
+    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80',
 ],
     agent: { name: 'Peter Van der Merwe', phone: '555-123-4567', verified: true, rating: 4.9, reviewCount: 82 },
     featured: false,
@@ -340,7 +340,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the central business district, this property is surrounded by major corporate headquarters, premium retail, and excellent transport links.",
     amenities: ['24/7 Security', 'Underground Parking', 'Fiber Internet', 'LEED Certified', 'On-site Cafe'],
     images: [
-    '/images/apartment_block_1779978678706.png',
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
 ],
     agent: { name: 'Peter Van der Merwe', phone: '555-123-4567', verified: true, rating: 4.9, reviewCount: 82 },
     featured: false,
@@ -365,7 +365,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: 'Located in the 1st arrondissement, steps from the Louvre Museum and luxury shopping.',
     amenities: ['Hardwood Floors', 'Fireplace', 'Elevator', 'City View'],
     images: [
-    '/images/apartment_dining_1779978782850.png',
+    'https://images.unsplash.com/photo-1502602891460-0d7055745145?w=800&q=80',
 ],
     agent: { name: 'Parisian Homes', phone: '555-111-3333', verified: true, rating: 4.8, reviewCount: 50 },
     featured: false,
@@ -388,7 +388,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: 'Experience the energy of Shibuya Crossing, with endless dining, shopping, and entertainment options at your doorstep.',
     amenities: ['Smart Home', 'High-speed Internet', 'In-unit Laundry', 'Security System'],
     images: [
-    '/images/loft_interior_1779978697203.png',
+    'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
 ],
     agent: { name: 'Tokyo Living', phone: '555-222-4444', verified: true, rating: 4.9, reviewCount: 120 },
     featured: false,
@@ -411,7 +411,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Kirribilli is one of Sydney's most prestigious suburbs, offering an exclusive lifestyle with easy access to the CBD via ferry.",
     amenities: ['Swimming Pool', 'Ocean View', 'Garage', 'Modern Kitchen', 'Patio'],
     images: [
-    '/images/harbour_house_1779978766107.png',
+    'https://images.unsplash.com/photo-1510525009512-ad7fc13eefab?w=800&q=80',
 ],
     agent: { name: 'Sydney Luxury', phone: '555-333-5555', verified: true, rating: 5.0, reviewCount: 40 },
     featured: true,
@@ -435,7 +435,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Bree Street is Cape Town's foodie and design hotspot, known for its trendy bars, art galleries, and artisanal shops. Experience the city's creative pulse right at your doorstep.",
     amenities: ['Wi-Fi', 'Kitchenette', 'Air Conditioning', 'Smart TV', 'Balcony'],
     images: [
-    '/images/apartment_dining_1779978782850.png',
+    'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&q=80',
 ],
     agent: { name: 'Cape Stays', phone: '555-303-4040', verified: true, rating: 4.9, reviewCount: 125 },
     featured: true,
@@ -460,7 +460,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Conveniently located at Cape Town International Airport, providing easy access to the city and the beautiful surrounding regions like the Winelands and the Cape Peninsula.",
     amenities: ['Automatic', 'Air Conditioning', 'GPS', 'Unlimited Mileage', 'Insurance Included'],
     images: [
-    '/images/house_pool_1779978750296.png',
+    'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80',
 ],
     agent: { name: 'Cape Drive', phone: '555-505-6060', verified: true, rating: 4.8, reviewCount: 210 },
     featured: false,
@@ -485,7 +485,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Located in the tranquil mountains overlooking the Stellenbosch valley, this retreat offers a peaceful escape surrounded by nature, hiking trails, and world-renowned vineyards.",
     amenities: ['All-inclusive', 'Daily Yoga', 'Meditation Sessions', 'Organic Meals', 'Spa Access'],
     images: [
-    '/images/spa_wellness_1779978823248.png',
+    'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
 ],
     agent: { name: 'Zen Escapes', phone: '555-707-8080', verified: true, rating: 5.0, reviewCount: 95 },
     featured: false,
@@ -510,7 +510,7 @@ export const ALL_PROPERTIES: Property[] = [
     neighborhoodInfo: "Situated in Sandton, Johannesburg's premier business and shopping district. You'll be minutes away from Nelson Mandela Square, Sandton City Mall, and the Gautrain station for easy airport access.",
     amenities: ['Room Service', 'Rooftop Pool', 'Gym', 'Restaurant', 'Concierge'],
     images: [
-    '/images/luxury_kitchen_living_1779978720358.png',
+    'https://images.unsplash.com/photo-1551882547-ff40c0d588fa?w=800&q=80',
 ],
     agent: { name: 'The Grand Urban', phone: '555-909-1010', verified: true, rating: 4.7, reviewCount: 540 },
     featured: true,
@@ -560,7 +560,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
         id: 'urbanville_arts_district',
         name: 'Urbanville Arts District',
         description: 'Vibrant, creative, and always buzzing. The perfect spot for those who love city life.',
-        image: 'https://picsum.photos/seed/neigh1/400/300',
+        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
         coordinates: { lat: 40.7128, lng: -74.0060 },
         profile: {
             history: "Once a warehouse district, the area was revitalized in the late 90s by artists seeking large, affordable spaces. It's now a protected cultural hub.",
@@ -579,7 +579,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { month: 'Mar', avgRent: 3500, avgSalePrice: 980000 },
             { month: 'Apr', avgRent: 3520, avgSalePrice: 995000 },
         ],
-        gallery: ['https://picsum.photos/seed/ng1_1/800/600', 'https://picsum.photos/seed/ng1_2/800/600', 'https://picsum.photos/seed/ng1_3/800/600'],
+        gallery: ['https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'],
         virtualTourUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1&mute=1&loop=1',
         reviews: [
             { author: 'Chloe R.', quote: "Living here is an inspiration. There's always a new gallery opening or a street performance to see. The energy is unmatched!", image: 'https://i.pravatar.cc/150?u=chloe' }
@@ -588,14 +588,14 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { name: 'First Friday Art Walk', date: 'First Friday of every month', description: 'Galleries stay open late, offering free wine and showcasing new exhibits.' }
         ],
         hiddenGems: [
-            { name: 'The Speakeasy Scribe', category: 'Cafe', description: 'A hidden basement coffee shop with vintage typewriters for patrons to use.', image: 'https://picsum.photos/seed/gem1/400/300' }
+            { name: 'The Speakeasy Scribe', category: 'Cafe', description: 'A hidden basement coffee shop with vintage typewriters for patrons to use.', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80' }
         ]
     },
     {
         id: 'suburbia_green_valley',
         name: 'Suburbia Green Valley',
         description: 'Family-friendly with top-rated schools, parks, and a strong sense of community.',
-        image: 'https://picsum.photos/seed/neigh2/400/300',
+        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
         coordinates: { lat: 41.5868, lng: -93.6250 },
         profile: {
             history: "Developed in the 1980s as a planned community, Green Valley was designed to be a peaceful suburban oasis with plenty of green space.",
@@ -614,7 +614,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { month: 'Mar', avgRent: 2250, avgSalePrice: 535000 },
             { month: 'Apr', avgRent: 2300, avgSalePrice: 550000 },
         ],
-        gallery: ['https://picsum.photos/seed/ng2_1/800/600', 'https://picsum.photos/seed/ng2_2/800/600', 'https://picsum.photos/seed/ng2_3/800/600'],
+        gallery: ['https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'],
         virtualTourUrl: 'https://www.youtube.com/embed/A45gAEQRd_A?rel=0&autoplay=1&mute=1&loop=1',
         reviews: [
             { author: 'The Miller Family', quote: "It's the perfect place to raise our kids. The schools are fantastic, and we feel so safe. We love the weekend farmers' market!", image: 'https://i.pravatar.cc/150?u=millers' }
@@ -623,14 +623,14 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { name: "Green Valley Farmers' Market", date: 'Every Saturday, 9am - 1pm', description: 'Fresh local produce, baked goods, and crafts at the community park.' }
         ],
         hiddenGems: [
-            { name: 'Willow Creek Duck Pond', category: 'Park', description: 'A serene little pond hidden behind the community center, perfect for a quiet afternoon.', image: 'https://picsum.photos/seed/gem2/400/300' }
+            { name: 'Willow Creek Duck Pond', category: 'Park', description: 'A serene little pond hidden behind the community center, perfect for a quiet afternoon.', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80' }
         ]
     },
     {
         id: 'stellenbosch_winelands',
         name: 'Stellenbosch Winelands',
         description: 'Breathtaking scenery, world-class vineyards, and a tranquil, luxurious lifestyle.',
-        image: 'https://picsum.photos/seed/neigh3/400/300',
+        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
         coordinates: { lat: -33.9321, lng: 18.8602 },
         profile: {
             history: "Established in 1679, Stellenbosch is the second oldest town in South Africa. It's renowned for its Cape Dutch architecture and prestigious university.",
@@ -649,7 +649,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { month: 'Mar', avgRent: 1600, avgSalePrice: 3100000 },
             { month: 'Apr', avgRent: 1600, avgSalePrice: 3200000 },
         ],
-        gallery: ['https://picsum.photos/seed/ng3_1/800/600', 'https://picsum.photos/seed/ng3_2/800/600', 'https://picsum.photos/seed/ng3_3/800/600'],
+        gallery: ['https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'],
         virtualTourUrl: 'https://www.youtube.com/embed/IyFLAz5_1I8?rel=0&autoplay=1&mute=1&loop=1',
         reviews: [
             { author: 'James B.', quote: "Retiring here was the best decision I've ever made. The views are incredible, the food is world-class, and there's a new wine to discover every weekend.", image: 'https://i.pravatar.cc/150?u=james' }
@@ -658,14 +658,14 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { name: 'Stellenbosch Wine Festival', date: 'Annually in February', description: 'A celebration of the regions finest wines, with tastings, food pairings, and live music.' }
         ],
         hiddenGems: [
-            { name: 'Jonkershoek Nature Reserve', category: 'Park', description: 'Stunning hiking and mountain biking trails just a short drive from the town center.', image: 'https://picsum.photos/seed/gem3/400/300' }
+            { name: 'Jonkershoek Nature Reserve', category: 'Park', description: 'Stunning hiking and mountain biking trails just a short drive from the town center.', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80' }
         ]
     },
     {
         id: 'soweto_cultural_hub',
         name: 'Soweto Cultural Hub',
         description: 'Rich in history and culture, offering a unique and vibrant community experience.',
-        image: 'https://picsum.photos/seed/neigh4/400/300',
+        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
         coordinates: { lat: -26.2661, lng: 27.8587 },
         profile: {
             history: "Soweto's history is inextricably linked to the struggle against apartheid. It was home to Nelson Mandela and Desmond Tutu. Today it's a symbol of resilience and a center of vibrant culture.",
@@ -684,7 +684,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { month: 'Mar', avgRent: 260, avgSalePrice: 820000 },
             { month: 'Apr', avgRent: 270, avgSalePrice: 850000 },
         ],
-        gallery: ['https://picsum.photos/seed/ng4_1/800/600', 'https://picsum.photos/seed/ng4_2/800/600', 'https://picsum.photos/seed/ng4_3/800/600'],
+        gallery: ['https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80', 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'],
         virtualTourUrl: 'https://www.youtube.com/embed/0uY8_ALH5Vw?rel=0&autoplay=1&mute=1&loop=1',
         reviews: [
             { author: 'Thabo M.', quote: "There is no place like Soweto. The sense of community, the history, the music... it's a place with a soul. I'm proud to call it home.", image: 'https://i.pravatar.cc/150?u=thabo' }
@@ -693,7 +693,7 @@ export const NEIGHBORHOOD_GUIDES: NeighborhoodGuide[] = [
             { name: 'Soweto Festival of Light', date: 'Annually in December', description: 'A festive celebration with lights, music, and food, bringing the community together.' }
         ],
         hiddenGems: [
-            { name: 'Credo Mutwa Cultural Village', category: 'Art', description: 'An outdoor exhibition of sculptures and buildings depicting African folklore and culture.', image: 'https://picsum.photos/seed/gem4/400/300' }
+            { name: 'Credo Mutwa Cultural Village', category: 'Art', description: 'An outdoor exhibition of sculptures and buildings depicting African folklore and culture.', image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80' }
         ]
     }
 ];
