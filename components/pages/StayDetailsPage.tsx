@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     StarIcon, MapPinIcon, ShieldCheckIcon, HeartIcon, ChevronDownIcon, CalendarIcon, UsersIcon, 
     XMarkIcon, CheckIcon, CheckCircleIcon, KeyIcon, WifiIcon, BeakerIcon, MapIcon, FireIcon,
-    ArrowLeftIcon, ChatBubbleBottomCenterTextIcon, HandThumbUpIcon
+    ArrowLeftIcon, ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, ArrowUpIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
@@ -76,7 +76,7 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
     
     // Booking Form State
     const [bookingDates, setBookingDates] = useState({ checkIn: '', checkOut: '' });
-    const [addons, setAddons] = useState({ breakfast: false, transfer: false, spa: false });
+    const [addons, setAddons] = useState({ breakfast: false, transfer: false, spa: false, upgrade: false, occasion: false, insurance: false });
 
     // Handle room booking initiation
     const startBooking = (room: any) => {
@@ -418,7 +418,10 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
                                             {[
                                                 { id: 'breakfast', label: 'Artisan Breakfast Buffet', price: 'R 350 / day', desc: 'Farm-to-table breakfast served overlooking the gardens.', icon: BeakerIcon },
                                                 { id: 'transfer', label: 'Airport Transfer (Return)', price: 'R 1,200', desc: 'Private luxury sedan pickup and drop-off.', icon: MapPinIcon },
-                                                { id: 'spa', label: 'Couples Spa Package', price: 'R 2,500', desc: '90-minute massage and access to thermal pools.', icon: SparklesIcon }
+                                                { id: 'spa', label: 'Couples Spa Package', price: 'R 2,500', desc: '90-minute massage and access to thermal pools.', icon: SparklesIcon },
+                                                { id: 'upgrade', label: 'Priority Room Upgrade', price: 'Free', desc: 'Subject to availability upon arrival.', icon: ArrowUpIcon },
+                                                { id: 'occasion', label: 'Special Occasion Package', price: 'R 850', desc: 'Champagne, artisanal chocolates, and fine flowers in room.', icon: HeartIcon },
+                                                { id: 'insurance', label: 'Comprehensive Travel Insurance', price: 'R 250 / guest', desc: 'Full coverage for cancellations and medical emergencies.', icon: ShieldCheckIcon }
                                             ].map(addon => {
                                                 const Icon = addon.icon;
                                                 return (
@@ -450,7 +453,28 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
 
                                 {bookingStep === 2 && (
                                     <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
-                                        <h2 className="text-2xl font-heading font-semibold mb-6">Guest Details</h2>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-heading font-semibold">Guest Details</h2>
+                                            <div className="text-sm">
+                                                <span className="text-gray-500">Have an account?</span>{' '}
+                                                <button className="text-brand-primary font-bold hover:underline">Sign in</button>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-8 p-4 bg-brand-light rounded-2xl flex items-center justify-between border border-gray-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                                    <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/><path d="M1 1h22v22H1z" fill="none"/></svg>
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-brand-dark text-sm">Checkout faster</p>
+                                                    <p className="text-xs text-gray-500">Auto-fill your details with Google.</p>
+                                                </div>
+                                            </div>
+                                            <button className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-brand-dark hover:bg-gray-50">
+                                                Use Google
+                                            </button>
+                                        </div>
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                             <div className="flex flex-col gap-1.5 focus-within:text-brand-primary transition-colors">
@@ -465,6 +489,19 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
                                                 <label className="text-xs font-bold uppercase tracking-wide">Email Address</label>
                                                 <input type="email" className="px-4 py-3 bg-brand-light rounded-xl outline-none focus:ring-2 focus:ring-brand-primary text-brand-dark" required />
                                             </div>
+                                            
+                                            <div className="flex flex-col gap-1.5 md:col-span-2 focus-within:text-brand-primary transition-colors mt-4">
+                                                <label className="text-xs font-bold uppercase tracking-wide">Estimated Arrival Time</label>
+                                                <select className="px-4 py-3 bg-brand-light rounded-xl outline-none focus:ring-2 focus:ring-brand-primary text-brand-dark cursor-pointer appearance-none">
+                                                    <option>I don't know yet</option>
+                                                    <option>12:00 PM - 2:00 PM</option>
+                                                    <option>2:00 PM - 4:00 PM</option>
+                                                    <option>4:00 PM - 6:00 PM</option>
+                                                    <option>6:00 PM - 8:00 PM</option>
+                                                    <option>After 8:00 PM</option>
+                                                </select>
+                                            </div>
+
                                             <div className="flex flex-col gap-1.5 md:col-span-2 focus-within:text-brand-primary transition-colors">
                                                 <label className="text-xs font-bold uppercase tracking-wide">Special Requests (Optional)</label>
                                                 <textarea className="px-4 py-3 bg-brand-light rounded-xl outline-none focus:ring-2 focus:ring-brand-primary text-brand-dark min-h-[100px] resize-none" placeholder="Let us know if you have any allergies or special requirements..."></textarea>
@@ -482,12 +519,42 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
                                 {bookingStep === 3 && (
                                     <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
                                         <h2 className="text-2xl font-heading font-semibold mb-2">Secure Payment</h2>
-                                        <p className="text-sm text-gray-500 mb-6 flex items-center gap-2">
-                                            <ShieldCheckIcon className="w-4 h-4 text-emerald-500" /> Fully secured transaction
-                                        </p>
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold border border-emerald-100">
+                                                <ShieldCheckIcon className="w-4 h-4" /> 256-bit SSL
+                                            </div>
+                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-600 rounded-full text-xs font-bold border border-slate-200">
+                                                <CheckCircleIcon className="w-4 h-4" /> PCI-DSS Compliant
+                                            </div>
+                                        </div>
                                         
+                                        <div className="mb-6">
+                                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">When would you like to pay?</h3>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="border-2 border-brand-primary bg-brand-primary/5 rounded-2xl p-4 cursor-pointer relative">
+                                                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-primary flex items-center justify-center text-white"><CheckIcon className="w-3 h-3" /></div>
+                                                    <h4 className="font-bold text-brand-dark mb-1">Pay Now</h4>
+                                                    <p className="text-xs text-gray-500">Lock in this price today.</p>
+                                                </div>
+                                                <div className="border border-gray-200 hover:border-gray-300 rounded-2xl p-4 cursor-pointer">
+                                                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full border border-gray-300"></div>
+                                                    <h4 className="font-bold text-brand-dark mb-1">Pay at Property</h4>
+                                                    <p className="text-xs text-gray-500">Pay when you arrive.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Payment Method</h3>
+                                            <div className="flex gap-2 mb-4 overflow-x-auto pb-2 custom-scrollbar">
+                                                <button className="flex-shrink-0 px-6 py-3 rounded-xl border-2 border-brand-primary bg-brand-primary/5 font-semibold text-brand-dark text-sm">Credit Card</button>
+                                                <button className="flex-shrink-0 px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 font-semibold text-gray-600 text-sm">Apple Pay</button>
+                                                <button className="flex-shrink-0 px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 font-semibold text-gray-600 text-sm">Google Pay</button>
+                                                <button className="flex-shrink-0 px-6 py-3 rounded-xl border border-gray-200 hover:border-gray-300 font-semibold text-gray-600 text-sm">PayPal</button>
+                                            </div>
+                                        </div>
+
                                         <div className="bg-brand-light p-4 rounded-2xl mb-6">
-                                            {/* Dummy Card Input structure */}
                                             <div className="space-y-4">
                                                 <div className="flex flex-col gap-1.5 focus-within:text-brand-primary">
                                                     <label className="text-xs font-bold uppercase tracking-wide">Card Number</label>
@@ -521,15 +588,24 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
                                         </div>
                                         <h2 className="text-3xl font-heading font-black text-brand-dark mb-4">Booking Confirmed!</h2>
                                         <p className="text-lg text-gray-600 mb-8 max-w-sm">
-                                            Your stay at {property.name} is all set. We've sent the confirmation details to your email.
+                                            Your stay at {property.name} is all set. We've sent an instant confirmation email to your inbox.
                                         </p>
                                         
-                                        <div className="bg-brand-light w-full p-6 rounded-2xl mb-8 flex flex-col items-center border border-gray-100 border-dashed">
+                                        <div className="bg-brand-light w-full max-w-sm p-6 rounded-2xl mb-8 flex flex-col items-center border border-gray-200 border-dashed">
                                             <p className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Booking Reference</p>
                                             <p className="text-2xl font-mono font-black text-brand-primary tracking-widest">AFR-{Math.floor(100000 + Math.random() * 900000)}</p>
                                         </div>
 
-                                        <button onClick={() => { setBookingStep(0); onBack(); }} className="bg-brand-dark text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-primary transition-colors text-sm w-full md:w-auto">
+                                        <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full justify-center">
+                                            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-light text-brand-dark rounded-xl font-bold hover:bg-gray-100 transition-colors text-sm border border-gray-200 shadow-sm">
+                                                <CalendarIcon className="w-5 h-5" /> Add to Calendar
+                                            </button>
+                                            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-light text-brand-dark rounded-xl font-bold hover:bg-gray-100 transition-colors text-sm border border-gray-200 shadow-sm">
+                                                <UsersIcon className="w-5 h-5" /> Manage Booking
+                                            </button>
+                                        </div>
+
+                                        <button onClick={() => { setBookingStep(0); onBack(); }} className="bg-brand-dark text-white px-12 py-4 rounded-xl font-bold hover:bg-brand-primary transition-colors text-sm shadow-md">
                                             Return to Homepage
                                         </button>
                                     </div>
@@ -572,7 +648,10 @@ const StayDetailsPage: React.FC<StayDetailsPageProps> = ({ property, onBack }) =
                                             {addons.breakfast && <div className="flex justify-between"><span className="text-gray-600">Breakfast</span><span className="font-semibold">R 350</span></div>}
                                             {addons.transfer && <div className="flex justify-between"><span className="text-gray-600">Transfer</span><span className="font-semibold">R 1,200</span></div>}
                                             {addons.spa && <div className="flex justify-between"><span className="text-gray-600">Spa Package</span><span className="font-semibold">R 2,500</span></div>}
-                                            <div className="flex justify-between text-gray-600">
+                                            {addons.upgrade && <div className="flex justify-between"><span className="text-gray-600">Priority Upgrade</span><span className="font-semibold">Free</span></div>}
+                                            {addons.occasion && <div className="flex justify-between"><span className="text-gray-600">Occasion Package</span><span className="font-semibold">R 850</span></div>}
+                                            {addons.insurance && <div className="flex justify-between"><span className="text-gray-600">Travel Insurance</span><span className="font-semibold">R 250</span></div>}
+                                            <div className="flex justify-between text-gray-600 pt-2 border-t border-gray-50">
                                                 <span>Taxes & Fees</span>
                                                 <span>Included</span>
                                             </div>

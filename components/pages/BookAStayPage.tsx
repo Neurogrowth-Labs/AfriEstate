@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MagnifyingGlassIcon as SearchIcon, StarIcon, MapPinIcon, ShieldCheckIcon, HeartIcon, ChevronDownIcon, CalendarIcon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon as SearchIcon, StarIcon, MapPinIcon, ShieldCheckIcon, HeartIcon, ChevronDownIcon, CalendarIcon, UsersIcon, XMarkIcon, SparklesIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import StayDetailsPage from './StayDetailsPage';
 
 const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
@@ -57,16 +57,8 @@ const destinations = [
 ];
 
 const BookAStayPage: React.FC = () => {
-    const [selectedPropertyForBooking, setSelectedPropertyForBooking] = useState<any>(null);
     const [selectedPropertyForDetails, setSelectedPropertyForDetails] = useState<any>(null);
-    const [bookingDetails, setBookingDetails] = useState({ checkIn: '', checkOut: '', guests: '1' });
-    const [paymentDetails, setPaymentDetails] = useState({ cardNumber: '', expiry: '', cvc: '', name: '' });
-
-    const handleBookingSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        alert('Payment successful! Your stay is booked.');
-        setSelectedPropertyForBooking(null);
-    };
+    const [isChatBotOpen, setIsChatBotOpen] = useState(false);
 
     if (selectedPropertyForDetails) {
         return <StayDetailsPage property={selectedPropertyForDetails} onBack={() => setSelectedPropertyForDetails(null)} />;
@@ -187,7 +179,7 @@ const BookAStayPage: React.FC = () => {
                                          <p className="text-gray-500 text-sm mb-4">{property.type} • {property.location}</p>
                                          <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-100">
                                              <div className="font-semibold text-xl text-brand-primary">{property.price} <span className="text-sm text-gray-500 font-normal">/night</span></div>
-                                             <button onClick={(e) => { e.stopPropagation(); setSelectedPropertyForBooking(property); }} className="bg-brand-dark text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-brand-primary transition-colors">Book</button>
+                                             <button onClick={(e) => { e.stopPropagation(); setSelectedPropertyForDetails(property); }} className="bg-brand-dark text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-brand-primary transition-colors">Book</button>
                                          </div>
                                      </div>
                                  </div>
@@ -202,20 +194,28 @@ const BookAStayPage: React.FC = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <FadeInSection>
-                            <h2 className="text-5xl font-heading font-heading font-semibold mb-6 text-brand-gold">Your AI Travel Concierge</h2>
-                            <p className="text-xl text-white/80 mb-8 max-w-lg">Skip the scrolling. Tell us exactly what you want, and our smart AI will instantly curate the perfect stays and experiences.</p>
+                            <div className="flex items-center gap-3 mb-4">
+                                <SparklesIcon className="w-8 h-8 text-brand-gold" />
+                                <span className="text-xl font-bold tracking-widest uppercase text-brand-gold">Meet Ntanta</span>
+                            </div>
+                            <h2 className="text-5xl font-heading font-semibold mb-6">Your Intelligent Travel AI</h2>
+                            <p className="text-xl text-white/80 mb-8 max-w-lg">Skip the scrolling. Tell Ntanta exactly what you want, and our smart AI will instantly curate the perfect stays and experiences for your hospitality and tourism needs.</p>
                             
                             <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 mb-8 max-w-lg">
                                 <p className="italic text-lg">"Find me a beachfront villa under R2,000 in Cape Town for next weekend."</p>
                             </div>
                             
-                            <button className="bg-brand-secondary text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:bg-brand-secondary/80 transition-colors">
-                                Start a Conversation
+                            <button onClick={() => setIsChatBotOpen(true)} className="bg-brand-secondary text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-brand-secondary/80 transition-colors flex items-center gap-2">
+                                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" /> Start a Conversation with Ntanta
                             </button>
                         </FadeInSection>
-                        <div className="relative hidden lg:block">
-                            <div className="absolute inset-0 bg-brand-secondary blur-3xl opacity-20 rounded-full"></div>
-                            <img src="https://images.unsplash.com/photo-1596436889106-be35e843f6a6?q=80&w=2070" className="relative z-10 rounded-[40px] shadow-2xl border-4 border-brand-primary object-cover h-[500px] w-full" alt="AI Concierge" referrerPolicy="no-referrer" />
+                        <div className="relative hidden lg:flex justify-center items-center">
+                            <div className="absolute inset-0 bg-brand-secondary/30 blur-3xl opacity-50 rounded-full w-96 h-96 m-auto animate-pulse"></div>
+                            <div className="relative z-10 w-80 h-80 bg-gradient-to-br from-brand-secondary to-brand-primary border-4 border-white/20 rounded-[40px] shadow-2xl flex flex-col items-center justify-center p-8 text-center backdrop-blur-sm">
+                                <SparklesIcon className="w-32 h-32 text-brand-gold mb-6" />
+                                <h3 className="text-2xl font-bold font-heading">Ntanta AI</h3>
+                                <p className="text-sm font-medium text-white/70 mt-2">Hospitality & Tourism Chatbot</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -270,100 +270,65 @@ const BookAStayPage: React.FC = () => {
                 </div>
              </section>
 
-              {/* Booking Modal */}
-              {selectedPropertyForBooking && (
+              {/* Ntanta ChatBot Modal */}
+              {isChatBotOpen && (
                   <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                       {/* Backdrop */}
-                      <div className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" onClick={() => setSelectedPropertyForBooking(null)}></div>
+                      <div className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" onClick={() => setIsChatBotOpen(false)}></div>
                       
                       {/* Dialog */}
-                      <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+                      <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col h-[600px] max-h-[90vh]">
                           {/* Header */}
-                          <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-brand-light/30">
-                              <div>
-                                  <h3 className="text-2xl font-heading font-semibold text-brand-primary mb-1">
-                                      Complete Your Booking
-                                  </h3>
-                                  <p className="text-gray-500 text-sm">{selectedPropertyForBooking.name} - {selectedPropertyForBooking.location}</p>
+                          <div className="p-4 bg-brand-primary text-white flex justify-between items-center">
+                              <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-brand-secondary rounded-full flex items-center justify-center">
+                                      <SparklesIcon className="w-6 h-6 text-brand-gold" />
+                                  </div>
+                                  <div>
+                                      <h3 className="font-semibold text-lg leading-tight">Ntanta</h3>
+                                      <p className="text-xs text-white/80">Intelligent Travel AI</p>
+                                  </div>
                               </div>
                               <button 
-                                  onClick={() => setSelectedPropertyForBooking(null)}
-                                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
+                                  onClick={() => setIsChatBotOpen(false)}
+                                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                               >
-                                  <XMarkIcon className="w-5 h-5" />
+                                  <XMarkIcon className="w-5 h-5 text-white" />
                               </button>
                           </div>
                           
-                          {/* Body */}
-                          <div className="p-6 overflow-y-auto custom-scrollbar">
-                              <form onSubmit={handleBookingSubmit} className="flex flex-col gap-6">
-                                  {/* Booking Details Section */}
-                                  <div>
-                                      <h4 className="text-lg font-semibold text-brand-dark mb-4 border-b border-gray-100 pb-2">1. Stay Details</h4>
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                          <div className="flex flex-col gap-1.5">
-                                              <label className="text-sm font-semibold text-brand-primary">Check-in</label>
-                                              <input type="date" value={bookingDetails.checkIn} onChange={e => setBookingDetails({...bookingDetails, checkIn: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm text-gray-700" required />
-                                          </div>
-                                          <div className="flex flex-col gap-1.5">
-                                              <label className="text-sm font-semibold text-brand-primary">Check-out</label>
-                                              <input type="date" value={bookingDetails.checkOut} onChange={e => setBookingDetails({...bookingDetails, checkOut: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm text-gray-700" required />
-                                          </div>
-                                          <div className="flex flex-col gap-1.5">
-                                              <label className="text-sm font-semibold text-brand-primary">Guests</label>
-                                              <select value={bookingDetails.guests} onChange={e => setBookingDetails({...bookingDetails, guests: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm text-gray-700" required>
-                                                  <option value="1">1 Guest</option>
-                                                  <option value="2">2 Guests</option>
-                                                  <option value="3">3 Guests</option>
-                                                  <option value="4+">4+ Guests</option>
-                                              </select>
-                                          </div>
-                                      </div>
-                                  </div>
+                          {/* Chat Area */}
+                          <div className="flex-1 p-6 overflow-y-auto bg-gray-50 flex flex-col gap-4">
+                              <div className="self-start bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-sm max-w-[85%] shadow-sm">
+                                  <p className="text-sm text-brand-dark">Hi there! I'm Ntanta, your AI travel concierge. Where are you dreaming of going next?</p>
+                              </div>
+                              <div className="self-start inline-flex flex-wrap gap-2 mt-2">
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Beachfront in Cape Town</button>
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Safari lodges in Kenya</button>
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Luxury stays in Zanzibar</button>
+                              </div>
+                          </div>
 
-                                  {/* Payment Details Section */}
-                                  <div>
-                                      <h4 className="text-lg font-semibold text-brand-dark mb-4 border-b border-gray-100 pb-2">2. Payment Details</h4>
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                          <div className="flex flex-col gap-1.5 md:col-span-2">
-                                              <label className="text-sm font-semibold text-brand-primary">Cardholder Name</label>
-                                              <input type="text" value={paymentDetails.name} onChange={e => setPaymentDetails({...paymentDetails, name: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm" placeholder="Name on card" required />
-                                          </div>
-                                          <div className="flex flex-col gap-1.5">
-                                              <label className="text-sm font-semibold text-brand-primary">Card Number</label>
-                                              <input type="text" value={paymentDetails.cardNumber} onChange={e => setPaymentDetails({...paymentDetails, cardNumber: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm tracking-widest" placeholder="0000 0000 0000 0000" maxLength={19} required />
-                                          </div>
-                                          <div className="grid grid-cols-2 gap-4">
-                                              <div className="flex flex-col gap-1.5">
-                                                  <label className="text-sm font-semibold text-brand-primary">Expiry Date</label>
-                                                  <input type="text" value={paymentDetails.expiry} onChange={e => setPaymentDetails({...paymentDetails, expiry: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm" placeholder="MM/YY" maxLength={5} required />
-                                              </div>
-                                              <div className="flex flex-col gap-1.5">
-                                                  <label className="text-sm font-semibold text-brand-primary">CVC</label>
-                                                  <input type="text" value={paymentDetails.cvc} onChange={e => setPaymentDetails({...paymentDetails, cvc: e.target.value})} className="px-4 py-3 bg-brand-light rounded-xl border border-gray-100 outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary text-sm" placeholder="123" maxLength={4} required />
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-
-                                  {/* Total and Submit */}
-                                  <div className="mt-4 bg-brand-light/50 p-4 rounded-xl border border-brand-gold/30">
-                                      <div className="flex justify-between items-center mb-4">
-                                          <span className="text-gray-600 font-medium">Cost per night</span>
-                                          <span className="font-semibold text-brand-dark">{selectedPropertyForBooking.price}</span>
-                                      </div>
-                                      <button type="submit" className="w-full bg-brand-primary text-white py-4 rounded-xl font-semibold shadow-lg hover:bg-brand-primary/90 transition-colors flex justify-center items-center gap-2">
-                                          <ShieldCheckIcon className="w-5 h-5"/> Confirm & Pay Now
-                                      </button>
-                                      <p className="text-xs text-center text-gray-400 mt-3">
-                                        Your payment is secured by industry standard encryption.
-                                      </p>
-                                  </div>
-                              </form>
+                          {/* Input Area */}
+                          <div className="p-4 bg-white border-t border-gray-100">
+                              <div className="relative">
+                                  <input 
+                                      type="text" 
+                                      placeholder="Ask Ntanta anything..." 
+                                      className="w-full bg-gray-50 border border-gray-200 rounded-full py-3 pl-4 pr-12 text-sm outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                                  />
+                                  <button className="absolute right-2 top-1.5 w-9 h-9 bg-brand-primary text-white rounded-full flex items-center justify-center hover:bg-brand-primary/90 transition-colors">
+                                      <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                      </svg>
+                                  </button>
+                              </div>
                           </div>
                       </div>
                   </div>
               )}
+
+
         </div>
     );
 };
