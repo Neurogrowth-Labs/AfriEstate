@@ -26,7 +26,9 @@ const OfferingCard: React.FC<{
 
 const NewOfferings: React.FC<{
     onRentCarClick?: () => void;
-}> = ({ onRentCarClick }) => {
+    onBookStayClick?: () => void;
+    onFindWellnessClick?: () => void;
+}> = ({ onRentCarClick, onBookStayClick, onFindWellnessClick }) => {
     const offerings = [
         {
             title: 'Book a Stay',
@@ -34,7 +36,7 @@ const NewOfferings: React.FC<{
             image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop',
             icon: StayIcon,
             colorClass: 'from-brand-secondary/80',
-            onClick: () => {}
+            onClick: onBookStayClick || (() => {})
         },
         {
             title: 'Rent a Car',
@@ -50,7 +52,7 @@ const NewOfferings: React.FC<{
             image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop',
             icon: WellnessIcon,
             colorClass: 'from-brand-gold/80',
-            onClick: () => {}
+            onClick: onFindWellnessClick || (() => {})
         },
     ];
 

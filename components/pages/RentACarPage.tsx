@@ -453,7 +453,7 @@ const RentACarPage: React.FC = () => {
           {featuredVehicles.map((vehicle, idx) => (
             <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all group">
               <div className="h-64 overflow-hidden relative">
-                <img src={vehicle.image} alt={vehicle.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img src={vehicle.image} alt={vehicle.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"  referrerPolicy="no-referrer" />
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#0F2D25]">
                   {vehicle.category}
                 </div>
@@ -587,7 +587,7 @@ const RentACarPage: React.FC = () => {
 
         {/* Interactive Map Concept Box */}
         <div className="w-full bg-[#0F2D25] rounded-3xl overflow-hidden relative min-h-[400px] flex items-center shadow-2xl">
-           <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay grayscale" alt="Map" />
+           <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay grayscale" alt="Map"  referrerPolicy="no-referrer" />
            <div className="relative z-10 p-10 md:p-16 max-w-2xl bg-gradient-to-r from-[#0F2D25] to-transparent h-full flex flex-col justify-center">
              <span className="text-[#C9A35D] font-bold tracking-widest text-sm uppercase mb-4 block">Interactive Mapping</span>
              <h3 className="font-playfair text-4xl text-white font-bold mb-6">Find Your Vehicle Anywhere</h3>

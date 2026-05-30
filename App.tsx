@@ -55,11 +55,12 @@ import ContactPage from './components/pages/ContactPage';
 import ServicesPage from './components/pages/ServicesPage';
 import PricingPage from './components/pages/PricingPage';
 import RentACarPage from './components/pages/RentACarPage';
-
+import FindWellnessPage from './components/pages/FindWellnessPage';
+import BookAStayPage from './components/pages/BookAStayPage';
 
 // FIX: Added 'userSignup' to the AuthView type to allow setting this view state, resolving a TypeScript error.
 type AuthView = 'login' | 'signup' | 'userSignup' | 'agentSignup' | 'investorSignup' | 'pendingVerificationAgent' | 'pendingVerificationInvestor' | 'forgotPassword' | 'resetConfirmation';
-type Page = 'home' | 'about' | 'services' | 'contact' | 'pricing' | 'rent-a-car';
+type Page = 'home' | 'about' | 'services' | 'contact' | 'pricing' | 'rent-a-car' | 'find-wellness' | 'book-a-stay';
 
 const initialFilters: SearchFilters = {
     location: '',
@@ -870,6 +871,10 @@ The other fields should follow these rules:
           return <PricingPage onPlanSelect={handlePlanSelect} />;
       case 'rent-a-car':
           return <RentACarPage />;
+      case 'find-wellness':
+          return <FindWellnessPage />;
+      case 'book-a-stay':
+          return <BookAStayPage />;
       case 'home':
       default:
           return (
@@ -881,7 +886,11 @@ The other fields should follow these rules:
                       onFilterChange={handleFilterChange}
                   />
 
-                  <NewOfferings onRentCarClick={() => setPage('rent-a-car')} />
+                  <NewOfferings 
+                      onRentCarClick={() => setPage('rent-a-car')} 
+                      onFindWellnessClick={() => setPage('find-wellness')}
+                      onBookStayClick={() => setPage('book-a-stay')}
+                  />
                   
                   <section id="just-listed" className="py-24 bg-brand-light relative z-10 -mt-8 rounded-t-[3xl]">
                   <div className="container mx-auto px-4 sm:px-6">
