@@ -35,18 +35,13 @@ const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = (
     );
 };
 
+import { Property } from '../../types';
+
 const categories = [
     { name: 'Hotels', subtitle: 'Business hotels, city hotels, luxury hotels', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80' },
     { name: 'Resorts', subtitle: 'Beach resorts, safari resorts, wellness resorts', image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&q=80' },
     { name: 'Guest Houses', subtitle: 'Affordable, family-friendly, local experiences', image: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800&q=80' },
     { name: 'Airbnb', subtitle: 'Unique homes and vacation rentals', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80' },
-];
-
-const properties = [
-    { name: 'The Silo Hotel', location: 'Cape Town, South Africa', type: 'Luxury Hotel', rating: 4.9, price: 'R 15,000', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80', badge: 'Super Host' },
-    { name: 'Four Seasons Safari Lodge', location: 'Serengeti, Tanzania', type: 'Resort', rating: 5.0, price: 'R 25,000', image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=500&q=80', badge: 'Verified' },
-    { name: 'Giraffe Manor', location: 'Nairobi, Kenya', type: 'Boutique Hotel', rating: 4.8, price: 'R 18,000', image: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=500&q=80', badge: 'Popular' },
-    { name: 'Zuri Zanzibar', location: 'Zanzibar, Tanzania', type: 'Beach Resort', rating: 4.9, price: 'R 8,500', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&q=80', badge: 'Trending' }
 ];
 
 const destinations = [
@@ -56,9 +51,26 @@ const destinations = [
     { name: 'Zanzibar', stays: '300', price: 'R2,500' }
 ];
 
-const BookAStayPage: React.FC = () => {
+const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
     const [selectedPropertyForDetails, setSelectedPropertyForDetails] = useState<any>(null);
     const [isChatBotOpen, setIsChatBotOpen] = useState(false);
+
+    // Map `Property` interface from DB to the shape expected by BookAStayPage
+    const displayProperties = properties.length > 0 ? properties.map(p => ({
+        ...p, // keep original properties for downstream
+        name: p.title,
+        location: `${p.address.city}, ${p.address.street}`,
+        type: p.propertyType,
+        rating: p.agent?.rating || 4.5,
+        price: `R ${p.price.toLocaleString()}`,
+        image: p.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80',
+        badge: p.featured ? 'Featured' : 'Verified'
+    })) : [
+        { name: 'The Silo Hotel', location: 'Cape Town, South Africa', type: 'Luxury Hotel', rating: 4.9, price: 'R 15,000', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80', badge: 'Super Host' },
+        { name: 'Four Seasons Safari Lodge', location: 'Serengeti, Tanzania', type: 'Resort', rating: 5.0, price: 'R 25,000', image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=500&q=80', badge: 'Verified' },
+        { name: 'Giraffe Manor', location: 'Nairobi, Kenya', type: 'Boutique Hotel', rating: 4.8, price: 'R 18,000', image: 'https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=500&q=80', badge: 'Popular' },
+        { name: 'Zuri Zanzibar', location: 'Zanzibar, Tanzania', type: 'Beach Resort', rating: 4.9, price: 'R 8,500', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&q=80', badge: 'Trending' }
+    ];
 
     if (selectedPropertyForDetails) {
         return <StayDetailsPage property={selectedPropertyForDetails} onBack={() => setSelectedPropertyForDetails(null)} />;
@@ -157,7 +169,7 @@ const BookAStayPage: React.FC = () => {
                         </div>
                      </FadeInSection>
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                         {properties.map((property, i) => (
+                         {displayProperties.map((property, i) => (
                              <FadeInSection key={property.name} delay={i * 50}>
                                  <div className="bg-white rounded-[24px] border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group flex flex-col h-full cursor-pointer" onClick={() => setSelectedPropertyForDetails(property)}>
                                      <div className="relative h-56 overflow-hidden">

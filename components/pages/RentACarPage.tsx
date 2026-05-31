@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { Property } from '../../types';
 
 const carRentals = [
   {
@@ -336,8 +338,74 @@ const featuredVehicles = [
   }
 ];
 
-const RentACarPage: React.FC = () => {
+const RentACarPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
   const [activeCategory, setActiveCategory] = useState('Luxury');
+
+  const handleBookVehicle = async (vehicle: any) => {
+      try {
+          const { data: { user } } = await supabase.auth.getUser();
+          const username = user?.email || 'guest';
+          
+          const bookingTitle = `${vehicle.make} ${vehicle.model}`;
+          const newBooking = {
+              property_id: 'transport_' + Math.random().toString(36).substring(7), // simulated ID if none
+              property_title: bookingTitle,
+              username: username,
+              date: new Date().toISOString().split('T')[0],
+              time: '10:00',
+              status: 'Pending',
+              timestamp: Date.now()
+          };
+
+          await supabase.from('tour_requests').insert(newBooking);
+          alert('Vehicle booking requested successfully!');
+      } catch (error) {
+          console.error("Booking error:", error);
+          alert('Error processing booking.');
+      }
+  };
+
+  const displayVehicles = properties.length > 0 ? properties.map(p => ({
+      make: p.title.split(' ')[0] || 'Transport',
+      model: p.title.split(' ').slice(1).join(' ') || 'Vehicle',
+      image: p.images?.[0] || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
+      rating: p.agent?.rating || 4.8,
+      reviews: p.agent?.reviewCount || 100,
+      specs: p.amenities.length > 0 ? p.amenities : ['Automatic', '5 Seats', 'Unlimited Mileage'],
+      price: `R${p.price}`,
+      category: p.vehicleType || 'SUV'
+  })) : [
+  {
+    make: 'Mercedes-Benz',
+    model: 'GLE 300d',
+    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
+    rating: '5.0',
+    reviews: '1,245',
+    specs: ['Automatic', '5 Seats', 'Diesel', 'Unlimited Mileage', 'Airport Pickup'],
+    price: 'R1,950',
+    category: 'Luxury'
+  },
+  {
+    make: 'BMW',
+    model: 'X5 xDrive30d',
+    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=800',
+    rating: '4.9',
+    reviews: '982',
+    specs: ['Automatic', '5 Seats', 'Diesel', 'Unlimited Mileage', 'Airport Pickup'],
+    price: 'R1,850',
+    category: 'SUV'
+  },
+  {
+    make: 'Audi',
+    model: 'Q8 55 TFSI',
+    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&q=80&w=800',
+    rating: '4.9',
+    reviews: '850',
+    specs: ['Automatic', '5 Seats', 'Petrol', 'Unlimited Mileage', 'City Delivery'],
+    price: 'R2,100',
+    category: 'Luxury'
+  }
+];
 
   return (
     <div className="bg-[#FAF8F5] text-[#1D1D1D] font-sans antialiased">
@@ -450,7 +518,7 @@ const RentACarPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredVehicles.map((vehicle, idx) => (
+          {displayVehicles.map((vehicle, idx) => (
             <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all group">
               <div className="h-64 overflow-hidden relative">
                 <img src={vehicle.image} alt={vehicle.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"  referrerPolicy="no-referrer" />
@@ -480,7 +548,7 @@ const RentACarPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <button className="w-full bg-white border-2 border-[#0F2D25] text-[#0F2D25] font-semibold py-3 rounded-lg hover:bg-[#0F2D25] hover:text-[#C9A35D] transition-colors">
+                <button onClick={() => handleBookVehicle(vehicle)} className="w-full bg-white border-2 border-[#0F2D25] text-[#0F2D25] font-semibold py-3 rounded-lg hover:bg-[#0F2D25] hover:text-[#C9A35D] transition-colors">
                   Book Now
                 </button>
               </div>

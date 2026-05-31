@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MagnifyingGlassIcon as SearchIcon, StarIcon, MapPinIcon, HeartIcon, ChevronDownIcon, PhoneIcon, GlobeAltIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { wellnessDirectory } from '../../src/wellnessDirectory';
+import { Property } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
     const [isVisible, setVisible] = useState(false);
@@ -46,13 +48,6 @@ const categories = [
     { name: 'Wellness Retreats', subtitle: 'Retreat Centers and Experiences', icon: '🏔️' },
 ];
 
-const featuredCompanies = [
-    { name: 'Serenity Wellness Center', location: 'Cape Town', rating: 4.9, category: 'Mental Health • Coaching • Therapy', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop' },
-    { name: 'Vital Health Clinic', location: 'Johannesburg', rating: 4.8, category: 'Medical Wellness • Preventive Care', image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80' },
-    { name: 'Zen Retreat Africa', location: 'Garden Route', rating: 5.0, category: 'Retreats • Mindfulness • Yoga', image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80' },
-    { name: 'Balance Corporate Wellness', location: 'Pretoria', rating: 4.7, category: 'Employee Wellness Programs', image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800&q=80' }
-];
-
 const popularServices = [
     { name: 'Therapy Sessions', price: 'From R350', button: 'Book Online', icon: '🛋️' },
     { name: 'Personal Fitness Coaching', price: 'From R250', button: 'Book Now', icon: '🏋️' },
@@ -65,14 +60,58 @@ const retreats = [
     'Wellness Retreats', 'Yoga Retreats', 'Healing Retreats', 'Detox Retreats', 'Executive Wellness Retreats', 'Meditation Retreats'
 ];
 
-const FindWellnessPage: React.FC = () => {
+const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
     const [visibleCount, setVisibleCount] = useState(12);
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [modalMode, setModalMode] = useState<'book' | 'enquire' | null>(null);
 
+    const displayCompanies = properties.length > 0 ? properties.map(p => ({
+        name: p.title,
+        location: p.address.city,
+        rating: p.agent?.rating || 4.7,
+        category: p.amenities.join(' • ') || 'Wellness Center',
+        image: p.images?.[0] || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop',
+        notes: p.neighborhoodInfo || 'A premium wellness service provider.',
+        phone: p.agent?.phone || '+27 12 345 6789',
+        website: 'www.wellness.com'
+    })) : [
+        { name: 'Serenity Wellness Center', location: 'Cape Town', rating: 4.9, category: 'Mental Health • Coaching • Therapy', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop', notes: '', phone: '+27 21 555 1234', website: 'serenitywellness.co.za' },
+        { name: 'Vital Health Clinic', location: 'Johannesburg', rating: 4.8, category: 'Medical Wellness • Preventive Care', image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80', notes: '', phone: '+27 11 444 8888', website: 'vitalhealth.co.za' },
+        { name: 'Zen Retreat Africa', location: 'Garden Route', rating: 5.0, category: 'Retreats • Mindfulness • Yoga', image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80', notes: '', phone: '+27 44 333 9999', website: 'zenretreat.co.za' },
+        { name: 'Balance Corporate Wellness', location: 'Pretoria', rating: 4.7, category: 'Employee Wellness Programs', image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800&q=80', notes: '', phone: '+27 12 222 7777', website: 'balancewellness.co.za' }
+    ];
+
     const closeModal = () => {
         setSelectedCompany(null);
         setModalMode(null);
+    };
+
+    const handleFormSubmit = async () => {
+        if (!selectedCompany) return;
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            const username = user?.email || 'guest';
+            
+            // Log it in tour_requests to simulate a booking
+            const newRequest = {
+                property_id: 'wellness_' + Math.random().toString(36).substring(7),
+                property_title: selectedCompany.name,
+                username: username,
+                date: new Date().toISOString().split('T')[0],
+                time: '12:00',
+                status: 'Pending',
+                timestamp: Date.now()
+            };
+
+            await supabase.from('tour_requests').insert(newRequest);
+            
+            alert(modalMode === 'book' ? 'Booking requested successfully!' : 'Enquiry sent successfully!');
+            closeModal();
+        } catch (e) {
+            console.error('Error submitting form', e);
+            closeModal();
+        }
     };
 
     return (
@@ -144,7 +183,7 @@ const FindWellnessPage: React.FC = () => {
                         <p className="text-center text-brand-light/80 max-w-2xl mx-auto mb-16">Connect with Africa's leading healthcare providers, therapeutic professionals, fitness centers, and comprehensive wellness sanctuaries.</p>
                     </FadeInSection>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                        {wellnessDirectory.slice(0, visibleCount).map((company, i) => (
+                        {displayCompanies.slice(0, visibleCount).map((company, i) => (
                             <FadeInSection key={company.name + i} delay={(i % 4) * 100}>
                                 <div className="bg-white text-gray-800 rounded-3xl overflow-hidden shadow-2xl group cursor-pointer flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300">
                                     <div className="h-40 relative flex-shrink-0 overflow-hidden">
@@ -183,7 +222,7 @@ const FindWellnessPage: React.FC = () => {
                             </FadeInSection>
                         ))}
                     </div>
-                    {visibleCount < wellnessDirectory.length && (
+                    {visibleCount < displayCompanies.length && (
                         <div className="mt-16 text-center">
                             <button 
                                 onClick={() => setVisibleCount(prev => prev + 12)}
@@ -368,10 +407,7 @@ const FindWellnessPage: React.FC = () => {
                                      ></textarea>
                                  </div>
 
-                                 <button type="button" onClick={() => {
-                                     alert(modalMode === 'book' ? 'Booking requested successfully!' : 'Enquiry sent successfully!');
-                                     closeModal();
-                                 }} className="mt-2 w-full bg-brand-primary text-white py-4 rounded-xl font-semibold shadow-lg hover:bg-brand-primary/90 transition-colors">
+                                 <button type="button" onClick={handleFormSubmit} className="mt-2 w-full bg-brand-primary text-white py-4 rounded-xl font-semibold shadow-lg hover:bg-brand-primary/90 transition-colors">
                                      {modalMode === 'book' ? 'Request Appointment' : 'Send Message'}
                                  </button>
                                  <p className="text-xs text-center text-gray-400 mt-2">

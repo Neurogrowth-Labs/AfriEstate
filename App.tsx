@@ -238,6 +238,62 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Real-time properties subscription
+  useEffect(() => {
+    const propertiesChannel = supabase
+      .channel('public:properties')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'properties' },
+        async () => {
+          // Refetch properties when a modification happens
+          const allProps = await getProperties(false);
+          setAllProperties(allProps);
+          setInvestmentProperties(allProps.filter(p => p.listingType === ListingType.FOR_INVESTMENT));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(propertiesChannel);
+    };
+  }, []);
+
+  // Real-time user specific data subscriptions
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const userChannel = supabase
+      .channel(`user-data:${currentUser.username}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notifications', filter: `username=eq.${currentUser.username}` },
+        async () => {
+          setNotifications((await getNotifications(currentUser)).map(n => ({...n, isRead: false })));
+          setReadNotificationIds(await getReadNotificationIds(currentUser.username));
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages' },
+        async () => {
+          setMessages(await getMessagesForUser(currentUser.username));
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'tour_requests' },
+        async () => {
+          setTourRequests(await getTourRequests(currentUser.username));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(userChannel);
+    };
+  }, [currentUser]);
+
   // Data Fetching and Initial Setup
   useEffect(() => {
     const fetchData = async () => {
@@ -377,11 +433,14 @@ The other fields should follow these rules:
 
   // Derived State
   const featuredProperties = useMemo(() => {
-    return allProperties.filter(p => p.featured && p.status === PropertyStatus.ACTIVE);
+    return allProperties.filter(p => p.featured && p.status === PropertyStatus.ACTIVE && ![PropertyType.HOTEL, PropertyType.SHORT_TERM_RENTAL, PropertyType.TRANSPORT, PropertyType.WELLNESS].includes(p.propertyType));
   }, [allProperties]);
 
   const recentProperties = useMemo(() => {
-    return [...allProperties].sort((a, b) => b.dateListed - a.dateListed).slice(0, 3);
+    return [...allProperties]
+      .filter(p => ![PropertyType.HOTEL, PropertyType.SHORT_TERM_RENTAL, PropertyType.TRANSPORT, PropertyType.WELLNESS].includes(p.propertyType))
+      .sort((a, b) => b.dateListed - a.dateListed)
+      .slice(0, 3);
   }, [allProperties]);
 
   const savedProperties = useMemo(() => {
@@ -555,11 +614,9 @@ The other fields should follow these rules:
     
     if (currentUser.role === 'investor') {
         setIsInvestmentRequestModalOpen(true);
-    } else if (currentUser.role === 'agent') {
+    } else if (currentUser.role === 'agent' || currentUser.role === 'user') {
         setPropertyToEdit(null);
         setIsPropertyFormOpen(true);
-    } else if (currentUser.role === 'user') {
-        setIsServiceRegistrationModalOpen(true);
     }
   };
 
@@ -870,11 +927,11 @@ The other fields should follow these rules:
       case 'pricing':
           return <PricingPage onPlanSelect={handlePlanSelect} />;
       case 'rent-a-car':
-          return <RentACarPage />;
+          return <RentACarPage properties={allProperties.filter(p => p.propertyType === PropertyType.TRANSPORT)} />;
       case 'find-wellness':
-          return <FindWellnessPage />;
+          return <FindWellnessPage properties={allProperties.filter(p => p.propertyType === PropertyType.WELLNESS)} />;
       case 'book-a-stay':
-          return <BookAStayPage />;
+          return <BookAStayPage properties={allProperties.filter(p => [PropertyType.HOTEL, PropertyType.SHORT_TERM_RENTAL].includes(p.propertyType))} />;
       case 'home':
       default:
           return (

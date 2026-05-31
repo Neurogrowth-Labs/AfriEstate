@@ -48,9 +48,13 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({ isOpen, onClose, 
         if (propertyToEdit) {
             setProperty(propertyToEdit);
         } else {
-            setProperty({...emptyProperty, dateListed: Date.now()});
+            setProperty({
+                ...emptyProperty, 
+                dateListed: Date.now(),
+                propertyType: currentUser.role === 'user' ? PropertyType.TRANSPORT : PropertyType.APARTMENT
+            });
         }
-    }, [propertyToEdit, isOpen]);
+    }, [propertyToEdit, isOpen, currentUser]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -207,7 +211,10 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({ isOpen, onClose, 
                         <div>
                             <label htmlFor="propertyType" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Property Type</label>
                             <select name="propertyType" value={property.propertyType} onChange={handleChange} className="mt-1 w-full input">
-                                {Object.values(PropertyType).filter(t => t !== PropertyType.ALL).map(type => <option key={type} value={type}>{type}</option>)}
+                                {Object.values(PropertyType)
+                                    .filter(t => t !== PropertyType.ALL)
+                                    .filter(t => currentUser?.role === 'user' ? (t === PropertyType.TRANSPORT || t === PropertyType.WELLNESS) : true)
+                                    .map(type => <option key={type} value={type}>{type}</option>)}
                             </select>
                         </div>
                     </div>
