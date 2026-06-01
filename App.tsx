@@ -227,6 +227,7 @@ const App: React.FC = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         setCurrentUser({
+          id: session.user.id,
           username: session.user.email || session.user.id,
           fullName: session.user.user_metadata?.full_name || 'Supabase User',
           email: session.user.email || '',
@@ -1265,7 +1266,7 @@ The other fields should follow these rules:
           />
       }
       {currentUser && <PropertyFormModal isOpen={isPropertyFormOpen} onClose={() => setIsPropertyFormOpen(false)} onSave={handleSaveProperty} propertyToEdit={propertyToEdit} currentUser={currentUser} />}
-      <ServiceListingFormModal isOpen={isServiceListingFormOpen} onClose={() => setIsServiceListingFormOpen(false)} />
+      {currentUser && <ServiceListingFormModal currentUser={currentUser} isOpen={isServiceListingFormOpen} onClose={() => setIsServiceListingFormOpen(false)} />}
       {inquiryForResponse && <AIResponseModal isOpen={isAIResponseModalOpen} onClose={() => setIsAIResponseModalOpen(false)} tourRequest={inquiryForResponse} />}
       <AgentContactModal isOpen={isAgentContactModalOpen} onClose={() => setIsAgentContactModalOpen(false)} mode={agentContactMode} agentName={agentContactName} />
       <VRTourModal isOpen={isVRTourOpen} onClose={() => setIsVRTourOpen(false)} url={vrTourUrl} />

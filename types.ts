@@ -107,6 +107,7 @@ export interface SearchFilters {
 }
 
 export interface User {
+  id?: string;
   username: string; // Unique identifier, usually email
   fullName: string; // For seekers, their name. For agents, their name or agency name.
   email: string;

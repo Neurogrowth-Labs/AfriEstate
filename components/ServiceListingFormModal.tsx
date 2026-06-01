@@ -2,28 +2,18 @@ import React, { useState } from 'react';
 import { CloseIcon } from './icons/NavIcons';
 import RentACarListingForm from './RentACarListingForm';
 import WellnessListingForm from './WellnessListingForm';
+import type { User } from '../types';
 
 interface ServiceListingFormModalProps {
     isOpen: boolean;
     onClose: () => void;
+    currentUser: User;
 }
 
-const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpen, onClose }) => {
+const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpen, onClose, currentUser }) => {
     const [serviceType, setServiceType] = useState<'none' | 'car' | 'wellness'>('none');
-    const [submitting, setSubmitting] = useState(false);
 
     if (!isOpen) return null;
-
-    const handleSubmit = () => {
-        setSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            setSubmitting(false);
-            alert('Listing Submitted Successfully for Review!');
-            setServiceType('none');
-            onClose();
-        }, 1500);
-    };
 
     const handleClose = () => {
         setServiceType('none');
@@ -64,21 +54,19 @@ const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpe
                             </div>
                         </div>
                     ) : serviceType === 'car' ? (
-                        <RentACarListingForm onSubmit={handleSubmit} />
+                        <RentACarListingForm 
+                            currentUser={currentUser} 
+                            onSuccess={() => { setServiceType('none'); onClose(); }} 
+                            onBack={() => setServiceType('none')} 
+                        />
                     ) : (
-                        <WellnessListingForm onSubmit={handleSubmit} />
+                        <WellnessListingForm 
+                            currentUser={currentUser} 
+                            onSuccess={() => { setServiceType('none'); onClose(); }} 
+                            onBack={() => setServiceType('none')} 
+                        />
                     )}
                 </div>
-
-                {/* Footer */}
-                {serviceType !== 'none' && (
-                    <div className="p-6 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 flex gap-4 justify-end flex-shrink-0">
-                        <button type="button" onClick={() => setServiceType('none')} className="px-6 py-3 font-semibold text-gray-500 hover:text-gray-700">Back</button>
-                        <button type="button" onClick={handleSubmit} className="px-8 py-3 bg-brand-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-full sm:w-auto">
-                            {submitting ? 'Submitting...' : 'Submit For Review'}
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
