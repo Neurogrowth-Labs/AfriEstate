@@ -35,7 +35,7 @@ const NeighborhoodSection: React.FC<NeighborhoodSectionProps> = ({ onOpenExplore
                 <div className="text-center mt-12">
                     <button onClick={() => onOpenExplorer()} className="bg-brand-primary text-white font-semibold px-8 py-3 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2 mx-auto">
                         <SparklesIcon className="w-5 h-5" />
-                        Find Your Perfect Neighborhood
+                        Find Your Perfect Global Destination
                     </button>
                 </div>
             </div>

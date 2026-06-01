@@ -20,6 +20,7 @@ import CompareModal from './components/CompareModal';
 import { AuthModal } from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
 import PropertyFormModal from './components/PropertyFormModal';
+import ServiceListingFormModal from './components/ServiceListingFormModal';
 import FinancialServices from './components/FinancialServices';
 import AIResponseModal from './components/AIResponseModal';
 import { getProperties, saveProperties, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead } from './lib/data';
@@ -174,6 +175,7 @@ const App: React.FC = () => {
   const [authModalView, setAuthModalView] = useState<AuthView>('login');
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [isPropertyFormOpen, setIsPropertyFormOpen] = useState(false);
+  const [isServiceListingFormOpen, setIsServiceListingFormOpen] = useState(false);
   const [isAIResponseModalOpen, setIsAIResponseModalOpen] = useState(false);
   const [isAgentContactModalOpen, setIsAgentContactModalOpen] = useState(false);
   const [isVRTourOpen, setIsVRTourOpen] = useState(false);
@@ -614,7 +616,9 @@ The other fields should follow these rules:
     
     if (currentUser.role === 'investor') {
         setIsInvestmentRequestModalOpen(true);
-    } else if (currentUser.role === 'agent' || currentUser.role === 'user') {
+    } else if (currentUser.role === 'user') {
+        setIsServiceListingFormOpen(true);
+    } else if (currentUser.role === 'agent') {
         setPropertyToEdit(null);
         setIsPropertyFormOpen(true);
     }
@@ -1261,6 +1265,7 @@ The other fields should follow these rules:
           />
       }
       {currentUser && <PropertyFormModal isOpen={isPropertyFormOpen} onClose={() => setIsPropertyFormOpen(false)} onSave={handleSaveProperty} propertyToEdit={propertyToEdit} currentUser={currentUser} />}
+      <ServiceListingFormModal isOpen={isServiceListingFormOpen} onClose={() => setIsServiceListingFormOpen(false)} />
       {inquiryForResponse && <AIResponseModal isOpen={isAIResponseModalOpen} onClose={() => setIsAIResponseModalOpen(false)} tourRequest={inquiryForResponse} />}
       <AgentContactModal isOpen={isAgentContactModalOpen} onClose={() => setIsAgentContactModalOpen(false)} mode={agentContactMode} agentName={agentContactName} />
       <VRTourModal isOpen={isVRTourOpen} onClose={() => setIsVRTourOpen(false)} url={vrTourUrl} />
