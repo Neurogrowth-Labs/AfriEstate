@@ -56,6 +56,7 @@ const Hero: React.FC<HeroProps> = (props) => {
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80" 
             alt="Luxury Property Background" 
             className="w-full h-full object-cover transform scale-105 animate-slow-zoom"
+            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-brand-dark/50 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent"></div>

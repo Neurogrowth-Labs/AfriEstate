@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -16,7 +17,9 @@ root.render(
   <React.StrictMode>
     <LanguageProvider>
       <CurrencyProvider>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </CurrencyProvider>
     </LanguageProvider>
   </React.StrictMode>

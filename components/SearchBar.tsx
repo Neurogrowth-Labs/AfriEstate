@@ -111,8 +111,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
                             <option value={ListingType.SALE}>For Sale</option>
                             <option value={ListingType.RENT}>For Rent</option>
                         </select>
-                        <input type="number" placeholder="Min Price" name="priceMin" value={filters.priceMin || ''} onChange={(e) => onFilterChange('priceMin', e.target.value === '' ? 0 : Number(e.target.value))} className="input-field" />
-                        <input type="number" placeholder="Max Price" name="priceMax" value={filters.priceMax === 10000000 ? '' : filters.priceMax} onChange={(e) => onFilterChange('priceMax', e.target.value === '' ? 10000000 : Number(e.target.value))} className="input-field" />
+                        <div className="col-span-2 lg:col-span-2 flex flex-col justify-center px-4 input-field gap-1" style={{paddingTop: '0.4rem', paddingBottom: '0.4rem'}}>
+                            <div className="flex justify-between items-center w-full">
+                                <span className="text-xs font-bold text-slate-500 uppercase">Max Price</span>
+                                <span className="text-sm font-bold text-brand-dark dark:text-white">R {filters.priceMax === 10000000 || !filters.priceMax ? 'Any' : (filters.priceMax).toLocaleString()}</span>
+                            </div>
+                            <input 
+                                type="range" 
+                                min="100000" 
+                                max="10000000" 
+                                step="100000"
+                                value={filters.priceMax === 10000000 || !filters.priceMax ? 10000000 : filters.priceMax} 
+                                onChange={(e) => onFilterChange('priceMax', Number(e.target.value))} 
+                                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-primary" 
+                            />
+                        </div>
                         <div className="flex items-center gap-2 input-field">
                             <input type="number" name="bedrooms" min="0" value={filters.bedrooms || ''} onChange={(e) => onFilterChange('bedrooms', Number(e.target.value))} className="w-full bg-transparent focus:outline-none" placeholder="Beds"/>
                             <span className="text-slate-400 font-bold text-xs uppercase">Beds</span>

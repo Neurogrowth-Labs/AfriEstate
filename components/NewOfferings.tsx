@@ -10,7 +10,7 @@ const OfferingCard: React.FC<{
     onClick: () => void;
 }> = ({ title, description, image, icon: Icon, colorClass, onClick }) => (
     <div className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-xl h-[450px]" onClick={onClick}>
-        <img src={image} alt={title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000" />
+        <img src={image} alt={title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000" referrerPolicy="no-referrer" />
         <div className={`absolute inset-0 bg-gradient-to-t ${colorClass} via-brand-dark/20 to-transparent opacity-90`}></div>
         <div className="absolute bottom-0 left-0 p-8 text-white w-full">
             <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl w-fit mb-6 border border-white/30 transform group-hover:rotate-12 transition-transform">

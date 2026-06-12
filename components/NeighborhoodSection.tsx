@@ -22,7 +22,7 @@ const NeighborhoodSection: React.FC<NeighborhoodSectionProps> = ({ onOpenExplore
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {NEIGHBORHOOD_GUIDES.map((guide) => (
                         <div key={guide.id} className="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                            <img src={guide.image} alt={guide.name} className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                            <img src={guide.image} alt={guide.name} className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             <div className="absolute bottom-0 left-0 p-6 text-white">
                                 <h3 className="text-2xl font-bold mb-1">{guide.name}</h3>

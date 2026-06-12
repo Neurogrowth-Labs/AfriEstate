@@ -39,7 +39,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ posts, onPostClick, isLoading
                         posts.map((post) => (
                             <div key={post.title} className="glass-panel rounded-xl shadow-lg overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col border border-slate-200 dark:border-white">
                                 <div className="relative overflow-hidden">
-                                    <img src={post.image} alt={post.title} className="w-full h-56 object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                    <img src={post.image} alt={post.title} className="w-full h-56 object-cover transform group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
                                 </div>
                                 <div className="p-6 flex flex-col flex-grow">
                                     <h3 className="text-lg font-bold text-brand-dark dark:text-white mb-2">{post.title}</h3>

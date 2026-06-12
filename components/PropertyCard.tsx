@@ -7,6 +7,7 @@ import { HeartIcon, HeartIconSolid, CalculatorIcon, CalendarIcon, CheckBadgeIcon
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from './icons/SocialIcons';
 import { ListingType, PropertyType } from '../types';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { useToast } from '../contexts/ToastContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 
 interface ShareMenuProps {
@@ -91,6 +92,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
     const shareRef = useRef<HTMLDivElement>(null);
     const { formatCurrency } = useCurrency();
+    const { addToast } = useToast();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -146,7 +148,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     <div className="glass-card rounded-xl overflow-hidden group flex flex-col">
       <div className="relative overflow-hidden group/image">
         <button onClick={() => onOpenDetailModal(property)} className="absolute inset-0 z-0"></button>
-        <img src={(property.images && property.images.length > 0) ? property.images[currentImageIndex] : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src={(property.images && property.images.length > 0) ? property.images[currentImageIndex] : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" referrerPolicy="no-referrer" />
         
         {property.images && property.images.length > 1 && (
             <>
@@ -166,12 +168,15 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
 
         <div className="absolute top-3 right-3 flex flex-col space-y-2" ref={shareRef}>
             <button
-                onClick={(e) => handleIdActionClick(e, onSaveToggle)}
+                onClick={(e) => {
+                    handleIdActionClick(e, onSaveToggle);
+                    if (!isSaved) addToast('Property Saved Successfully!', 'success');
+                }}
                 className="bg-white p-2 border border-slate-200 rounded-full text-slate-700 hover:text-black hover:bg-slate-50 transition-all duration-300 z-10 shadow-sm"
                 aria-label={isSaved ? "Unsave property" : "Save property"}
             >
                 {isSaved ? (
-                    <HeartIconSolid className="w-5 h-5 text-brand-accent animate-pulse" />
+                    <HeartIconSolid className="w-5 h-5 text-brand-accent animate-heartbeat" />
                 ) : (
                     <HeartIcon className="w-5 h-5" />
                 )}

@@ -49,6 +49,10 @@ import ProviderServicesModal from './components/ProviderServicesModal';
 import SessionTimeoutModal from './components/SessionTimeoutModal';
 import RealTimeNews from './components/RealTimeNews';
 import NewOfferings from './components/NewOfferings';
+import { useToast } from './contexts/ToastContext';
+import MapInterface from './components/MapInterface';
+
+import SuperAdminDashboard from './components/dashboards/SuperAdminDashboard';
 
 // Page components
 import AboutPage from './components/pages/AboutPage';
@@ -214,7 +218,10 @@ const App: React.FC = () => {
   const [aiImprovementProperty, setAIImprovementProperty] = useState<Property | null>(null);
   const [applyingForJob, setApplyingForJob] = useState('');
   const [savedNeighborhoodIds, setSavedNeighborhoodIds] = useState<Set<string>>(new Set());
+  const [isMapView, setIsMapView] = useState(false);
+  const [isSuperAdminLoggedIn, setIsSuperAdminLoggedIn] = useState(false);
   const { t } = useTranslations();
+  const { addToast } = useToast();
 
   // Session Timeout Logic
   const warningTimerRef = useRef<number | null>(null);
@@ -658,7 +665,7 @@ The other fields should follow these rules:
           const newRequest = await addTourRequest(currentUser.username, request.propertyId, request.propertyTitle, request.date, request.time);
           setTourRequests(prev => [...prev, newRequest]);
           setIsTourModalOpen(false);
-          alert("Tour requested successfully! The agent will be in touch.");
+          addToast("Tour requested successfully! The agent will be in touch.", "success");
       }
   };
   
@@ -671,7 +678,7 @@ The other fields should follow these rules:
     const newSavedSearches = [...savedSearches, filters];
     setSavedSearches(newSavedSearches);
     await saveSearchesForUser(currentUser.username, newSavedSearches);
-    alert("Search saved!");
+    addToast("Search saved!", "success");
   };
 
   const handleDeleteSearch = async (searchToDelete: SearchFilters) => {
@@ -781,7 +788,7 @@ The other fields should follow these rules:
       const newRequest = await addInvestmentRequest(currentUser.username, details);
       setInvestmentRequests(prev => [newRequest, ...prev]);
       setIsInvestmentRequestModalOpen(false);
-      alert('Your request has been sent to agents!');
+      addToast('Your request has been sent to agents!', 'success');
   };
 
   const handleUpgradeAccountRequest = () => {
@@ -1030,24 +1037,43 @@ The other fields should follow these rules:
                       <div className="flex flex-col items-center mb-12">
                           <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading mb-6">{t.app.findYourProperty}</h2>
                       </div>
-                      <div className="flex justify-center items-center gap-4 mb-10">
-                          <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>{t.app.allListings}</button>
-                          <button onClick={() => setActiveTab('saved')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>
-                          {t.app.savedProperties}
-                          {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
-                          </button>
+                      <div className="flex justify-between items-center w-full mb-10">
+                          <div className="flex items-center gap-4">
+                              <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>{t.app.allListings}</button>
+                              <button onClick={() => setActiveTab('saved')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>
+                              {t.app.savedProperties}
+                              {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
+                              </button>
+                          </div>
+                          
+                          <div className="flex items-center gap-4">
+                              <div className="flex bg-white/50 rounded-lg p-1 border border-brand-primary/20">
+                                  <button onClick={() => setIsMapView(false)} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all ${!isMapView ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-dark'}`}>
+                                      List View
+                                  </button>
+                                  <button onClick={() => setIsMapView(true)} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all flex items-center gap-1.5 ${isMapView ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-dark'}`}>
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                                      Map View
+                                  </button>
+                              </div>
+                              <button onClick={handleSaveSearch} className="flex items-center gap-2 bg-white/50 text-brand-dark dark:text-white px-4 py-2 rounded-lg font-semibold hover:bg-white transition-colors border border-brand-primary/20">
+                                  <BookmarkIcon className="w-5 h-5 text-brand-primary" />
+                                  {t.app.saveSearch}
+                              </button>
+                          </div>
                       </div>
-                      {activeTab === 'all' && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.showingResults.replace('{{count}}', String(filteredProperties.length))}</p>}
-                      {activeTab === 'saved' && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.savedCount.replace('{{count}}', String(savedProperties.length))}</p>}
                       
-                      <div className="flex justify-center mb-8">
-                          <button onClick={handleSaveSearch} className="flex items-center gap-2 bg-white/50 text-brand-dark dark:text-white px-4 py-2 rounded-lg font-semibold hover:bg-white transition-colors border border-brand-primary/20">
-                              <BookmarkIcon className="w-5 h-5 text-brand-primary" />
-                              {t.app.saveSearch}
-                          </button>
-                      </div>
-
-                      {activeTab === 'all' ? (
+                      {activeTab === 'all' && !isMapView && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.showingResults.replace('{{count}}', String(filteredProperties.length))}</p>}
+                      {activeTab === 'saved' && !isMapView && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.savedCount.replace('{{count}}', String(savedProperties.length))}</p>}
+                      
+                      {isMapView ? (
+                        <div className="mb-12">
+                           <MapInterface 
+                              properties={activeTab === 'all' ? filteredProperties : savedProperties} 
+                              onOpenDetailModal={handleOpenDetailModal}
+                           />
+                        </div>
+                      ) : activeTab === 'all' ? (
                           filteredProperties.length > 0 ? (
                               <PropertyList 
                                   properties={filteredProperties}
@@ -1163,6 +1189,9 @@ The other fields should follow these rules:
 
   return (
     <div className={`font-sans min-h-screen flex flex-col ${theme}`}>
+      {isSuperAdminLoggedIn ? (
+        <SuperAdminDashboard onClose={() => setIsSuperAdminLoggedIn(false)} />
+      ) : null}
       <Header
         currentUser={currentUser}
         notifications={notificationsWithReadStatus}
@@ -1211,6 +1240,10 @@ The other fields should follow these rules:
         onSwitchToPricing={() => {
             setIsAuthModalOpen(false);
             setPage('pricing');
+        }}
+        onSuperAdminLogin={() => {
+          setIsAuthModalOpen(false);
+          setIsSuperAdminLoggedIn(true);
         }}
       />
       {currentUser && 
