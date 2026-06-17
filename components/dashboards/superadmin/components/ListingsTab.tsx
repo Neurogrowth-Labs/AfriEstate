@@ -43,6 +43,38 @@ export default function ListingsTab({
     priceMatchesTrend: true
   });
 
+  // Sovereign Geospatial Intelligence Local States for Risk Vetting Double-Click Interaction
+  const [isRiskModalOpen, setIsRiskModalOpen] = useState(false);
+  const [riskModalLayer, setRiskModalLayer] = useState("Appreciation");
+  const [riskModalRegion, setRiskModalRegion] = useState("Southern Africa");
+  const [isReauditing, setIsReauditing] = useState(false);
+  const [auditLogsLocal, setAuditLogsLocal] = useState<string[]>([]);
+
+  const handleOpenRiskModal = (layer: string, region: string) => {
+    setRiskModalLayer(layer);
+    setRiskModalRegion(region);
+    setIsRiskModalOpen(true);
+    setAuditLogsLocal([
+      `[LAUNCH] Initiating Deep Cadastral Integrity Audit for ${region}...`,
+      `[LAYER] Targeting operational variables for [${layer.toUpperCase()}] overlay...`,
+      `[SECURE] Multi-signature consensus route active.`,
+    ]);
+  };
+
+  const handleRunReaudit = () => {
+    setIsReauditing(true);
+    setAuditLogsLocal(prev => [...prev, `[AUDIT] Launching satellite telemetry boundary scan...`]);
+    setTimeout(() => {
+      setAuditLogsLocal(prev => [
+        ...prev,
+        `[SCAN] Multi-spectral imaging overlapping verified: 0.00% error.`,
+        `[SUCCESS] Title Deed digital signature validated with state hashes!`,
+        `[INTEGRITY] Integrity verification confirmed. SECURE STATUS ACTIVE.`
+      ]);
+      setIsReauditing(false);
+    }, 1200);
+  };
+
   const selectedListing = listings.find(l => l.id === selectedPropertyId) || listings[0];
 
   // Map region constant data definition
@@ -88,7 +120,8 @@ export default function ListingsTab({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+    <>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
       {/* LEFT CONTENT PANEL */}
       <div className="lg:col-span-8 flex flex-col space-y-4">
         
@@ -112,85 +145,292 @@ export default function ListingsTab({
         )}
 
         {/* VIEW TYPE: DEFAULT TABLE or MAP */}
+        {/* VIEW TYPE: DEFAULT TABLE or MAP */}
         {activeSub === "Geo Mapping" ? (
           /* High-Fidelity Interactive Map view */
-          <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-6 flex flex-col relative overflow-hidden min-h-[460px]">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,30,56,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(18,30,56,0.1)_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none"></div>
+          <div className="space-y-4">
+            <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-6 flex flex-col relative overflow-hidden min-h-[460px]">
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(18,30,56,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(18,30,56,0.1)_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none"></div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 z-10 mb-5 pb-3 border-b border-slate-800">
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-1.5 font-mono">
-                  <Globe className="h-4 w-4 text-cyan-400 animate-spin" style={{ animationDuration: "12s" }} /> 
-                  AFRIESTATE GEOSPATIAL INTELLIGENCE GRID
-                </h3>
-                <p className="text-[11px] text-slate-400 font-mono">Click targets to switch operational hubs. Double-click layers to evaluate risks.</p>
+              <div className="flex flex-wrap items-center justify-between gap-4 z-10 mb-5 pb-3 border-b border-slate-800">
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5 font-mono">
+                    <Globe className="h-4 w-4 text-cyan-400 animate-spin" style={{ animationDuration: "12s" }} /> 
+                    AFRIESTATE GEOSPATIAL INTELLIGENCE GRID
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    Click targets to switch operational hubs. Double-click layers or targets to evaluate risks.
+                  </p>
+                </div>
+
+                {/* Geographic toggling filter values */}
+                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-md border border-slate-800 text-[10px] font-mono">
+                  {["Appreciation", "Investor Density", "Fraud Hotspots"].map((layer: any) => (
+                    <button
+                      key={layer}
+                      onClick={() => setMapLayer(layer)}
+                      onDoubleClick={() => handleOpenRiskModal(layer, selectedMapRegion)}
+                      title="Double-click to evaluate layer risks"
+                      className={`rounded px-2.5 py-0.5 font-bold transition-all ${
+                        mapLayer === layer 
+                          ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-extrabold" 
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {layer}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Geographic toggling filter values */}
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-md border border-slate-800 text-[10px] font-mono">
-                {["Appreciation", "Investor Density", "Fraud Hotspots"].map((layer: any) => (
-                  <button
-                    key={layer}
-                    onClick={() => setMapLayer(layer)}
-                    className={`rounded px-2.5 py-0.5 font-bold transition-all ${
-                      mapLayer === layer 
-                        ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" 
-                        : "text-slate-400 hover:text-slate-200"
-                    }`}
+              {/* Simulated Vector Grid Overlay */}
+              <div className="flex-1 flex items-center justify-center relative mt-4">
+                <span className="absolute top-0 left-0 font-mono text-[9px] text-slate-500">DEVIATION_LEVEL: SECURE // SIG: GPS_CONTINENTAL</span>
+
+                {/* Graphical Africa map and pulsing nodes */}
+                <svg viewBox="0 0 400 400" className="w-[320px] h-[320px] text-slate-600/60 drop-shadow-[0_0_20px_rgba(6,182,212,0.1)]">
+                  <path 
+                    d="M 120,40 L 260,40 L 320,80 L 350,140 L 310,220 L 260,250 L 220,310 L 200,380 L 195,420 L 180,440 L 175,410 L 165,340 C 120,310 110,240 100,200 C 65,190 40,160 45,130 C 50,110 70,80 120,40 Z" 
+                    fill="#030712" 
+                    stroke="#1e293b" 
+                    strokeWidth="2" 
+                    strokeDasharray="4,4" 
+                  />
+
+                  {/* Hotspots */}
+                  <g 
+                    className="cursor-pointer group" 
+                    onClick={() => setSelectedMapRegion("Southern Africa")}
+                    onDoubleClick={() => handleOpenRiskModal(mapLayer, "Southern Africa")}
                   >
-                    {layer}
-                  </button>
-                ))}
+                    <circle cx="185" cy="380" r="15" fill="rgba(6,182,212,0.1)" className="animate-ping" />
+                    <circle cx="185" cy="380" r="5" fill={selectedMapRegion === "Southern Africa" ? "#06b6d4" : "#475569"} className="stroke-slate-950 group-hover:fill-cyan-400 transition-colors" />
+                    <text x="195" y="383" fill="#06b6d4" fontSize="9" fontWeight="bold" className="font-mono">SOUTHERN (CPT/JHB)</text>
+                  </g>
+
+                  <g 
+                    className="cursor-pointer group" 
+                    onClick={() => setSelectedMapRegion("West Africa")}
+                    onDoubleClick={() => handleOpenRiskModal(mapLayer, "West Africa")}
+                  >
+                    <circle cx="110" cy="180" r="15" fill="rgba(16,185,129,0.1)" className="animate-ping" />
+                    <circle cx="110" cy="180" r="5" fill={selectedMapRegion === "West Africa" ? "#10b981" : "#475569"} className="stroke-slate-950 group-hover:fill-emerald-400 transition-colors" />
+                    <text x="50" y="183" fill="#10b981" fontSize="9" fontWeight="bold" className="font-mono">WEST (LAGOS/LEKKI)</text>
+                  </g>
+
+                  <g 
+                    className="cursor-pointer group" 
+                    onClick={() => setSelectedMapRegion("East Africa")}
+                    onDoubleClick={() => handleOpenRiskModal(mapLayer, "East Africa")}
+                  >
+                    <circle cx="260" cy="220" r="15" fill="rgba(245,158,11,0.1)" className="animate-ping" />
+                    <circle cx="260" cy="220" r="5" fill={selectedMapRegion === "East Africa" ? "#f59e0b" : "#475569"} className="stroke-slate-950 group-hover:fill-amber-400 transition-colors" />
+                    <text x="272" y="223" fill="#f59e0b" fontSize="9" fontWeight="bold" className="font-mono">EAST (NAIROBI)</text>
+                  </g>
+
+                  <g 
+                    className="cursor-pointer group" 
+                    onClick={() => setSelectedMapRegion("North Africa")}
+                    onDoubleClick={() => handleOpenRiskModal(mapLayer, "North Africa")}
+                  >
+                    <circle cx="250" cy="90" r="15" fill="rgba(192,132,252,0.1)" />
+                    <circle cx="250" cy="90" r="5" fill={selectedMapRegion === "North Africa" ? "#c084fc" : "#475569"} className="stroke-slate-950 group-hover:fill-purple-400 transition-colors" />
+                    <text x="260" y="93" fill="#c084fc" fontSize="9" fontWeight="bold" className="font-mono">NORTH (CAIRO)</text>
+                  </g>
+                </svg>
+
+                {/* Real-time map telemetry overlay */}
+                <div className="absolute bottom-2 left-2 bg-slate-950/80 border border-slate-800 p-3 rounded-lg text-[10px] space-y-1.5 font-mono">
+                  <span className="text-cyan-400 block border-b border-slate-800 pb-1 mb-1 font-bold">MAP INDICATOR FOCUS</span>
+                  <div>ACTIVE PROVINCE: <span className="text-white font-bold">{selectedMapRegion}</span></div>
+                  <div>LOCAL DEPUTIES: <span className="text-white">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.city}</span></div>
+                  <div>ESCROW BUFFER: <span className="text-amber-400 font-bold">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.activeCapital}</span></div>
+                  <div>AVG OCCUPANCY: <span className="text-emerald-400">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.occupancyUnit}</span></div>
+                </div>
               </div>
             </div>
 
-            {/* Simulated Vector Grid Overlay */}
-            <div className="flex-1 flex items-center justify-center relative mt-4">
-              <span className="absolute top-0 left-0 font-mono text-[9px] text-slate-500">DEVIATION_LEVEL: SECURE // SIG: GPS_CONTINENTAL</span>
+            {/* INTELLIGENCE LAYER DIAGNOSTICS DECK */}
+            <div className="rounded-xl border border-slate-800 bg-[#060b1e] p-5 space-y-4 font-mono">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 uppercase">
+                    <Activity className="h-4 w-4 text-cyan-400 animate-pulse" />
+                    Operational Layer Intelligence Controls
+                  </h4>
+                  <p className="text-[10px] text-slate-500">
+                    Showing real-time indicators for <span className="text-white font-bold">{selectedMapRegion}</span> hub. Click cards to swap overlays.
+                  </p>
+                </div>
+                <div className="text-[9px] text-slate-400 border border-slate-800 px-2 py-0.5 rounded bg-slate-950/50">
+                  DB MODE: <span className="text-emerald-400 font-bold">SOVEREIGN SYNCED</span>
+                </div>
+              </div>
 
-              {/* Graphical Africa map and pulsing nodes */}
-              <svg viewBox="0 0 400 400" className="w-[320px] h-[320px] text-slate-600/60 drop-shadow-[0_0_20px_rgba(6,182,212,0.1)]">
-                <path 
-                  d="M 120,40 L 260,40 L 320,80 L 350,140 L 310,220 L 260,250 L 220,310 L 200,380 L 195,420 L 180,440 L 175,410 L 165,340 C 120,310 110,240 100,200 C 65,190 40,160 45,130 C 50,110 70,80 120,40 Z" 
-                  fill="#030712" 
-                  stroke="#1e293b" 
-                  strokeWidth="2" 
-                  strokeDasharray="4,4" 
-                />
+              {/* Grid of the three details */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                {/* APPRECIATION DETAILS BUTTON / CARD */}
+                <div 
+                  onClick={() => setMapLayer("Appreciation")}
+                  className={`relative rounded-xl border p-4 bg-slate-950/60 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                    mapLayer === "Appreciation"
+                      ? "border-cyan-500 bg-cyan-950/10 shadow-[0_0_15px_rgba(6,182,212,0.15)] bg-slate-950"
+                      : "border-slate-850 hover:border-slate-700/80 hover:bg-slate-900"
+                  }`}
+                >
+                  {mapLayer === "Appreciation" && (
+                    <span className="absolute -top-2 right-3 text-[8px] bg-cyan-500 text-black font-extrabold px-1.5 py-0.2 rounded uppercase">
+                      ACTIVE OVERLAY
+                    </span>
+                  )}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1">
+                        📈 Appreciation Index
+                      </span>
+                      <span className="text-[9.5px] text-cyan-400 font-bold bg-cyan-950/50 px-1.5 py-0.5 rounded">
+                        {selectedMapRegion === "Southern Africa" ? "+12.8%" :
+                         selectedMapRegion === "West Africa" ? "+18.4%" :
+                         selectedMapRegion === "East Africa" ? "+14.1%" : "+9.6%"} YoY
+                      </span>
+                    </div>
+                    
+                    <p className="text-[10px] text-slate-400 leading-relaxed mb-3">
+                      Sovereign capital appreciation velocity matching fractional tokenization index bounds.
+                    </p>
 
-                {/* Hotspots */}
-                <g className="cursor-pointer" onClick={() => setSelectedMapRegion("Southern Africa")}>
-                  <circle cx="185" cy="380" r="15" fill="rgba(6,182,212,0.1)" className="animate-ping" />
-                  <circle cx="185" cy="380" r="5" fill={selectedMapRegion === "Southern Africa" ? "#06b6d4" : "#475569"} className="stroke-slate-950" />
-                  <text x="195" y="383" fill="#06b6d4" fontSize="9" fontWeight="bold" className="font-mono">SOUTHERN (CPT/JHB)</text>
-                </g>
+                    <div className="space-y-1.5 border-t border-slate-900 pt-2.5 text-[9.5px] text-slate-400">
+                      <div className="flex justify-between">
+                        <span>Projected Multiplier:</span>
+                        <span className="text-white font-bold">
+                          {selectedMapRegion === "Southern Africa" ? "1.45x Over 3y" :
+                           selectedMapRegion === "West Africa" ? "2.10x Over 3y" :
+                           selectedMapRegion === "East Africa" ? "1.65x Over 3y" : "1.20x Over 3y"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Registry Integration:</span>
+                        <span className="text-emerald-400">100% SECURED</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Market Horizon:</span>
+                        <span className="text-slate-300 font-semibold">Decentralized High-Yield</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-900/50 pt-2.5 mt-3 text-[9px] text-slate-500 font-bold flex justify-between items-center">
+                    <span>DBL-CLICK FOR RISK HUD</span>
+                    <span className="text-cyan-500">➔</span>
+                  </div>
+                </div>
 
-                <g className="cursor-pointer" onClick={() => setSelectedMapRegion("West Africa")}>
-                  <circle cx="110" cy="180" r="15" fill="rgba(16,185,129,0.1)" className="animate-ping" />
-                  <circle cx="110" cy="180" r="5" fill={selectedMapRegion === "West Africa" ? "#10b981" : "#475569"} className="stroke-slate-950" />
-                  <text x="50" y="183" fill="#10b981" fontSize="9" fontWeight="bold" className="font-mono">WEST (LAGOS/LEKKI)</text>
-                </g>
+                {/* INVESTOR DENSITY DETAILS BUTTON / CARD */}
+                <div 
+                  onClick={() => setMapLayer("Investor Density")}
+                  className={`relative rounded-xl border p-4 bg-slate-950/60 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                    mapLayer === "Investor Density"
+                      ? "border-amber-500 bg-amber-950/10 shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-slate-950"
+                      : "border-slate-850 hover:border-slate-700/80 hover:bg-slate-900"
+                  }`}
+                >
+                  {mapLayer === "Investor Density" && (
+                    <span className="absolute -top-2 right-3 text-[8px] bg-amber-500 text-black font-extrabold px-1.5 py-0.2 rounded uppercase">
+                      ACTIVE OVERLAY
+                    </span>
+                  )}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                        👥 Investor Density
+                      </span>
+                      <span className="text-[10px] text-amber-400 font-bold bg-amber-950/50 px-1.5 py-0.5 rounded">
+                        {selectedMapRegion === "Southern Africa" ? "2,840 Wallets" :
+                         selectedMapRegion === "West Africa" ? "1,620 Wallets" :
+                         selectedMapRegion === "East Africa" ? "910 Wallets" : "1,122 Wallets"}
+                      </span>
+                    </div>
 
-                <g className="cursor-pointer" onClick={() => setSelectedMapRegion("East Africa")}>
-                  <circle cx="260" cy="220" r="15" fill="rgba(245,158,11,0.1)" className="animate-ping" />
-                  <circle cx="260" cy="220" r="5" fill={selectedMapRegion === "East Africa" ? "#f59e0b" : "#475569"} className="stroke-slate-950" />
-                  <text x="272" y="223" fill="#f59e0b" fontSize="9" fontWeight="bold" className="font-mono">EAST (NAIROBI)</text>
-                </g>
+                    <p className="text-[10px] text-slate-400 leading-relaxed mb-3">
+                      Sovereign cash deposit density and active wallets backing local property pools.
+                    </p>
 
-                <g className="cursor-pointer" onClick={() => setSelectedMapRegion("North Africa")}>
-                  <circle cx="250" cy="90" r="15" fill="rgba(192,132,252,0.1)" />
-                  <circle cx="250" cy="90" r="5" fill={selectedMapRegion === "North Africa" ? "#c084fc" : "#475569"} className="stroke-slate-950" />
-                  <text x="260" y="93" fill="#c084fc" fontSize="9" fontWeight="bold" className="font-mono">NORTH (CAIRO)</text>
-                </g>
-              </svg>
+                    <div className="space-y-1.5 border-t border-slate-900 pt-2.5 text-[9.5px] text-slate-400">
+                      <div className="flex justify-between">
+                        <span>Committed Capital:</span>
+                        <span className="text-white font-bold">
+                          {selectedMapRegion === "Southern Africa" ? "R 2.45B Pool" :
+                           selectedMapRegion === "West Africa" ? "R 3.10B Pool" :
+                           selectedMapRegion === "East Africa" ? "R 1.22B Pool" : "R 1.48B Pool"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Institution Ratio:</span>
+                        <span className="text-amber-400">32% REIT Reserves</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Liquidity Safety:</span>
+                        <span className="text-slate-355 font-bold">CLASS AA</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-900/50 pt-2.5 mt-3 text-[9px] text-slate-500 font-bold flex justify-between items-center">
+                    <span>DBL-CLICK FOR RISK HUD</span>
+                    <span className="text-amber-500">➔</span>
+                  </div>
+                </div>
 
-              {/* Real-time map telemetry overlay */}
-              <div className="absolute bottom-2 left-2 bg-slate-950/80 border border-slate-800 p-3 rounded-lg text-[10px] space-y-1.5 font-mono">
-                <span className="text-cyan-400 block border-b border-slate-800 pb-1 mb-1 font-bold">MAP INDICATOR FOCUS</span>
-                <div>ACTIVE PROVINCE: <span className="text-white font-bold">{selectedMapRegion}</span></div>
-                <div>LOCAL DEPUTIES: <span className="text-white">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.city}</span></div>
-                <div>ESCROW BUFFER: <span className="text-amber-400 font-bold">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.activeCapital}</span></div>
-                <div>AVG OCCUPANCY: <span className="text-emerald-400">{regionsConstantData[selectedMapRegion as keyof typeof regionsConstantData]?.occupancyUnit}</span></div>
+                {/* FRAUD HOTSPOTS DETAILS BUTTON / CARD */}
+                <div 
+                  onClick={() => setMapLayer("Fraud Hotspots")}
+                  className={`relative rounded-xl border p-4 bg-slate-950/60 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                    mapLayer === "Fraud Hotspots"
+                      ? "border-rose-500 bg-rose-950/10 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-slate-950"
+                      : "border-slate-850 hover:border-slate-700/80 hover:bg-slate-900"
+                  }`}
+                >
+                  {mapLayer === "Fraud Hotspots" && (
+                    <span className="absolute -top-2 right-3 text-[8px] bg-rose-500 text-black font-extrabold px-1.5 py-0.2 rounded uppercase">
+                      ACTIVE OVERLAY
+                    </span>
+                  )}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1">
+                        🛡️ Fraud Hotspots
+                      </span>
+                      <span className="text-[10px] text-rose-400 font-bold bg-rose-950/50 px-1.5 py-0.5 rounded">
+                        {selectedMapRegion === "Southern Africa" ? "0.8% Class A" :
+                         selectedMapRegion === "West Africa" ? "2.6% Class B" :
+                         selectedMapRegion === "East Africa" ? "1.4% Class A" : "0.5% Class A"} Risk
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] text-slate-400 leading-relaxed mb-3">
+                      Deed registration boundary conflicts and multi-level escrow dispute alerts.
+                    </p>
+
+                    <div className="space-y-1.5 border-t border-slate-900 pt-2.5 text-[9.5px] text-slate-400">
+                      <div className="flex justify-between">
+                        <span>Active Cadaster Scan:</span>
+                        <span className="text-emerald-400 font-bold">100% ONLINE</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Incidents Intercepted:</span>
+                        <span className="text-rose-400">0 CRITICAL</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Dispute Guard Level:</span>
+                        <span className="text-slate-350 font-bold">SECURE NOTARY</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-900/50 pt-2.5 mt-3 text-[9px] text-slate-500 font-bold flex justify-between items-center">
+                    <span>DBL-CLICK FOR RISK HUD</span>
+                    <span className="text-rose-500">➔</span>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -396,5 +636,92 @@ export default function ListingsTab({
         )}
       </div>
     </div>
+
+    {/* SOVEREIGN RISK EVALUATION OVERLAY / CONTROL PANEL MODAL */}
+    {isRiskModalOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div className="w-full max-w-xl border border-slate-800 rounded-2xl bg-[#090e1f] p-6 shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col justify-between font-mono relative">
+          <button 
+            onClick={() => setIsRiskModalOpen(false)}
+            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors animate-pulse"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+              <ShieldAlert className="h-5 w-5 text-cyan-400 animate-pulse" />
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider text-left">
+                  Sovereign Risk Diagnostics Control HUD
+                </h3>
+                <p className="text-[10px] text-slate-500 text-left">
+                  Evaluating Regional Integrity for <span className="text-cyan-400 font-bold">{riskModalRegion}</span> Hub
+                </p>
+              </div>
+            </div>
+
+            {/* Technical indicators grid */}
+            <div className="grid grid-cols-2 gap-3 text-xs text-left">
+              <div className="bg-slate-950 border border-slate-850 p-3 rounded">
+                <span className="text-[10px] text-slate-500 block">SELECTED HUB LAYER</span>
+                <span className="text-cyan-400 font-bold uppercase">{riskModalLayer}</span>
+              </div>
+              <div className="bg-slate-950 border border-slate-850 p-3 rounded">
+                <span className="text-[10px] text-slate-500 block">AML INTEGRITY CLASS</span>
+                <span className="text-emerald-400 font-extrabold">CLASS AAA (STABLE)</span>
+              </div>
+              <div className="bg-slate-950 border border-slate-850 p-3 rounded">
+                <span className="text-[10px] text-slate-500 block">CADASTRAL CO-REFERENCE CONTROLS</span>
+                <span className="text-white font-bold">12,840 Hectares Validated</span>
+              </div>
+              <div className="bg-slate-950 border border-slate-850 p-3 rounded">
+                <span className="text-[10px] text-slate-500 block">ESTIMATED RISK FACTOR</span>
+                <span className={`${
+                  riskModalRegion === "West Africa" ? "text-amber-400" : "text-emerald-400"
+                } font-black`}>
+                  {riskModalRegion === "Southern Africa" ? "0.8%" :
+                   riskModalRegion === "West Africa" ? "2.6% (Moderate)" :
+                   riskModalRegion === "East Africa" ? "1.4%" : "0.5%"} Flag Index
+                </span>
+              </div>
+            </div>
+
+            {/* Live Vetting System Logs */}
+            <div className="bg-slate-950/90 border border-slate-850 rounded p-4 text-[10px] space-y-1 max-h-[140px] overflow-y-auto text-left">
+              <span className="text-[9px] text-slate-500 font-bold block border-b border-slate-900 pb-1 mb-1">CADASTRAL AUDIT STREAM</span>
+              {auditLogsLocal.map((log, idx) => (
+                <div key={idx} className="text-slate-300 font-mono">
+                  {log}
+                </div>
+              ))}
+              {isReauditing && (
+                <div className="text-cyan-400 flex items-center gap-2 mt-1">
+                  <span className="animate-pulse">● Running satellite scans and decentralized hash validations...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-3">
+              <button
+                onClick={handleRunReaudit}
+                disabled={isReauditing}
+                className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
+              >
+                {isReauditing ? "Scanning Web3 Deeds..." : "Force Real-time Re-Audit Scan"}
+              </button>
+              <button
+                onClick={() => setIsRiskModalOpen(false)}
+                className="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded text-xs font-bold uppercase transition-all"
+              >
+                Dismiss HUD
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 }

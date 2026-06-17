@@ -101,6 +101,34 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
   ]);
   const [chatInput, setChatInput] = useState("");
 
+  // --- ADDITIONAL INTERACTIVE SYSTEM STATES ---
+  const [amlSearchTerm, setAmlSearchTerm] = useState("");
+  const [amlScreenHistory, setAmlScreenHistory] = useState([
+    { name: "Khadija Diop", type: "PEP List Match", risk: "None (Approved Clear)", timestamp: "2026-06-17 11:30" },
+    { name: "Sovereign Holdings Cape", type: "OFAC SDN Lookup", risk: "None (Approved Clear)", timestamp: "25 mins ago" },
+    { name: "Olumide Alade Inc.", type: "PEP List Match", risk: "Medium Risk (High Velocity Alert)", timestamp: "1 hour ago" }
+  ]);
+  const [isAmlSearching, setIsAmlSearching] = useState(false);
+
+  const [disputes, setDisputes] = useState([
+    { id: "DISP-884", details: "Cape Town Beach Penthouse structural defect escrow split dispute.", buyer: "Chinedu Okafor", developer: "Nile Development Corp", amount: 4800000, status: "OPEN" },
+    { id: "DISP-203", details: "Accra Smart Loft booking non-refund discrepancy on late exit.", buyer: "Sarah Jenkins", developer: "West Forest Properties", amount: 350000, status: "RESOLVED" }
+  ]);
+
+  const [autoWorkflows, setAutoWorkflows] = useState([
+    { id: "WF-01", name: "Auto-Scrutinize Off-Platform Keywords", desc: "Flag communications attempting to bypass escrows", enabled: true, frequency: "Real-time" },
+    { id: "WF-02", name: "PEP Database Hash Co-Sourcing", desc: "Sync regional registries to GopherML screening indexes", enabled: true, frequency: "Hourly" },
+    { id: "WF-03", name: "Underpriced Tax Evasion Predictor", desc: "Detect properties listed 40% below regional cadastral valuation", enabled: false, frequency: "On Listing Uploaded" }
+  ]);
+
+  const [escalationsList, setEscalationsList] = useState([
+    { id: "CRISIS-41", title: "Sovereign Node Latency Threshold Breached", level: "CRITICAL", origin: "Lagos Hub Router-3", duration: "14 mins", status: "PENDING ACTION" },
+    { id: "CRISIS-90", title: "SARS Escrow Tax Certificate Ping Failure", level: "HIGH", origin: "Johannesburg Gateway Notary", duration: "1 hour", status: "MITIGATED" }
+  ]);
+
+  const [apiPingResult, setApiPingResult] = useState<string | null>(null);
+  const [isTestingApi, setIsTestingApi] = useState(false);
+
   // --- RECURRING SYSTEM CLOCKS & TELEMETRIES ---
   useEffect(() => {
     const updateTime = () => {
@@ -222,6 +250,66 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
       setSupportChat(prev => [...prev, { sender: "User", msg: "Understood. Thank you for validating my FFC license file. I will notify my local branch office.", time: currentTime.substring(0, 5) }]);
       pushLog("SUPPORT: Dynamic chat response sent.");
     }, 1500);
+  };
+
+  // --- INTERACTIVE BUSINESS SUITES COMPLIANCE/MODERATORS/SETTINGS ---
+  const handleRunAmlScreening = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!amlSearchTerm.trim()) return;
+    setIsAmlSearching(true);
+    pushLog(`AML screening check initiated for: "${amlSearchTerm}"`);
+    setTimeout(() => {
+      setIsAmlSearching(false);
+      const isSuspect = ["trump", "putin", "bin laden", "cartel", "hacker", "scam"].some(name => amlSearchTerm.toLowerCase().includes(name));
+      const entry = {
+        name: amlSearchTerm,
+        type: "Interactive PEP & OFAC SDN Scan",
+        risk: isSuspect ? "HIGH RISK (SDN List Match Definite)" : "None (Approved Clear)",
+        timestamp: "Just now"
+      };
+      setAmlScreenHistory(prev => [entry, ...prev]);
+      if (isSuspect) {
+        toast(`CRITICAL SANCTIONS MATCH FOR "${amlSearchTerm}". Escalating report.`, "warn");
+        pushLog(`SDN List definite mismatch matched for subject entity: "${amlSearchTerm}"`);
+      } else {
+        toast(`AML Screener: entity clean. Hash registry issued.`, "success");
+      }
+      setAmlSearchTerm("");
+    }, 1000);
+  };
+
+  const handleResolveDispute = (dispId: string, action: string) => {
+    setDisputes(prev => prev.map(d => {
+      if (d.id === dispId) {
+        pushLog(`DISPUTE RESOLUTION: Dispute ${dispId} resolved: Escrow distributed via ${action}.`);
+        toast(`Dispute settled via ${action}. Escrow final ledger updated.`, "success");
+        return { ...d, status: "RESOLVED" };
+      }
+      return d;
+    }));
+  };
+
+  const handleToggleWorkflow = (wfId: string) => {
+    setAutoWorkflows(prev => prev.map(wf => {
+      if (wf.id === wfId) {
+        const nextState = !wf.enabled;
+        pushLog(`WORKFLOW MODIFIED: '${wf.name}' state set to ${nextState ? "ACTIVE" : "DISABLED"}`);
+        toast(`Workflow ${nextState ? "activated" : "deactivated"}.`, "info");
+        return { ...wf, enabled: nextState };
+      }
+      return wf;
+    }));
+  };
+
+  const handleExecuteApiDiagnostics = () => {
+    setIsTestingApi(true);
+    setApiPingResult("Sending test pings from Cape Town hub to SARS escrows, Lagos Notarys, KES land registries...");
+    pushLog("API DIAGNOSTICS: Initiating end-to-end integration loop probes.");
+    setTimeout(() => {
+      setIsTestingApi(false);
+      setApiPingResult("Diagnostics clean: SARS Notary API OK (12ms), Lagos Multi-Sig OK (22ms), Nairobi Cadastran Mesh OK (48ms). GopherML Core Model Sync OK.");
+      toast("API Network Diagnostics completed successfully.", "success");
+    }, 1200);
   };
 
   // --- COMPLIANCE QUEUE ACTIONS ---
@@ -824,7 +912,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                       key={reg}
                       onClick={() => setChartRegionFilter(reg)}
                       className={`rounded px-3 py-1 font-bold ${
-                        chartRegionFilter === reg ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "text-slate-400 hover:text-white"
+                        chartRegionFilter === reg ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-extrabold shadow-[0_0_12px_rgba(6,182,212,0.15)]" : "text-slate-400 hover:text-white"
                       }`}
                     >
                       {reg}
@@ -832,6 +920,32 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                   ))}
                 </div>
               </div>
+
+              {/* ACTIVE REGIONAL INTELLIGENCE NODES GRID */}
+              <div className="space-y-4 font-mono text-xs">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center gap-1.5 font-bold text-white uppercase">
+                    <Network className="h-4 w-4 text-cyan-400 animate-pulse" />
+                    Sovereign Regional Nodes
+                  </div>
+                  <span className="text-[10px] text-slate-500">
+                    NETWORK STATUS: <span className="text-emerald-400 font-bold">ALL SYSTEMS SYNCED</span> // FILTER: <strong className="text-cyan-400 uppercase">{chartRegionFilter}</strong>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {regionalNodes
+                    .filter(node => chartRegionFilter === "All Africa" || node.region === chartRegionFilter)
+                    .map(node => (
+                      <RegionalNodeCard 
+                        key={node.id} 
+                        node={node} 
+                        renderCurrency={renderCurrency} 
+                      />
+                    ))}
+                </div>
+              </div>
+
               <RevenueTab 
                 transactions={transactions} 
                 selectedTransactionId={selectedTransactionId} 
@@ -921,29 +1035,167 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
           {activeCategory === "Compliance Command" && (
             <div className="space-y-6 font-mono text-xs">
               
-              {activeSub === "Audit Logs" ? (
+              {activeSub === "Audit Logs" || activeSub === "AML Audit Logs" ? (
                 /* Audit trail feed */
-                <div className="rounded-xl border border-slate-800 bg-[#0c1224] p-5">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3.5">
-                    <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5">
-                      <Shield className="h-4 w-4 text-cyan-400" /> Cryptographic Immutable Audit Ledger Blocks
-                    </h3>
-                    <span className="text-slate-500">SHA-256 CO-CHAIN CONNECTED</span>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
+                    <span className="text-slate-400 font-bold uppercase">AML Cryptographic Audit Ledger Registry</span>
+                    <span className="bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded text-[10px] font-bold">CO-CHAIN INTERLINK Nominal</span>
                   </div>
-                  <div className="space-y-2 bg-slate-950 p-4 rounded-lg border border-slate-900 font-mono text-[10.5px]">
-                    {auditLogs.map((log, id) => (
-                      <div key={id} className="text-slate-350">{log}</div>
-                    ))}
+
+                  <div className="rounded-xl border border-slate-800 bg-[#0c1224] p-5">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3.5">
+                      <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5">
+                        <Shield className="h-4 w-4 text-cyan-400" /> Cryptographic Immutable Audit Ledger Blocks (SHA-256)
+                      </h3>
+                      <button onClick={() => { pushLog("LEDGER_INTEGRITY: Validating full node merkle proofs."); toast("Ledger integrity certified clean.", "success"); }} className="text-cyan-400 hover:underline uppercase text-[10px] font-bold">
+                        Verify Ledger Integrity
+                      </button>
+                    </div>
+                    <div className="space-y-2 bg-slate-950 p-4 rounded-lg border border-slate-900 font-mono text-[10.5px]">
+                      {auditLogs.map((log, id) => (
+                        <div key={id} className="text-slate-300 border-l border-slate-800 pl-2.5 py-1 flex justify-between items-center">
+                          <span>{log}</span>
+                          <span className="text-[9px] text-[#22c55e] bg-[#22c55e]/10 px-1 py-0.2 rounded">VERIFIED</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : activeSub === "AML Screening" ? (
+                /* AML Screening Search and PEP registers */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-6 space-y-4">
+                    <div className="rounded-xl border border-slate-800 bg-[#0c1224] p-5">
+                      <h3 className="text-xs font-black text-white uppercase flex items-center gap-1.5 pb-2 border-b border-slate-800 mb-4">
+                        <Users className="h-4 w-4 text-cyan-400" /> Interactive AML Entity & PEP Lookup Engine
+                      </h3>
+                      <p className="text-slate-400 text-[11px] mb-4 leading-relaxed font-sans">
+                        Run real-time high-velocity sanction list checking against international SDN (Specially Designated Nationals), PEP (Politically Exposed Persons) databases.
+                      </p>
+
+                      <form onSubmit={handleRunAmlScreening} className="space-y-3">
+                        <div>
+                          <label className="text-[10px] text-slate-500 block mb-1">Subject / Company / Entity Full Name</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={amlSearchTerm}
+                              onChange={(e) => setAmlSearchTerm(e.target.value)}
+                              placeholder="E.g. Khadija Diop or Olumide Alade"
+                              className="bg-slate-950 border border-slate-850 rounded px-2.5 py-1.5 text-xs text-white flex-1 focus:outline-none focus:border-cyan-400"
+                            />
+                            <button
+                              type="submit"
+                              disabled={isAmlSearching}
+                              className="bg-cyan-500 hover:bg-cyan-450 text-black font-extrabold px-4 rounded text-xs uppercase"
+                            >
+                              {isAmlSearching ? "SCANNING..." : "RUN SCAN"}
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+
+                      {isAmlSearching && (
+                        <div className="mt-4 p-3 bg-slate-950 rounded border border-slate-850 text-center text-cyan-400 animate-pulse font-bold text-[11.5px]">
+                          Scanning international registries & biometric logs...
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rounded-xl border border-[#1e293b] bg-slate-950 p-4">
+                      <span className="text-[10px] text-slate-500 font-bold block mb-1">AUTOMATED SANCTIONS STATUS INDICATORS:</span>
+                      <div className="grid grid-cols-3 gap-2 text-[10px] text-center font-bold">
+                        <div className="bg-[#121c16] text-[#22c55e] border border-[#1b2b20] p-1.5 rounded">OFAC SDN: OK</div>
+                        <div className="bg-[#121c16] text-[#22c55e] border border-[#1b2b20] p-1.5 rounded">PEP LIST: SYNCED</div>
+                        <div className="bg-[#121c16] text-[#22c55e] border border-[#1b2b20] p-1.5 rounded">SARB KYC: PASS</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-6 rounded-xl border border-slate-800 bg-[#0c1224] p-5">
+                    <h3 className="text-xs font-black text-white uppercase flex items-center gap-1.5 pb-2 border-b border-slate-800 mb-4">
+                      <Clock className="h-4 w-4 text-cyan-400" /> Historical Screening Query Records
+                    </h3>
+                    <div className="space-y-3.5 max-h-72 overflow-y-auto pr-1">
+                      {amlScreenHistory.map((item, idx) => (
+                        <div key={idx} className="bg-slate-950 p-3 rounded-lg border border-slate-850 flex justify-between items-start text-[11px]">
+                          <div>
+                            <span className="text-white font-extrabold block">{item.name}</span>
+                            <span className="text-slate-500 block text-[9.5px]">{item.type} • {item.timestamp}</span>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            item.risk.includes("HIGH") ? "bg-rose-500/20 text-rose-450" : "bg-[#22c55e]/15 text-[#22c55e]"
+                          }`}>{item.risk}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : activeSub === "Fraud & Sanctions" ? (
+                /* Fraud & Sanctions velocity check system */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="rounded-xl border border-slate-800 bg-[#0c1224] p-5">
+                      <h3 className="text-xs font-black text-white uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-3.5">
+                        <ShieldAlert className="h-4 w-4 text-rose-505" /> High Velocity Fraud Alert Engine (Suspicious Triggers)
+                      </h3>
+
+                      <div className="space-y-2.5">
+                        {[
+                          { id: "TX-221", origin: "Lagos Hub Node", target: "Cayman Escrow", amount: 14500000, trigger: "Multiple cross-border transfer attempts inside 60s window.", gravity: "CRITICAL" },
+                          { id: "TX-904", origin: "Cape Town Hub Node", target: "London Private Holding", amount: 82000000, trigger: "Bypassed standard SARB dual legal notary. Flagged for review.", gravity: "HIGH RISK" }
+                        ].map((trig, idx) => (
+                          <div key={idx} className="bg-slate-950 border border-slate-850 p-4 rounded-lg flex flex-col justify-between md:flex-row gap-4">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-rose-400 font-extrabold select-all">{trig.id}</span>
+                                <span className="bg-rose-500/10 text-rose-455 text-[8.5px] font-black px-1.5 rounded uppercase">{trig.gravity}</span>
+                              </div>
+                              <p className="text-slate-300 font-sans leading-relaxed text-[11px]">{trig.trigger}</p>
+                              <p className="text-slate-500 text-[10px]">{trig.origin} ➔ {trig.target} • {renderCurrency(trig.amount)}</p>
+                            </div>
+                            <div className="flex md:flex-col justify-end gap-1.5 select-none self-end md:self-center">
+                              <button onClick={() => { pushLog(`FRAUD: Suspicious transaction ${trig.id} frozen.`); toast(`Alert ${trig.id} isolated & frozen.`, "warn"); }} className="bg-rose-500 hover:bg-rose-400 text-black text-[10px] font-bold px-3 py-1.5 rounded uppercase">Freeze Wallet</button>
+                              <button onClick={() => { pushLog(`FRAUD: Dismissed false alarm on ${trig.id}.`); toast(`Alert cleared secure.`, "success"); }} className="bg-slate-930 text-slate-400 hover:text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase border border-slate-800 hover:border-slate-600">Dismiss</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase pb-2 border-b border-slate-850 mb-1">
+                      Live Sanctions Registry Sync status
+                    </h3>
+                    <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                      AfriEstate co-signs and hashes compliance metrics with municipal and federal intelligence centers hourly.
+                    </p>
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between items-center text-[11px] p-2 bg-[#0c1224] rounded border border-slate-900">
+                        <span className="text-slate-300">Interpol Red-Notice List</span>
+                        <span className="text-emerald-400 font-black">ACTIVE SYNC (9ms)</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] p-2 bg-[#0c1224] rounded border border-slate-900">
+                        <span className="text-slate-300">OFAC Blocked Entities Stream</span>
+                        <span className="text-emerald-400 font-black">ACTIVE SYNC (12ms)</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] p-2 bg-[#0c1224] rounded border border-slate-900">
+                        <span className="text-slate-300">SARB Politically Exposed Register</span>
+                        <span className="text-emerald-400 font-black">ACTIVE SYNC (4ms)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
-                /* KYC, AML Screening, Custom legal cases listing */
+                /* KYC, Legal Cases & Regulatory Reports list */
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   
                   {/* Cases list */}
                   <div className="lg:col-span-8 space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
-                      <span className="text-slate-450 uppercase font-black">Active Compliance Incidents ({complianceCases.length})</span>
+                      <span className="text-slate-450 uppercase font-black">Active Compliance & Legal Incident Register ({complianceCases.length})</span>
                       <span className="bg-rose-500/10 text-rose-450 px-2 py-0.5 rounded text-[10px] font-bold">VETTING CORE ACTIVE</span>
                     </div>
 
@@ -993,7 +1245,8 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                   <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-[#0d142b] p-5 flex flex-col justify-between overflow-hidden">
                     {selectedCaseId ? (
                       (() => {
-                        const matchedCase = complianceCases.find(c => c.id === selectedCaseId)!;
+                        const matchedCase = complianceCases.find(c => c.id === selectedCaseId);
+                        if (!matchedCase) return <div className="text-center py-20 text-slate-500">Case not found.</div>;
                         return (
                           <div className="space-y-4">
                             <div className="flex items-center gap-2 rounded-lg bg-rose-950/40 border border-rose-800/30 p-2 text-rose-400 text-[10px] text-center justify-center font-bold">
@@ -1046,98 +1299,313 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
 
           {/* CATEGORY: MODERATION & TRUST */}
           {activeCategory === "Moderation & Trust" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-mono text-xs">
+            <div className="space-y-6 font-mono text-xs">
               
-              {/* Reports queue table */}
-              <div className="lg:col-span-8 flex flex-col space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
-                  <span className="text-slate-400 font-bold uppercase">Platform Content Flagger Incident Stream</span>
-                  <span className="text-slate-500 text-[10px]">VERDICT PIPELINE: ONLINE</span>
-                </div>
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
+                <span className="text-slate-400 font-bold uppercase">Sovereign Moderator Vetting & Dispute Room</span>
+                <span className="text-cyan-400 text-[10px] font-bold">TRUST INDEX: 99.8% SPECULATING CHANNELS ON</span>
+              </div>
 
-                <div className="rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="border-b border-slate-850 text-slate-500 text-[10px] uppercase bg-slate-950">
-                        <th className="p-4">REPORT ID</th>
-                        <th className="p-4">CONTENT TYPE</th>
-                        <th className="p-4">REPORTED ISSUE</th>
-                        <th className="p-4">SEVERITY</th>
-                        <th className="p-4 text-right">STATUS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {moderationReports.map(m => (
-                        <tr 
-                          key={m.id} 
-                          onClick={() => setSelectedReportId(m.id)}
-                          className={`border-b border-slate-800/40 hover:bg-slate-900/30 cursor-pointer text-[11px] transition-all ${
-                            selectedReportId === m.id ? "bg-cyan-950/10" : ""
-                          }`}
-                        >
-                          <td className="p-4 font-bold text-white uppercase">{m.id}</td>
-                          <td className="p-4">
-                            <span className="text-cyan-400 font-semibold">{m.contentType}</span>
-                            <span className="text-slate-500 block text-[9.5px]">by {m.reportingUser}</span>
-                          </td>
-                          <td className="p-4 text-slate-450 font-sans leading-normal">{m.issue}</td>
-                          <td className="p-4">
-                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-black ${
-                              m.severity === 'Critical' ? "bg-rose-500 text-black" : "bg-amber-500 text-black"
-                            }`}>{m.severity.toUpperCase()}</span>
-                          </td>
-                          <td className="p-4 text-right font-black">
-                            <span className={`px-1.5 py-0.5 rounded text-[9.5px] ${
-                              m.status.includes("Removed") ? "bg-rose-500/10 text-rose-450" :
-                              m.status.includes("Dismiss") ? "bg-emerald-500/10 text-emerald-440" : "bg-cyan-500/10 text-cyan-400"
-                            }`}>{m.status}</span>
-                          </td>
+              {activeSub === "User Reports" || activeSub === "User reports" ? (
+                /* Flagged User Complaint Histories */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-850 text-slate-500 text-[10px] uppercase bg-slate-950">
+                          <th className="p-4">ACCUSED USER</th>
+                          <th className="p-4">REPORTER EMAIL</th>
+                          <th className="p-4">COMPLAINT SUBSTANCE</th>
+                          <th className="p-4">SEVERITY</th>
+                          <th className="p-4 text-right">ACTION</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Moderation arbitration detail card */}
-              <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-[#0d142b] p-5 flex flex-col justify-between overflow-hidden">
-                {selectedReportId ? (
-                  (() => {
-                    const matchedReport = moderationReports.find(m => m.id === selectedReportId)!;
-                    return (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 rounded-lg bg-cyan-950/40 border border-cyan-800/30 p-2 text-cyan-400 text-[10.5px] text-center justify-center font-bold">
-                          <ShieldAlert className="h-4 w-4" /> REVALUATION DISPUTE ARBITRATOR
-                        </div>
-
-                        <div>
-                          <span className="text-[10px] text-slate-500 uppercase">INCIDENT ENVELOPE:</span>
-                          <h3 className="text-sm font-black text-white">{matchedReport.id}</h3>
-                          <p className="text-[10px] text-slate-400">Reporter: {matchedReport.reportingUser}</p>
-                        </div>
-
-                        <div className="p-3 bg-slate-950 rounded border border-slate-900 font-mono text-[10.5px] space-y-1 text-slate-350">
-                          <span className="text-slate-500 font-bold uppercase block text-[9.5px]">FLAGGED VALUE ELEMENT:</span>
-                          <p className="leading-relaxed border-l-2 border-rose-500 pl-2">{matchedReport.reportedValue}</p>
-                        </div>
-
-                        <div className="space-y-2 border-t border-slate-800 pt-3">
-                          <span className="text-[10px] text-slate-500 block font-bold uppercase">Arbitration Decision</span>
-                          <div className="grid grid-cols-2 gap-2">
-                            <button onClick={() => handleApplyModerationAction(matchedReport.id, "warn")} className="rounded bg-amber-500/10 py-1.5 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 font-bold uppercase">Issue Warn</button>
-                            <button onClick={() => handleApplyModerationAction(matchedReport.id, "dismiss")} className="rounded bg-slate-900 py-1.5 text-slate-400 border border-slate-800 hover:border-slate-600 font-bold uppercase">Dismiss Flag</button>
-                          </div>
-                          <button onClick={() => handleApplyModerationAction(matchedReport.id, "remove")} className="w-full rounded bg-rose-500 text-black font-bold py-2 hover:bg-rose-450 uppercase mt-1">Authorize & Remove Content</button>
-                        </div>
-                      </div>
-                    );
-                  })()
-                ) : (
-                  <div className="text-center py-20 text-slate-500">
-                    Select a flagged content review or listing report row to dispatch arbitration enforcement verdicts.
+                      </thead>
+                      <tbody>
+                        {[
+                          { id: "U-819", targetName: "Chisom_Invest_Cape", reporter: "investor_39@gold.net", reason: "Attempted to request direct wire transfer outside platform escrow.", severity: "Critical", status: "Active" },
+                          { id: "U-144", targetName: "Bamikole_Agencies", reporter: "buyer_11@yahoo.co.za", reason: "Listing specifications show outdated surveyor reports.", severity: "Medium", status: "Active" }
+                        ].map((compl, idx) => (
+                          <tr key={idx} className="border-b border-slate-800/40 hover:bg-slate-900/30 text-[11px] transition-all">
+                            <td className="p-4">
+                              <span className="text-white font-bold block">{compl.targetName}</span>
+                              <span className="text-slate-500 block text-[9.5px]">{compl.id}</span>
+                            </td>
+                            <td className="p-4 text-slate-400 font-bold">{compl.reporter}</td>
+                            <td className="p-4 text-slate-400 font-sans leading-relaxed">{compl.reason}</td>
+                            <td className="p-4">
+                              <span className={`px-1.5 py-0.2 rounded text-[8px] font-black uppercase ${
+                                compl.severity === "Critical" ? "bg-rose-500 text-black" : "bg-amber-500 text-black"
+                              }`}>{compl.severity}</span>
+                            </td>
+                            <td className="p-4 text-right select-none">
+                              <div className="flex gap-1 justify-end">
+                                <button onClick={() => { pushLog(`SUSPEND: Blocked access for user ${compl.targetName}.`); toast(`User ${compl.targetName} suspended.`, "warn"); }} className="bg-rose-500 hover:bg-rose-400 text-black font-bold px-2 py-1 rounded text-[10px] uppercase">SUSPEND</button>
+                                <button onClick={() => { pushLog(`WARNING: Dispatched code penalty warnings to ${compl.targetName}.`); toast(`Compliance warning sent.`, "info"); }} className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-2 py-1 rounded text-[10px] uppercase">WARN</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                )}
-              </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-850 pb-2 mb-1">
+                      Platform Anti-Defamation Policy
+                    </h3>
+                    <p className="text-[11px] font-sans text-slate-400 leading-relaxed">
+                      All platform user reports trigger natural language GopherML audits prior to human manual arbitration inside the dashboard workspace.
+                    </p>
+                    <div className="p-3 bg-[#0d142b] border border-slate-900 rounded font-bold text-[10px] text-cyan-400 text-center">
+                      98.2% Auto-Detection Sieve Efficiency
+                    </div>
+                  </div>
+                </div>
+              ) : activeSub === "Dispute Center" ? (
+                /* Escrow disputes and booking settlements */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 space-y-4">
+                    <div className="rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-slate-850 text-slate-500 text-[10px] uppercase bg-slate-950">
+                            <th className="p-4">DISPUTE ID</th>
+                            <th className="p-4">DISPUTE DETAILS / AGENTS</th>
+                            <th className="p-4 text-center">FROZEN FUNDS</th>
+                            <th className="p-4">STATUS</th>
+                            <th className="p-4 text-right">RESOLUTION ACTION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {disputes.map((disp, idx) => (
+                            <tr key={idx} className="border-b border-slate-800/40 text-[11px]">
+                              <td className="p-4 font-bold text-white uppercase select-all">{disp.id}</td>
+                              <td className="p-4">
+                                <span className="text-slate-200 block font-sans">{disp.details}</span>
+                                <span className="text-slate-500 block text-[9.5px]">Buyer: {disp.buyer} | Developer: {disp.developer}</span>
+                              </td>
+                              <td className="p-4 text-center text-amber-400 font-bold">{renderCurrency(disp.amount)}</td>
+                              <td className="p-4">
+                                  <span className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold ${
+                                    disp.status === 'OPEN' ? "bg-amber-500/10 text-amber-400 animate-pulse" : "bg-emerald-500/10 text-emerald-400"
+                                  }`}>{disp.status}</span>
+                              </td>
+                              <td className="p-4 text-right select-none">
+                                {disp.status === "OPEN" ? (
+                                  <div className="flex gap-1 justify-end">
+                                    <button onClick={() => handleResolveDispute(disp.id, `Release to Buyer (${disp.buyer})`)} className="bg-emerald-500 hover:bg-emerald-400 text-black font-black px-2 py-1 rounded text-[10px] uppercase">Payout Buyer</button>
+                                    <button onClick={() => handleResolveDispute(disp.id, `Release to Developer (${disp.developer})`)} className="bg-cyan-500 hover:bg-cyan-400 text-black font-black px-2 py-1 rounded text-[10px] uppercase">Payout Dev</button>
+                                  </div>
+                                ) : (
+                                  <span className="text-emerald-400 font-bold text-xs select-none">✓ Settled</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 flex flex-col justify-between overflow-hidden">
+                    <div className="space-y-4">
+                      <div className="rounded-lg bg-cyan-950/40 border border-cyan-850/40 p-2.5 text-cyan-400 text-center font-bold">
+                        ARBITRATOR NOTARY PROTOCOL
+                      </div>
+                      <p className="font-sans text-slate-400 text-[11px] leading-relaxed">
+                        By deploying resolution, the Super Admin releases multi-sig cryptographic escrow holdings. Finalized transfers are irreversible under AfriEstate corporate terms.
+                      </p>
+                    </div>
+                    <div className="border-t border-slate-900 pt-3 text-[10px] text-slate-500">
+                      Multi-Sig Authority: <strong className="text-emerald-400 font-mono">AUTHORIZED SUPERUSER</strong>
+                    </div>
+                  </div>
+                </div>
+              ) : activeSub === "AI Moderation Queue" ? (
+                /* GopherML AI Moderation queues */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden animate-pulse-once">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-850 text-slate-500 text-[10px] bg-slate-950 uppercase">
+                          <th className="p-4">SCAN ID</th>
+                          <th className="p-4">ELEMENT / VALUE SCAN</th>
+                          <th className="p-4">NLP FLAG SIGNAL</th>
+                          <th className="p-4 text-center">CONFIDENCE</th>
+                          <th className="p-4 text-right font-bold">ACTIONS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { id: "AIMP-924", type: "Property Description", val: "Beautiful beachfront loft. Pay directly via bank draft to whatsapp +27 82 042...", flag: "Direct off-channel payment solicit", confidence: 98 },
+                          { id: "AIMP-103", type: "Agent Profile Summary", val: "Professional broker. Contact on direct email owner_richards@scam.com", flag: "Suspicious domain contact", confidence: 84 }
+                        ].map((m, idx) => (
+                          <tr key={idx} className="border-b border-slate-800/40 text-[11px]">
+                            <td className="p-4 text-slate-400 font-bold uppercase select-all">{m.id}</td>
+                            <td className="p-4">
+                              <span className="text-slate-350 block leading-normal border-l border-rose-500 pl-2 font-sans">{m.val}</span>
+                              <span className="text-slate-500 text-[9.5px] block mt-1">{m.type}</span>
+                            </td>
+                            <td className="p-4 text-cyan-405 font-semibold">{m.flag}</td>
+                            <td className="p-4 text-center font-black text-rose-400">{m.confidence}%</td>
+                            <td className="p-4 text-right select-none">
+                              <div className="flex gap-1 justify-end">
+                                <button onClick={() => { pushLog(`MODERATE: Approved machine flag on ${m.id}`); toast("Action taken on machine recommendation.", "success"); }} className="bg-rose-500 hover:bg-rose-455 text-black font-extrabold px-2 py-1 rounded text-[10px] uppercase">Approve Flag</button>
+                                <button onClick={() => { pushLog(`MODERATE: De-categorized & cleared ${m.id}`); toast("Overrode GopherML recommendation.", "info"); }} className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-2 py-1 rounded text-[10px] uppercase">Dismiss</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase pb-1.5 border-b border-slate-850 mb-1">
+                      GopherML Sentinel Parameters
+                    </h3>
+                    <p className="text-[11px] font-sans text-slate-400 leading-relaxed">
+                      Deep natural language transformer weights filter and isolate listings that contain off-platform escrow payment solicitation vectors on upload.
+                    </p>
+                    <div className="p-3 bg-slate-900 border border-slate-850 rounded text-center text-[10.5px] text-white">
+                      Current Scanning Pipeline: <strong className="text-[#22c55e]">99.9% Nominal</strong>
+                    </div>
+                  </div>
+                </div>
+              ) : activeSub === "Communication Monitoring" ? (
+                /* Chat logs bypass checkers */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase flex items-center gap-1.5 pb-2 border-b border-slate-800 mb-2">
+                      <Shield className="h-4 w-4 text-cyan-400 animate-pulse" /> Intercepted Off-Platform Escrow Payment Bypass Hooks
+                    </h3>
+
+                    <div className="space-y-3.5">
+                      {[
+                        { sender: "Broker_991", receiver: "Investor_Faraji", text: "Please do not use the bank notary gateway on AfriEstate. Send me the R 45,000 reservation fee directly via western union to avoid fee.", matchWord: "Western Union / directly / avoid fee", hash: "COMM-H-904" },
+                        { sender: "Dev_Accra_Z", receiver: "Buyer_Kaye", text: "Let us chat on my personal cellphone +233 49023 2948. Hard to use this applet.", matchWord: "cellphone / +233 ...", hash: "COMM-H-111" }
+                      ].map((comm, idx) => (
+                        <div key={idx} className="p-3.5 bg-slate-950 border border-rose-950/50 rounded-lg space-y-2">
+                          <div className="flex justify-between items-center bg-slate-900 p-1 px-2.5 rounded text-[10px]">
+                            <span className="text-rose-400 font-bold">{comm.sender} ➔ {comm.receiver}</span>
+                            <span className="text-slate-500 font-mono text-[9px]">{comm.hash}</span>
+                          </div>
+                          <p className="text-slate-350 font-sans leading-relaxed text-[11px] border-l-2 border-rose-500 pl-3">
+                            {comm.text}
+                          </p>
+                          <div className="flex flex-wrap items-center justify-between text-[10px] gap-2 pt-1">
+                            <span className="text-rose-450 font-bold bg-rose-500/10 px-2 py-0.5 rounded uppercase">TRIGGER WORD MATCH: "{comm.matchWord}"</span>
+                            <div className="flex gap-2 select-none">
+                              <button onClick={() => { pushLog(`COMM: Suspended channel for ${comm.sender}`); toast("Conversation channel frozen.", "warn"); }} className="bg-rose-500 text-black font-extrabold px-3 py-1 rounded text-[9.5px] uppercase">Block Channel</button>
+                              <button onClick={() => { pushLog(`COMM: Issued system policy notice to ${comm.sender}`); toast("System policy notice dispatched.", "info"); }} className="bg-slate-800 text-slate-350 font-bold px-3 py-1 rounded text-[9.5px] uppercase">Warn Actor</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase pb-1.5 border-b border-slate-850 mb-1">
+                      Legal Compliance Mandate
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-relaxed font-sans">
+                      AfriEstate maintains anti-solicitation filters to comply with financial escrow regulations of respective hubs. Solicitations bypasses of notary channels violate national anti-money laundering frameworks.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* Content Moderation Queue (Default View) */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Reports queue table */}
+                  <div className="lg:col-span-8 flex flex-col space-y-4">
+                    <div className="rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-slate-850 text-slate-500 text-[10px] uppercase bg-slate-950 font-mono">
+                            <th className="p-4">REPORT ID</th>
+                            <th className="p-4">CONTENT TYPE</th>
+                            <th className="p-4">REPORTED ISSUE</th>
+                            <th className="p-4">SEVERITY</th>
+                            <th className="p-4 text-right font-mono">STATUS</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {moderationReports.map(m => (
+                            <tr 
+                              key={m.id} 
+                              onClick={() => setSelectedReportId(m.id)}
+                              className={`border-b border-slate-800/40 hover:bg-slate-900/30 cursor-pointer text-[11px] transition-all ${
+                                selectedReportId === m.id ? "bg-cyan-950/10" : ""
+                              }`}
+                            >
+                              <td className="p-4 font-bold text-white uppercase">{m.id}</td>
+                              <td className="p-4">
+                                <span className="text-cyan-400 font-semibold">{m.contentType}</span>
+                                <span className="text-slate-500 block text-[9.5px]">by {m.reportingUser}</span>
+                              </td>
+                              <td className="p-4 text-slate-450 font-sans leading-normal">{m.issue}</td>
+                              <td className="p-4">
+                                <span className={`px-1.5 py-0.2 rounded text-[8px] font-black ${
+                                  m.severity === 'Critical' ? "bg-rose-500 text-black" : "bg-amber-500 text-black"
+                                }`}>{m.severity.toUpperCase()}</span>
+                              </td>
+                              <td className="p-4 text-right font-black">
+                                <span className={`px-1.5 py-0.5 rounded text-[9.5px] ${
+                                  m.status.includes("Removed") ? "bg-rose-500/10 text-rose-450" :
+                                  m.status.includes("Dismiss") ? "bg-emerald-500/10 text-emerald-440" : "bg-cyan-500/10 text-cyan-400"
+                                }`}>{m.status}</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Moderation arbitration detail card */}
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-[#0d142b] p-5 flex flex-col justify-between overflow-hidden">
+                    {selectedReportId ? (
+                      (() => {
+                        const matchedReport = moderationReports.find(m => m.id === selectedReportId);
+                        if (!matchedReport) return <div className="text-center py-20 text-slate-500">Report not found.</div>;
+                        return (
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 rounded-lg bg-cyan-950/40 border border-cyan-800/30 p-2 text-cyan-400 text-[10.5px] text-center justify-center font-bold">
+                              <ShieldAlert className="h-4 w-4" /> REVALUATION DISPUTE ARBITRATOR
+                            </div>
+
+                            <div>
+                              <span className="text-[10px] text-slate-500 uppercase">INCIDENT ENVELOPE:</span>
+                              <h3 className="text-sm font-black text-white">{matchedReport.id}</h3>
+                              <p className="text-[10px] text-slate-400">Reporter: {matchedReport.reportingUser}</p>
+                            </div>
+
+                            <div className="p-3 bg-slate-950 rounded border border-slate-900 font-mono text-[10.5px] space-y-1 text-slate-350">
+                              <span className="text-slate-500 font-bold uppercase block text-[9.5px]">FLAGGED VALUE ELEMENT:</span>
+                              <p className="leading-relaxed border-l-2 border-rose-500 pl-2">{matchedReport.reportedValue}</p>
+                            </div>
+
+                            <div className="space-y-2 border-t border-slate-800 pt-3">
+                              <span className="text-[10px] text-slate-500 block font-bold uppercase">Arbitration Decision</span>
+                              <div className="grid grid-cols-2 gap-2">
+                                <button onClick={() => handleApplyModerationAction(matchedReport.id, "warn")} className="rounded bg-amber-500/10 py-1.5 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 font-bold uppercase">Issue Warn</button>
+                                <button onClick={() => handleApplyModerationAction(matchedReport.id, "dismiss")} className="rounded bg-slate-900 py-1.5 text-slate-400 border border-slate-800 hover:border-slate-600 font-bold uppercase">Dismiss Flag</button>
+                              </div>
+                              <button onClick={() => handleApplyModerationAction(matchedReport.id, "remove")} className="w-full rounded bg-rose-500 text-black font-bold py-2 hover:bg-rose-450 uppercase mt-1">Authorize & Remove Content</button>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      <div className="text-center py-20 text-slate-500">
+                        Select a flagged content review or listing report row to dispatch arbitration enforcement verdicts.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
             </div>
           )}
@@ -1147,7 +1615,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
             <div className="space-y-6 font-mono text-xs">
               
               {/* Service status health cards registry */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {services.map(srv => (
                   <div key={srv.id} className="p-4 rounded-xl border border-slate-850 bg-[#0c1224] flex items-center justify-between">
                     <div>
@@ -1161,7 +1629,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                       }`}>{srv.status}</span>
                       <button 
                         onClick={() => handleOpenActionModal("restart_service_node", srv)}
-                        className="text-[9px] text-cyan-400 hover:underline block mt-1.5 uppercase font-bold"
+                        className="text-[9px] text-cyan-400 hover:underline block mt-1.5 uppercase font-bold text-right w-full"
                       >
                         REBOOT
                       </button>
@@ -1170,8 +1638,93 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                 ))}
               </div>
 
-              {/* Active cyber threat logs */}
-              {activeSub === "Cybersecurity & Threats" && (
+              {activeSub === "AI Engine Health" ? (
+                /* AI Engine Performance diagnostics, neural nodes */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] p-5 space-y-4">
+                    <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-850 pb-2.5">
+                      <Sparkles className="h-4 w-4 text-cyan-400 animate-pulse" /> Active Neural Vetting Models & Latency Pools
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        { model: "GopherML-v3 Custom Transformer", use: "Platform Compliance NLP Vetting", latency: "14ms", confidence: "99.8%", safety: "99.9%" },
+                        { model: "AfriPrice Forecaster Matrix", use: "Real Estate Value Synthesis", latency: "28ms", confidence: "97.4%", safety: "100%" },
+                        { model: "Sentinel Asset Classifier", use: "Image Fraud & Surveyor Validation", latency: "42ms", confidence: "98.1%", safety: "99.5%" }
+                      ].map((m, idx) => (
+                        <div key={idx} className="p-3.5 bg-slate-950 border border-slate-850 rounded-lg space-y-2">
+                          <span className="text-white font-bold block leading-relaxed">{m.model}</span>
+                          <span className="text-slate-500 block text-[9.5px] uppercase">{m.use}</span>
+                          <div className="grid grid-cols-3 gap-1 pt-2 border-t border-slate-900 text-[10px] text-center">
+                            <div>
+                              <span className="text-slate-500 block text-[8px] uppercase">Latency</span>
+                              <strong className="text-cyan-400">{m.latency}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-500 block text-[8px] uppercase">Accuracy</span>
+                              <strong className="text-[#22c55e]">{m.confidence}</strong>
+                            </div>
+                            <div>
+                              <span className="text-slate-500 block text-[8px] uppercase">Safety</span>
+                              <strong className="text-amber-400">{m.safety}</strong>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-850 space-y-3">
+                      <span className="font-bold text-white block">Tuning Controls & Temperature Thresholds</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-slate-400 flex justify-between">
+                            <span>GopherML Confidence Sieve Filter</span>
+                            <span className="text-cyan-400 font-bold">95%</span>
+                          </label>
+                          <input type="range" min="80" max="100" defaultValue="95" className="w-full accent-cyan-400 h-1 bg-slate-800 rounded" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-slate-400 flex justify-between">
+                            <span>Inference Divergence Temperature</span>
+                            <span className="text-cyan-400 font-bold">0.15</span>
+                          </label>
+                          <input type="range" min="0" max="100" defaultValue="15" className="w-full accent-cyan-400 h-1 bg-slate-800 rounded" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-850 pb-2">
+                      GPU Context Memory Buffers
+                    </h3>
+                    <div className="space-y-3.5">
+                      <div>
+                        <div className="flex justify-between text-[10px] mb-1">
+                          <span className="text-slate-400">VRAM Allocation (80GB A100 Pool)</span>
+                          <span className="text-[#22c55e] font-bold">48.2 GB / 80 GB</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-900 rounded overflow-hidden">
+                          <div className="bg-[#22c55e] h-full" style={{ width: "60%" }}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-[10px] mb-1">
+                          <span className="text-slate-400">Embedding Cache Sync State</span>
+                          <span className="text-cyan-400 font-bold">SYNCHRONIZED (100%)</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-900 rounded overflow-hidden">
+                          <div className="bg-cyan-400 h-full" style={{ width: "100%" }}></div>
+                        </div>
+                      </div>
+                    </div>
+                    <button onClick={() => { pushLog("SYSTEM: Manual garbage collection requested on AI VRAM."); toast("Flushed stale context cache pools.", "success"); }} className="w-full py-2 bg-slate-900 hover:bg-slate-850 text-cyan-450 border border-slate-800 rounded text-center block font-extrabold uppercase text-[10px]">
+                      Flush Context Cache Pools
+                    </button>
+                  </div>
+                </div>
+              ) : activeSub === "Cybersecurity & Threats" ? (
+                /* Active cyber threat logs */
                 <div className="rounded-xl border border-slate-850 bg-[#0c1224] p-5 space-y-4">
                   <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-850 pb-2.5">
                     <ShieldAlert className="h-4 w-4 text-rose-500 animate-pulse" /> INTRUSION DETECTION & ACTIVE BRUTE-FORCE ATTEMPT CHANNELS
@@ -1186,7 +1739,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                           <th>PROBING ATTACK TYPE</th>
                           <th>SEVERITY</th>
                           <th>STATUS</th>
-                          <th className="text-right">MITIGATION</th>
+                          <th className="text-right font-bold">MITIGATION</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1207,7 +1760,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                               ) : (
                                 <button 
                                   onClick={() => handleOpenActionModal("isolate_threat", th)}
-                                  className="bg-rose-500 hover:bg-rose-450 text-black font-bold px-3 py-1 rounded text-[10px] uppercase"
+                                  className="bg-rose-500 hover:bg-rose-450 text-black font-bold px-3 py-1 rounded text-[10px] uppercase animate-pulse"
                                 >
                                   Isolate IP
                                 </button>
@@ -1219,19 +1772,71 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                     </table>
                   </div>
                 </div>
-              )}
+              ) : activeSub === "APIs & Error Logs" ? (
+                /* Console log outputs terminal & run diagnostic triggers */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-5 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-rose-400 uppercase flex items-center gap-1.5 pb-2 border-b border-slate-850">
+                      <Shield className="h-4 w-4" /> Multi-Node Network Probes & Verification
+                    </h3>
 
-              {/* Console log outputs terminal */}
-              {activeSub === "APIs & Error Logs" && (
-                <div className="rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-3.5">
-                  <div className="flex justify-between border-b border-slate-800 pb-2">
-                    <span className="text-cyan-450 font-bold flex items-center gap-1.5"><Terminal className="h-4 w-4 text-cyan-400 animate-pulse" /> SOVEREIGN NODE REAL-TIME TERMINAL PRINTS</span>
-                    <span className="text-slate-500">Nominal diagnostics</span>
+                    <p className="font-sans text-slate-400 text-[11px] leading-relaxed">
+                      Dispatch end-to-end telemetry ping tests across AfriEstate banking partners, municipal land records registries, and Escrow agents.
+                    </p>
+
+                    <button
+                      onClick={handleExecuteApiDiagnostics}
+                      disabled={isTestingApi}
+                      className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-450 text-black border-none font-black text-xs rounded uppercase block tracking-wider"
+                    >
+                      {isTestingApi ? "TEST DIAGNOSTICS IN PROGRESS..." : "TRIGGER MULTI-NODE INTEGRITY SCAN"}
+                    </button>
+
+                    <div className="bg-[#0c1224] border border-slate-850 p-3.5 rounded-lg space-y-1.5 font-sans">
+                      <span className="text-[10px] text-slate-500 uppercase block font-mono">Integration Output</span>
+                      <p className={`text-[11px] leading-relaxed ${isTestingApi ? "text-cyan-405 animate-pulse" : "text-white"}`}>
+                        {apiPingResult || "Ready: Tap above trigger button to probe API nodes."}
+                      </p>
+                    </div>
                   </div>
-                  <div className="font-mono text-[10.5px] space-y-1 text-slate-400 bg-slate-900 border border-slate-950 rounded p-4 h-56 overflow-y-auto [scrollbar-width:thin]">
-                    {auditLogs.map((log, id) => (
-                      <div key={id} className="text-slate-350">{log}</div>
-                    ))}
+
+                  <div className="lg:col-span-7 rounded-xl border border-slate-850 bg-[#0c1224] p-5 space-y-3.5">
+                    <div className="flex justify-between border-b border-slate-800 pb-2">
+                      <span className="text-cyan-455 font-bold flex items-center gap-1.5"><Terminal className="h-4 w-4 text-cyan-400 animate-pulse" /> SOVEREIGN NODE REAL-TIME TERMINAL PRINTS</span>
+                      <span className="text-slate-500 font-mono">SHA-256 REGISTER</span>
+                    </div>
+                    <div className="font-mono text-[10.5px] space-y-1 text-slate-400 bg-slate-950 border border-slate-900 rounded p-4 h-56 overflow-y-auto [scrollbar-width:thin]">
+                      {auditLogs.map((log, id) => (
+                        <div key={id} className="text-slate-300 border-l border-slate-850 pl-2 py-0.5">{log}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Default/Service Status layout view */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="rounded-xl border border-slate-850 bg-[#0c1224] p-5 space-y-3">
+                    <h3 className="text-xs font-black text-white uppercase pb-2 border-b border-slate-800">Operating Telemetry Architecture</h3>
+                    <p className="font-sans text-[11px] text-slate-400 leading-relaxed">
+                      Sovereign OS holds 14 distributed regional node meshes ensuring sub-50ms high availability for sovereign REIT asset settlement across SSA territories.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
+                      <div className="p-2 bg-slate-950 rounded border border-slate-900">
+                        <span className="text-slate-500 block">GLOBAL UPTIME</span>
+                        <strong className="text-emerald-400">99.982%</strong>
+                      </div>
+                      <div className="p-2 bg-slate-950 rounded border border-slate-900">
+                        <span className="text-slate-500 block">LAST AUDIT HASH</span>
+                        <strong className="text-cyan-400 select-all">SHA-256</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-3">
+                    <h3 className="text-xs font-black text-white uppercase pb-2 border-b border-slate-850">Regulatory Notarization State</h3>
+                    <p className="font-sans text-[11px] text-slate-400 leading-relaxed">
+                      All critical overrides inside the Command Center are captured cryptographically via legal multi-sig. Complete accountability is enforced natively.
+                    </p>
                   </div>
                 </div>
               )}
@@ -1241,78 +1846,256 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
 
           {/* CATEGORY: AI CO-PILOT COMMAND */}
           {activeCategory === "AI Co-Pilot" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-mono text-xs">
+            <div className="space-y-6 font-mono text-xs">
               
-              {/* Left query side */}
-              <div className="lg:col-span-8 rounded-xl border border-slate-800 bg-[#0d1430] p-6 flex flex-col justify-between min-h-[420px]">
-                <div>
-                  <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-4">
-                    <Sparkles className="h-4 w-4 text-cyan-400 animate-pulse" /> Sovereign Executive AI Assistant (GopherML v3)
-                  </h3>
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
+                <span className="text-slate-400 font-bold uppercase">Sovereign Executive AI Matrix Center (GopherML v3)</span>
+                <span className="bg-cyan-500/10 text-cyan-400 px-2.5 py-0.5 rounded text-[10px] font-bold">Inference Speed: 22ms</span>
+              </div>
 
-                  <div className="space-y-4 max-h-80 overflow-y-auto [scrollbar-width:thin] pr-2">
-                    {aiHistory.map((item, idx) => (
-                      <div key={idx} className="p-3 bg-[#0a0f24] rounded-lg border border-slate-800 space-y-1.5">
-                        <span className="text-cyan-400 font-bold block">▶ OPERATOR_Q: "{item.query}"</span>
-                        <p className="text-slate-300 border-l border-cyan-500 pl-3 leading-relaxed">{item.answer}</p>
+              {activeSub === "Revenue Forecasting" ? (
+                /* Dynamic revenue forecasting simulations */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-800 bg-[#0d1430] p-6 space-y-4">
+                    <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-2">
+                      <Sparkles className="h-4 w-4 text-cyan-400 animate-pulse" /> AI Neural Revenue Projection Matrix
+                    </h3>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-[#0c1224] p-3.5 rounded border border-slate-850">
+                        <span className="text-slate-500 text-[10px] uppercase block mb-1">Baseline Year Forecast</span>
+                        <strong className="text-xl text-white">R 482.4 M</strong>
+                        <span className="text-emerald-400 text-[9.5px] block mt-1">+12.4% Organic YoY</span>
                       </div>
-                    ))}
+                      <div className="bg-[#0c1224] p-3.5 rounded border border-slate-850">
+                        <span className="text-slate-500 text-[10px] uppercase block mb-1">Staking Pool Escrow Accruals</span>
+                        <strong className="text-xl text-white">R 124.9 M</strong>
+                        <span className="text-emerald-400 text-[9.5px] block mt-1">+8.2% Compound yield</span>
+                      </div>
+                      <div className="bg-[#0c1224] p-3.5 rounded border border-slate-850">
+                        <span className="text-slate-500 text-[10px] uppercase block mb-1">Token Commission Yields</span>
+                        <strong className="text-xl text-white">R 45.1 M</strong>
+                        <span className="text-cyan-400 text-[9.5px] block mt-1">2.5% Flat Rate fee</span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-950 rounded-lg border border-slate-850 space-y-3.5">
+                      <span className="font-bold text-white block">Modulate Regional Macroeconomic Growth Triggers</span>
+                      <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                        Simulate the revenue elasticity coefficients next quarter by adjusting expected sovereign stamp duty variables or adding tax incentives:
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button
+                          onClick={() => {
+                            pushLog("REVENUE_FORECAST: Simulated 10% rent index increase across Sub-Saharan Hubs.");
+                            toast("Simulation run complete: Revenue pool projected to hit R 522.4M next quarter.", "success");
+                          }}
+                          className="bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-slate-800 rounded py-2 text-center uppercase font-bold text-[10.5px] block"
+                        >
+                          Simulate +10% Rent Growth
+                        </button>
+                        <button
+                          onClick={() => {
+                            pushLog("REVENUE_FORECAST: Simulated 2.5% Stamp Duty subsidy across Accra and Lagos Hubs.");
+                            toast("Simulation run complete: Total tax-free margins increased by R 14.8M.", "info");
+                          }}
+                          className="bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-slate-800 rounded py-2 text-center uppercase font-bold text-[10.5px] block"
+                        >
+                          Simulate -2.5% Stamp Duty Subsidy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase pb-1.5 border-b border-slate-850">
+                      Forecasting Confidence Interval
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-relaxed">
+                      Sovereign OS projections utilize triple-exponential smoothing models trained against 18-years of historic real estate asset valuations on-chain.
+                    </p>
+                    <div className="p-3 bg-[#0d142b] border border-cyan-900/30 rounded text-center text-cyan-450 font-bold">
+                      Confidence Interval: 94.8% ± 0.2%
+                    </div>
                   </div>
                 </div>
-
-                <form onSubmit={handleCoPilotSubmit} className="pt-4 border-t border-slate-850 flex gap-2">
-                  <div className="relative flex-1">
-                    <Terminal className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
-                    <input
-                      type="text"
-                      value={aiInput}
-                      onChange={(e) => setAiInput(e.target.value)}
-                      placeholder="Instruct AI, e.g. Forecast next quarter revenue or Detect agents with suspicious transaction patterns"
-                      className="w-full bg-slate-950 rounded-lg pl-9 pr-4 py-2 border border-slate-850 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
-                    />
+              ) : activeSub === "Market Intelligence" ? (
+                /* Market appreciation and demand intelligence list */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-850 text-slate-500 text-[10px] bg-slate-950 uppercase">
+                          <th className="p-4">SOVEREIGN NODE HUB</th>
+                          <th className="p-4">YOY ASSET APPRECIATION</th>
+                          <th className="p-4">DEMAND HEAT MATRIX</th>
+                          <th className="p-4 text-center">AVERAGE CONVEYANCE TIME</th>
+                          <th className="p-4 text-right">FORECAST VERDICT</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { hub: "Lagos Atlantic Node", YoY: "+14.8%", heat: "EXTREMELY HIGH", time: "2.4 days (Escrow)", verdict: "Strong Buy" },
+                          { hub: "Cape Town Coast Node", YoY: "+9.2%", heat: "HIGH DEMAND", time: "1.8 days (Sovereign)", verdict: "Accumulate" },
+                          { hub: "Accra Green Node", YoY: "+11.4%", heat: "STABLE GROWTH", time: "3.2 days (Multi-Sig)", verdict: "Stable Hold" },
+                          { hub: "Nairobi Tech Node", YoY: "+16.1%", heat: "VIBRANT HIGH", time: "1.1 days (Instant)", verdict: "Strong Buy" }
+                        ].map((intel, idx) => (
+                          <tr key={idx} className="border-b border-slate-800/40 text-[11px] hover:bg-[#080d1a] transition-all">
+                            <td className="p-4 font-bold text-white leading-relaxed">{intel.hub}</td>
+                            <td className="p-4 text-[#22c55e] font-extrabold">{intel.YoY}</td>
+                            <td className="p-4 text-amber-400 font-bold">{intel.heat}</td>
+                            <td className="p-4 text-center text-slate-400">{intel.time}</td>
+                            <td className="p-4 text-right">
+                              <span className="bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded text-[10px] font-bold uppercase">{intel.verdict}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  <button 
-                    type="submit" 
-                    disabled={isAiComputing}
-                    className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 rounded text-xs"
-                  >
-                    {isAiComputing ? "COMPUTING..." : "EXECUTE"}
-                  </button>
-                </form>
-              </div>
 
-              {/* Right presets options & interactive network graph visualization */}
-              <div className="lg:col-span-4 rounded-xl border border-slate-800 bg-slate-950 p-5 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xs font-black text-white tracking-widest uppercase pb-2 border-b border-slate-850 mb-3 block">
-                    Recommended AI Query Templates
-                  </h3>
-                  <div className="space-y-2.5">
-                    {PRESET_AI_ASSISTANCE.map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => { setAiInput(item.text); }}
-                        className="w-full p-2.5 bg-[#0a0f24] hover:bg-[#141b3a] rounded border border-slate-850 text-left text-[11px] text-slate-300 leading-normal"
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-850 pb-2 mb-1">
+                      GopherML Land Index Sentinel
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-relaxed leading-normal">
+                      Deep satellite-mesh scanning calculates regional cadastral variances hourly, verifying developer offerings to block localized artificial pricing manipulation.
+                    </p>
+                    <button onClick={() => { pushLog("SYSTEM: Re-synthesized all continental land price matrices."); toast("Cadastral price maps updated.", "success"); }} className="w-full bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-slate-800 py-1.5 rounded text-[10.5px] uppercase font-bold">
+                      Re-Index Cadastral Map
+                    </button>
+                  </div>
+                </div>
+              ) : activeSub === "AI Automation Workflows" ? (
+                /* List of auto workflows with interactive triggers */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-850 text-slate-500 text-[10px] bg-slate-950 uppercase">
+                          <th className="p-4 font-bold">WORKFLOW ID</th>
+                          <th className="p-4 font-bold">WORKFLOW RULE & IDENTIFIER</th>
+                          <th className="p-4 font-bold">FREQUENCY INTENSITY</th>
+                          <th className="p-4 text-center font-bold">ACTIVE PIPELINE STATUS</th>
+                          <th className="p-4 text-right font-bold">ACTION SYSTEM</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {autoWorkflows.map((wf) => (
+                          <tr key={wf.id} className="border-b border-slate-800/40 text-[11px] hover:bg-[#070b1a] transition-all">
+                            <td className="p-4 font-bold text-slate-300 uppercase select-all">{wf.id}</td>
+                            <td className="p-4">
+                              <span className="text-white font-extrabold block">{wf.name}</span>
+                              <span className="text-slate-500 block text-[9.5px]">{wf.desc}</span>
+                            </td>
+                            <td className="p-4 text-cyan-405 font-bold uppercase">{wf.frequency}</td>
+                            <td className="p-4 text-center">
+                              <span className={`px-2 py-0.5 rounded text-[9.5px] font-bold ${
+                                wf.enabled ? "bg-[#22c55e]/15 text-[#22c55e]" : "bg-rose-500/15 text-rose-450"
+                              }`}>{wf.enabled ? "ACTIVE PIPELINE" : "DISABLED"}</span>
+                            </td>
+                            <td className="p-4 text-right select-none">
+                              <button
+                                onClick={() => handleToggleWorkflow(wf.id)}
+                                className={`px-3 py-1 rounded text-[10px] uppercase font-black tracking-wider transition-all ${
+                                  wf.enabled ? "bg-rose-500 text-black hover:bg-rose-450" : "bg-cyan-500 text-black hover:bg-cyan-455"
+                                }`}
+                              >
+                                {wf.enabled ? "SHUTDOWN" : "BOOT WORKFLOW"}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-850 pb-2 mb-1">
+                      System Orchestration Ledger
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-relaxed">
+                      Shutting down standard workflows releases processing thresholds but requires manual sovereign notary co-signing. Watch active logs closely on transition.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* Executive AI Assistant (Default View) */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Left query side */}
+                  <div className="lg:col-span-8 rounded-xl border border-slate-800 bg-[#0d1430] p-6 flex flex-col justify-between min-h-[420px]">
+                    <div>
+                      <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-4">
+                        <Sparkles className="h-4 w-4 text-cyan-400 animate-pulse" /> Sovereign Executive AI Assistant (GopherML v3)
+                      </h3>
+
+                      <div className="space-y-4 max-h-80 overflow-y-auto [scrollbar-width:thin] pr-2">
+                        {aiHistory.map((item, idx) => (
+                          <div key={idx} className="p-3 bg-[#0a0f24] rounded-lg border border-slate-800 space-y-1.5">
+                            <span className="text-cyan-400 font-bold block">▶ OPERATOR_Q: "{item.query}"</span>
+                            <p className="text-slate-300 border-l border-cyan-500 pl-3 leading-relaxed font-sans">{item.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleCoPilotSubmit} className="pt-4 border-t border-slate-850 flex gap-2">
+                      <div className="relative flex-1">
+                        <Terminal className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
+                        <input
+                          type="text"
+                          value={aiInput}
+                          onChange={(e) => setAiInput(e.target.value)}
+                          placeholder="Instruct AI, e.g. Forecast next quarter revenue or Detect agents with suspicious transaction patterns"
+                          className="w-full bg-slate-950 rounded-lg pl-9 pr-4 py-2 border border-slate-850 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                        />
+                      </div>
+                      <button 
+                        type="submit" 
+                        disabled={isAiComputing}
+                        className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 rounded text-xs"
                       >
-                        {item.text}
+                        {isAiComputing ? "COMPUTING..." : "EXECUTE"}
                       </button>
-                    ))}
+                    </form>
                   </div>
-                </div>
 
-                {/* Simulated fraud network connected graph diagram representation */}
-                <div className="bg-slate-900 border border-slate-850 rounded p-3 text-[10.5px] mt-4 space-y-1">
-                  <span className="text-rose-400 font-bold uppercase block text-[9px] tracking-widest">Interactive Fraud Network Plot</span>
-                  <div className="flex h-16 items-center justify-center border border-slate-850 border-dashed rounded relative">
-                    <span className="absolute text-[8.5px] text-slate-500 font-bold uppercase">GopherML Graph Analysis Output</span>
-                    <div className="h-2 w-2 rounded-full bg-rose-500 absolute left-8"></div>
-                    <div className="h-0.5 w-12 bg-slate-850 absolute left-10"></div>
-                    <div className="h-2 w-2 rounded-full bg-amber-400 absolute left-22"></div>
-                    <div className="h-0.5 w-12 bg-slate-850 absolute left-24"></div>
-                    <div className="h-2 w-2 rounded-full bg-cyan-400 absolute left-36"></div>
+                  {/* Right presets options & interactive network graph visualization */}
+                  <div className="lg:col-span-4 rounded-xl border border-slate-800 bg-slate-950 p-5 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-xs font-black text-white tracking-widest uppercase pb-2 border-b border-slate-850 mb-3 block">
+                        Recommended AI Query Templates
+                      </h3>
+                      <div className="space-y-2.5">
+                        {PRESET_AI_ASSISTANCE.map((item, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => { setAiInput(item.text); }}
+                            className="w-full p-2.5 bg-[#0a0f24] hover:bg-[#141b3a] rounded border border-slate-850 text-left text-[11px] text-slate-300 leading-normal"
+                          >
+                            {item.text}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Simulated fraud network connected graph diagram representation */}
+                    <div className="bg-slate-900 border border-slate-850 rounded p-3 text-[10.5px] mt-4 space-y-1">
+                      <span className="text-rose-450 font-bold uppercase block text-[9px] tracking-widest">Interactive Fraud Network Plot</span>
+                      <div className="flex h-16 items-center justify-center border border-slate-850 border-dashed rounded relative">
+                        <span className="absolute text-[8.5px] text-slate-500 font-bold uppercase">GopherML Graph Analysis Output</span>
+                        <div className="h-2 w-2 rounded-full bg-rose-500 absolute left-8"></div>
+                        <div className="h-0.5 w-12 bg-slate-850 absolute left-10"></div>
+                        <div className="h-2 w-2 rounded-full bg-amber-400 absolute left-22"></div>
+                        <div className="h-0.5 w-12 bg-slate-850 absolute left-24"></div>
+                        <div className="h-2 w-2 rounded-full bg-cyan-400 absolute left-36"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
             </div>
           )}
@@ -1321,54 +2104,168 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
           {activeCategory === "Analytics Intelligence" && (
             <div className="space-y-6 font-mono text-xs">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Visual Capital Allocation Flows */}
-                <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-5 space-y-4">
-                  <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-800 pb-2.5">
-                    <TrendingUp className="h-4 w-4 text-emerald-400 animate-pulse" /> CONTINENTAL CAPITAL FLOWS SEGMENTATION
-                  </h3>
-                  <div className="space-y-3 pt-1.5">
-                    {[
-                      { l: "Retail Fractional Holders", p: 48, c: "bg-cyan-400" },
-                      { l: "Sovereign REIT Funds Pool", p: 32, c: "bg-purple-500" },
-                      { l: "Continental Escrow Buffers", p: 14, c: "bg-amber-400" },
-                      { l: "Tax Reserve Outflow", p: 6, c: "bg-rose-500" }
-                    ].map((item, idx) => (
-                      <div key={idx} className="space-y-1 text-[11px]">
-                        <div className="flex justify-between text-slate-350">
-                          <span>{item.l}</span>
-                          <span className="font-bold">{item.p}%</span>
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-855 bg-slate-950 p-4">
+                <span className="text-slate-400 font-bold uppercase">Sovereign Business Intelligence & Analytic Mesh</span>
+                <span className="bg-cyan-500/10 text-cyan-400 px-2.5 py-0.5 rounded text-[10px] font-bold">Updated: Real-time</span>
+              </div>
+
+              {activeSub === "Geographic Insights" ? (
+                /* Geographic Insights - Map Layer evaluation summaries */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-800 bg-[#0d1430] p-5 space-y-4">
+                    <h3 className="text-xs font-bold text-white uppercase border-b border-slate-800 pb-2">
+                      Continental Land Registry Map Coverages
+                    </h3>
+                    <p className="text-[11px] text-slate-400 leading-relaxed font-sans font-medium">
+                      Verify risk evaluation grids by selecting active coordinate layer matrices. GopherML correlates national cadastre files directly with municipal records in real-time.
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { title: "Appreciation Evaluator", status: "Enabled", color: "text-[#22c55e]" },
+                        { title: "Investor Density Matrix", status: "Enabled", color: "text-cyan-400" },
+                        { title: "Fraud Hotspots Overlay", status: "Active Scanner", color: "text-rose-455" }
+                      ].map((lyr, i) => (
+                        <div key={i} className="p-3 bg-[#0c1224] border border-slate-850 rounded text-center space-y-1">
+                          <span className="text-slate-400 font-bold block">{lyr.title}</span>
+                          <strong className={`text-[10px] uppercase font-black block ${lyr.color}`}>{lyr.status}</strong>
                         </div>
-                        <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${item.c}`} style={{ width: `${item.p}%` }}></div>
+                      ))}
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-850 space-y-3">
+                      <span className="font-bold text-white block">Active Cadastral Mesh Coverage</span>
+                      <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
+                        <div className="p-2 border border-slate-900 bg-[#0c1224] rounded">
+                          <span className="text-slate-500 block text-[9px]">NIGERIA</span>
+                          <span className="text-white font-bold">14,923 Blocks</span>
+                        </div>
+                        <div className="p-2 border border-slate-900 bg-[#0c1224] rounded">
+                          <span className="text-slate-500 block text-[9px]">SOUTH AFRICA</span>
+                          <span className="text-white font-bold">28,401 Blocks</span>
+                        </div>
+                        <div className="p-2 border border-slate-900 bg-[#0c1224] rounded">
+                          <span className="text-slate-500 block text-[9px]">KENYA</span>
+                          <span className="text-white font-bold">9,203 Blocks</span>
+                        </div>
+                        <div className="p-2 border border-slate-900 bg-[#0c1224] rounded">
+                          <span className="text-slate-500 block text-[9px]">GHANA</span>
+                          <span className="text-white font-bold">6,128 Blocks</span>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-855 pb-2">
+                      Geographic Indexing Tool
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-normal">
+                      Initiate a satellite verification run to synchronize newly added plots with regional multi-spectral coordinates.
+                    </p>
+                    <button
+                      onClick={() => { pushLog("GEO: Initiated remote sensing map recalibration over West African Node."); toast("Map layers successfully updated with satellite index.", "success"); }}
+                      className="w-full py-2 bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-slate-855 rounded text-center block font-black uppercase text-[10px]"
+                    >
+                      Trigger Satellite Recalibration
+                    </button>
                   </div>
                 </div>
+              ) : activeSub === "Occupancy & Performance" ? (
+                /* Occupancy performance statistics charts representations */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] space-y-4 p-5">
+                    <h3 className="text-xs font-bold text-white uppercase pb-2 border-b border-slate-800">
+                      Sovereign REIT Portfolio Occupancy Matrix
+                    </h3>
 
-                {/* Visual business analytics stats */}
-                <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-5 space-y-4">
-                  <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-800 pb-2.5">
-                    <Activity className="h-4 w-4 text-cyan-400" /> SYSTEM TRANSACTION FLOW COEFFICIENTS
-                  </h3>
+                    <div className="space-y-3.5">
+                      {[
+                        { location: "Cape Town Coastside Hub", occupancy: "96.8%", rent: "R 42,000 / mo", count: "128 Verified Units" },
+                        { location: "Lagos Atlantic Highrise Hub", occupancy: "94.2%", rent: "R 84,500 / mo", count: "310 Verified Units" },
+                        { location: "Accra Greenery Villa Hub", occupancy: "92.4%", rent: "R 29,300 / mo", count: "82 Verified Units" },
+                        { location: "Nairobi Tech-Tower Loft Hub", occupancy: "97.1%", rent: "R 34,800 / mo", count: "148 Verified Units" }
+                      ].map((item, id) => (
+                        <div key={id} className="p-3 bg-[#090e1c] border border-slate-850 rounded flex justify-between items-center">
+                          <div>
+                            <span className="text-white font-bold block">{item.location}</span>
+                            <span className="text-[9.5px] text-slate-500 block">{item.count} • avg yield {item.rent}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[#22c55e] font-extrabold text-xs block">{item.occupancy} Occupied</span>
+                            <span className="text-[9px] text-slate-550 block uppercase">Nominal Performance</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-4 rounded-xl border border-slate-850 bg-slate-950 p-5 space-y-4">
+                    <h3 className="text-xs font-black text-white uppercase border-b border-slate-855 pb-2">
+                      Portfolio Performance Action
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-normal text-slate-300">
+                      Initiate dividend recalculation based on actual occupancy and performance parameters for fractional holders.
+                    </p>
+                    <button 
+                      onClick={() => handleOpenActionModal("schedule_dividend", {})}
+                      className="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-black rounded text-center block font-black uppercase text-[10.5px]"
+                    >
+                      Authorize Dividend Payouts
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Business Intelligence View (Default View) */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    <div className="bg-slate-950 border border-slate-850 p-3 rounded text-center">
-                      <span className="text-slate-500 block">TOTAL TRANS OUTFLOW</span>
-                      <strong className="text-emerald-400 block text-lg font-bold">R 1.84B</strong>
-                      <span className="text-[9.5px] text-slate-500 mt-1 block font-sans">99% checked safe</span>
-                    </div>
-                    <div className="bg-slate-950 border border-slate-850 p-3 rounded text-center">
-                      <span className="text-slate-500 block">TAX RESERVE LOCK</span>
-                      <strong className="text-cyan-400 block text-lg font-bold">R 4.20M</strong>
-                      <span className="text-[9.5px] text-slate-500 mt-1 block font-sans">Corporate SARS provisions</span>
+                  {/* Visual Capital Allocation Flows */}
+                  <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-5 space-y-4">
+                    <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-800 pb-2.5 font-sans">
+                      <TrendingUp className="h-4 w-4 text-emerald-400 animate-pulse" /> CONTINENTAL CAPITAL FLOWS SEGMENTATION
+                    </h3>
+                    <div className="space-y-3 pt-1.5">
+                      {[
+                        { l: "Retail Fractional Holders", p: 48, c: "bg-cyan-400" },
+                        { l: "Sovereign REIT Funds Pool", p: 32, c: "bg-purple-500" },
+                        { l: "Continental Escrow Buffers", p: 14, c: "bg-amber-400" },
+                        { l: "Tax Reserve Outflow", p: 6, c: "bg-rose-500" }
+                      ].map((item, idx) => (
+                        <div key={idx} className="space-y-1 text-[11px]">
+                          <div className="flex justify-between text-slate-350">
+                            <span>{item.l}</span>
+                            <span className="font-bold">{item.p}%</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${item.c}`} style={{ width: `${item.p}%` }}></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
 
-              </div>
+                  {/* Visual business analytics stats */}
+                  <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-5 space-y-4">
+                    <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 border-b border-slate-800 pb-2.5 font-sans">
+                      <Activity className="h-4 w-4 text-cyan-400" /> SYSTEM TRANSACTION FLOW COEFFICIENTS
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 gap-3 pt-2 font-mono">
+                      <div className="bg-slate-950 border border-slate-850 p-3 rounded text-center">
+                        <span className="text-slate-500 block">TOTAL TRANS OUTFLOW</span>
+                        <strong className="text-emerald-400 block text-lg font-bold">R 1.84B</strong>
+                        <span className="text-[9.5px] text-slate-500 mt-1 block font-sans">99% checked safe</span>
+                      </div>
+                      <div className="bg-slate-950 border border-slate-850 p-3 rounded text-center">
+                        <span className="text-slate-500 block">TAX RESERVE LOCK</span>
+                        <strong className="text-cyan-400 block text-lg font-bold">R 4.20M</strong>
+                        <span className="text-[9.5px] text-slate-500 mt-1 block font-sans">Corporate SARS provisions</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
 
             </div>
           )}
@@ -1383,120 +2280,319 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
                 <span className="text-[10px] text-slate-500">MUTATIONS REQUIRE PIN CLEARANCE</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* API keys setting */}
-                <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
-                  <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">API KEY CREDENTIALS</span>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-[10px] text-slate-500 block mb-1">GopherML AI Engine Secret API Key</label>
-                      <input type="password" value="****************************************" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white" disabled />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 block mb-1">SARS Tax Escrow Notary API Identifier</label>
-                      <input type="text" defaultValue="sars_token_hash_49210e9" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
+              {activeSub === "Localization & Currency" ? (
+                /* Localization & Currency settings */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">Sovereign Active Currency Hub</span>
+                    <p className="text-slate-400 text-[11px] leading-relaxed font-sans">
+                      Select the primary base currency denomination for rendering reports, dividends, and listings valuation. The current base node currency is <strong className="text-cyan-400">{currencyCode}</strong>.
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {[
+                        { code: "ZAR", symbol: "R", desc: "South African Rand" },
+                        { code: "NGN", symbol: "₦", desc: "Nigerian Naira" },
+                        { code: "KES", symbol: "KSh", desc: "Kenyan Shilling" },
+                        { code: "GHS", symbol: "GH₵", desc: "Ghanaian Cedi" },
+                        { code: "USD", symbol: "$", desc: "US Dollar" }
+                      ].map((curr) => (
+                        <button
+                          key={curr.code}
+                          onClick={() => {
+                            setCurrencyCode(curr.code);
+                            pushLog(`LOCALIZATION: Currency base swapped to: ${curr.code}`);
+                            toast(`Platform base currency swapped to ${curr.code}`, "success");
+                          }}
+                          className={`px-3 py-2 rounded font-bold border transition-all text-[11px] ${
+                            currencyCode === curr.code
+                              ? "bg-cyan-500 text-black border-cyan-500"
+                              : "bg-[#0c1224] text-slate-300 border-slate-800 hover:border-slate-700"
+                          }`}
+                        >
+                          {curr.code} ({curr.symbol})
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <button onClick={() => onAction("adjust_pricing_config", {} as any)} className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 py-2 rounded text-[10.5px] uppercase">Save API Config</button>
-                </div>
 
-                {/* Platform default variables configuring */}
-                <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
-                  <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">ROUTER VARIABLES DEFAULT</span>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-[10px] text-slate-500 block mb-1">Max cross-border payout lock duration</label>
-                      <input type="text" defaultValue="48h (Lock Required)" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 block mb-1">Sovereign override bypass passcode</label>
-                      <input type="password" value="************" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white" disabled />
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">Timezone Synchronization</span>
+                    <p className="text-slate-400 text-[11px] leading-normal font-sans font-medium">
+                      Sovereign OS transaction ledgers synchronize on a unified consensus UTC tick to verify stamp certificates globally.
+                    </p>
+                    <div className="p-3 bg-[#0c1224] border border-slate-850 rounded text-cyan-400 font-bold text-[11px]">
+                      CONSENSUS TIME: UTC (+00:00) GMT
                     </div>
                   </div>
                 </div>
+              ) : activeSub === "AI Configuration & API Keys" ? (
+                /* AI parameters, temperature sliders and tokens */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">Neural Inference Pipeline Weights</span>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">GopherML Key Status</label>
+                        <input type="password" value="****************************************" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white" disabled />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 block text-slate-400 flex justify-between max-w-sm mb-1">
+                          <span>Model Vector Weights temperature</span>
+                          <span className="text-cyan-405 font-bold">0.12 (Low Deviation)</span>
+                        </label>
+                        <input type="range" min="0" max="100" defaultValue="12" className="w-full accent-cyan-440 h-1 bg-slate-900 rounded" />
+                      </div>
+                    </div>
+                    <button onClick={() => { pushLog("SYSTEM: Recalibrated active vector weights."); toast("Neural pipeline weights optimized.", "success"); }} className="bg-cyan-500 hover:bg-cyan-404 text-black font-extrabold px-4 py-2 rounded text-[10.5px] uppercase font-mono">Re-calibrate Weights</button>
+                  </div>
 
-              </div>
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">AI Safety Filters</span>
+                    <p className="text-slate-400 text-[11px] leading-relaxed font-sans">
+                      GopherML strictly screens listing metadata files to intercept false valuations, PEP compliance matches, and potential off-platform bypass terms.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* Default Platform Settings View */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* API keys setting */}
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">API KEY CREDENTIALS</span>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">GopherML AI Engine Secret API Key</label>
+                        <input type="password" value="****************************************" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white" disabled />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">SARS Tax Escrow Notary API Identifier</label>
+                        <input type="text" defaultValue="sars_token_hash_49210e9" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
+                      </div>
+                    </div>
+                    <button onClick={() => onAction("adjust_pricing_config", {} as any)} className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 py-2 rounded text-[10.5px] uppercase">Save API Config</button>
+                  </div>
+
+                  {/* Platform default variables configuring */}
+                  <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-4">
+                    <span className="text-xs font-bold text-white block border-b border-slate-850 pb-1.5 uppercase">ROUTER VARIABLES DEFAULT</span>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">Max cross-border payout lock duration</label>
+                        <input type="text" defaultValue="48h (Lock Required)" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">Sovereign override bypass passcode</label>
+                        <input type="password" value="************" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white" disabled />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
             </div>
           )}
 
           {/* CATEGORY: SUPPORT & INCIDENT RESPONSE */}
           {activeCategory === "Support & Incident Response" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-mono text-xs">
+            <div className="space-y-6 font-mono text-xs">
               
-              {/* Tickets directory table */}
-              <div className="lg:col-span-6 space-y-4 flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-center bg-slate-950 border border-slate-850 p-4 rounded-xl mb-4">
-                    <span className="text-slate-400 font-bold uppercase">Customer Support SLA Incidents</span>
-                    <span className="text-slate-500">2 OPEN COHORTS</span>
-                  </div>
-
-                  <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {tickets.map(t => (
-                      <div key={t.id} className="bg-[#0c1224] border border-slate-850 rounded-xl p-4 space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-cyan-400 font-bold">{t.id} • {t.assignedTeam}</span>
-                          <span className={`px-1 rounded text-[9px] font-bold ${
-                            t.priority === 'CRITICAL' ? "bg-rose-500 text-black animate-pulse" : "bg-amber-500 text-black"
-                          }`}>{t.priority}</span>
-                        </div>
-                        <h4 className="font-bold text-slate-200 text-xs">{t.subject}</h4>
-                        <p className="text-[11px] text-slate-400 leading-normal">{t.message}</p>
-                        
-                        <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-900 pt-2">
-                          <span>User: {t.userEmail}</span>
-                          <button onClick={() => toast("Incident assigned escalating.", "info")} className="text-cyan-400 font-bold hover:underline">ESCALATE SLA</button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <span className="text-slate-600 font-[10px] select-none block">SLA Response Limit: <strong className="text-emerald-400">10 mins</strong></span>
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-850 bg-slate-950 p-4">
+                <span className="text-slate-400 font-bold uppercase">Sovereign Incident & Ticket Management Center</span>
+                <span className="bg-[#22c55e]/10 text-[#22c55e] px-2.5 py-0.5 rounded text-[10px] font-bold">Consensus SLA: 10 mins</span>
               </div>
 
-              {/* Dynamic live chat console with real estate actors */}
-              <div className="lg:col-span-6 rounded-xl border border-slate-800 bg-[#0d1430] p-5 flex flex-col justify-between min-h-[420px]">
-                
-                <div>
-                  <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-4">
-                    <MessageSquare className="h-4 w-4 text-cyan-400" /> Sovereign Customer Live Chat Console
-                  </h3>
+              {activeSub === "Live Chat Console" ? (
+                /* Full size Live Broker Chat Console */
+                <div className="rounded-xl border border-slate-800 bg-[#0d1430] p-6 flex flex-col justify-between min-h-[460px]">
+                  <div>
+                    <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-4">
+                      <MessageSquare className="h-4 w-4 text-cyan-400" /> Sovereign Customer Live Chat Console
+                    </h3>
 
-                  <div className="space-y-3 max-h-60 overflow-y-auto [scrollbar-width:thin] pr-2">
-                    {supportChat.map((chat, idx) => (
-                      <div key={idx} className={`p-2.5 rounded-lg border max-w-[85%] ${
-                        chat.sender.includes("Operator") 
-                          ? "bg-cyan-950/10 border-cyan-800/40 text-cyan-300 ml-auto" 
-                          : "bg-slate-950 border-slate-850 text-slate-350"
-                      }`}>
-                        <div className="flex justify-between text-[9.5px] font-bold mb-1 opacity-70">
-                          <span>{chat.sender}</span>
-                          <span>{chat.time}</span>
+                    <div className="space-y-4 max-h-80 overflow-y-auto [scrollbar-width:thin] pr-2">
+                      {supportChat.map((chat, idx) => (
+                        <div key={idx} className={`p-3 rounded-lg border max-w-[70%] ${
+                          chat.sender.includes("Operator") 
+                            ? "bg-cyan-950/20 border-cyan-800/40 text-cyan-300 ml-auto text-right" 
+                            : "bg-slate-950 border-slate-850 text-slate-350"
+                        }`}>
+                          <div className="flex justify-between text-[9.5px] font-bold mb-1 opacity-70">
+                            <span>{chat.sender}</span>
+                            <span>{chat.time}</span>
+                          </div>
+                          <p className="leading-relaxed text-[11px] font-sans">{chat.msg}</p>
                         </div>
-                        <p className="leading-relaxed text-[11px]">{chat.msg}</p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-800 flex gap-2">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Type response back to broker..."
+                      className="w-full bg-slate-950 rounded-lg px-4 py-2.5 border border-slate-850 text-xs text-white focus:outline-none focus:border-cyan-500"
+                    />
+                    <button 
+                      onClick={handleSendSupportMessage}
+                      className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-6 rounded text-xs uppercase"
+                    >
+                      Send Message
+                    </button>
                   </div>
                 </div>
+              ) : activeSub === "Escalations" ? (
+                /* Critical Escalations timeline queue */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 rounded-xl border border-slate-850 bg-[#0c1224] overflow-hidden">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-855 text-slate-500 text-[10px] bg-slate-950 uppercase">
+                          <th className="p-4">CRISIS ID</th>
+                          <th className="p-4">INCIDENT DETAILS</th>
+                          <th className="p-4">LEVEL SEVERITY</th>
+                          <th className="p-4">BREACH ORIGIN HUB</th>
+                          <th className="p-4 text-right">MITIGATION STATUS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {escalationsList.map((esc) => (
+                          <tr key={esc.id} className="border-b border-slate-800/40 text-[11px] hover:bg-[#080d1a] transition-all">
+                            <td className="p-4 font-bold text-slate-300 uppercase select-all">{esc.id}</td>
+                            <td className="p-4 font-sans font-medium">
+                              <span className="text-white font-extrabold block">{esc.title}</span>
+                              <span className="text-slate-500 block text-[9.5px]">Duration: {esc.duration}</span>
+                            </td>
+                            <td className="p-4">
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                esc.level === "CRITICAL" ? "bg-rose-500 text-black animate-pulse" : "bg-amber-500 text-black"
+                              }`}>{esc.level}</span>
+                            </td>
+                            <td className="p-4 text-slate-400 font-bold uppercase">{esc.origin}</td>
+                            <td className="p-4 text-right">
+                              {esc.status === "MITIGATED" ? (
+                                <span className="text-[#22c55e] font-extrabold">Mitigated ✓</span>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setEscalationsList(prev => prev.map(item => {
+                                      if (item.id === esc.id) {
+                                        return { ...item, status: "MITIGATED" };
+                                      }
+                                      return item;
+                                    }));
+                                    pushLog(`CRISIS_COMMAND: Mitigated incident ${esc.id} successfully.`);
+                                    toast(`Mitigation dispatched to target router successfully.`, "success");
+                                  }}
+                                  className="bg-rose-500 hover:bg-rose-455 text-black font-black px-3 py-1 rounded text-[10px] uppercase animate-pulse"
+                                >
+                                  Deploy Defense Shield
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
-                <div className="pt-4 border-t border-slate-800 flex gap-2">
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Type response back to broker..."
-                    className="w-full bg-slate-950 rounded-lg px-3 py-2 border border-slate-850 text-xs text-white focus:outline-none focus:border-cyan-500"
-                  />
-                  <button 
-                    onClick={handleSendSupportMessage}
-                    className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 rounded text-xs uppercase"
-                  >
-                    Send
-                  </button>
+                  <div className="lg:col-span-4 rounded-xl border border-slate-855 bg-slate-950 p-5 space-y-4 font-mono">
+                    <h3 className="text-xs font-black text-rose-500 uppercase border-b border-slate-855 pb-2 mb-1 animate-pulse">
+                      Sovereign Guard Mode
+                    </h3>
+                    <p className="text-[11.5px] font-sans text-slate-400 leading-normal">
+                      Activating emergency lockdown halts cross-border capital flow nodes immediately. Ensure security council verification pins are aligned.
+                    </p>
+                    <button
+                      onClick={() => { pushLog("SYSTEM: Platform-wide emergency safe mode triggered."); toast("Platform entered lockdown: Escrows frozen.", "warn"); }}
+                      className="w-full bg-rose-500 hover:bg-rose-450 text-black font-extrabold py-2 rounded text-[10.5px] uppercase"
+                    >
+                      Emergency Node Lockdown
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Tickets directory timeline (Default View) */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Tickets directory table */}
+                  <div className="lg:col-span-6 space-y-4 flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center bg-slate-950 border border-slate-850 p-4 rounded-xl mb-4 font-sans font-bold">
+                        <span className="text-slate-400 font-bold uppercase">Customer Support SLA Incidents</span>
+                        <span className="text-slate-500">2 OPEN COHORTS</span>
+                      </div>
+
+                      <div className="space-y-3 max-h-85 overflow-y-auto pr-1">
+                        {tickets.map(t => (
+                          <div key={t.id} className="bg-[#0c1224] border border-slate-850 rounded-xl p-4 space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-cyan-400 font-bold">{t.id} • {t.assignedTeam}</span>
+                              <span className={`px-1 rounded text-[9px] font-bold ${
+                                t.priority === 'CRITICAL' ? "bg-rose-500 text-black animate-pulse" : "bg-amber-500 text-black"
+                              }`}>{t.priority}</span>
+                            </div>
+                            <h4 className="font-bold text-slate-200 text-xs">{t.subject}</h4>
+                            <p className="text-[11px] text-slate-400 leading-normal font-sans">{t.message}</p>
+                            
+                            <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-900 pt-2">
+                              <span>User: {t.userEmail}</span>
+                              <button onClick={() => toast("Incident assigned escalating.", "info")} className="text-cyan-400 font-bold hover:underline">ESCALATE SLA</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <span className="text-slate-600 font-[10px] select-none block">SLA Response Limit: <strong className="text-emerald-400">10 mins</strong></span>
+                  </div>
+
+                  {/* Dynamic live chat console with real estate actors */}
+                  <div className="lg:col-span-6 rounded-xl border border-slate-800 bg-[#0d1430] p-5 flex flex-col justify-between min-h-[420px]">
+                    
+                    <div>
+                      <h3 className="text-xs font-black text-white tracking-widest uppercase flex items-center gap-1.5 pb-2.5 border-b border-slate-800 mb-4">
+                        <MessageSquare className="h-4 w-4 text-cyan-400" /> Sovereign Customer Live Chat Console
+                      </h3>
+
+                      <div className="space-y-3 max-h-60 overflow-y-auto [scrollbar-width:thin] pr-2">
+                        {supportChat.map((chat, idx) => (
+                          <div key={idx} className={`p-2.5 rounded-lg border max-w-[85%] ${
+                            chat.sender.includes("Operator") 
+                              ? "bg-cyan-950/10 border-cyan-800/40 text-cyan-300 ml-auto" 
+                              : "bg-slate-950 border-slate-850 text-slate-350"
+                          }`}>
+                            <div className="flex justify-between text-[9.5px] font-bold mb-1 opacity-70">
+                              <span>{chat.sender}</span>
+                              <span>{chat.time}</span>
+                            </div>
+                            <p className="leading-relaxed text-[11px] font-sans">{chat.msg}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-800 flex gap-2">
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder="Type response back to broker..."
+                        className="w-full bg-slate-950 rounded-lg px-3 py-2 border border-slate-850 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                      <button 
+                        onClick={handleSendSupportMessage}
+                        className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 rounded text-xs uppercase"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              )}
 
             </div>
           )}
@@ -1570,6 +2666,183 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
         </div>
       )}
 
+    </div>
+  );
+}
+
+// --- SOVEREIGN NETWORKS REGIONAL NODES DEFINITIONS ---
+const regionalNodes = [
+  {
+    id: "NODE-SA-01",
+    name: "Southern Africa Node",
+    alias: "Primary Sovereign Vault",
+    region: "Southern Africa",
+    city: "Cape Town / Johannesburg",
+    capitalPool: 2450000000,
+    activeWallets: 2840,
+    listings: 45,
+    occupancyRate: "94.8%",
+    avgYield: "12.8%",
+    status: "ONLINE",
+    multiplier: "1.45x Over 3y",
+    notaryStatus: "Fully Certified",
+    latency: "12ms",
+    integrityScore: 99.8,
+    gateways: ["CPT-EDGE-01", "JHB-BACKBONE-02"],
+    highlightColor: "text-cyan-400"
+  },
+  {
+    id: "NODE-WA-02",
+    name: "West Africa Node",
+    alias: "Lagos / Lekki Hub",
+    region: "West Africa",
+    city: "Lagos / Lekki Corridor",
+    capitalPool: 3100000000,
+    activeWallets: 1620,
+    listings: 32,
+    occupancyRate: "91.2%",
+    avgYield: "18.4%",
+    status: "ONLINE",
+    multiplier: "2.10x Over 3y",
+    notaryStatus: "Multi-Sig Secured",
+    latency: "28ms",
+    integrityScore: 97.4,
+    gateways: ["LOS-CORE-01", "LEKKI-WIRED-03"],
+    highlightColor: "text-emerald-400"
+  },
+  {
+    id: "NODE-EA-03",
+    name: "East Africa Node",
+    alias: "Nairobi / Westlands Hub",
+    region: "East Africa",
+    city: "Nairobi / Westlands",
+    capitalPool: 1220000000,
+    activeWallets: 910,
+    listings: 21,
+    occupancyRate: "88.6%",
+    avgYield: "14.1%",
+    status: "SYNCING",
+    multiplier: "1.65x Over 3y",
+    notaryStatus: "Cadaster Mesh Update",
+    latency: "45ms",
+    integrityScore: 96.1,
+    gateways: ["NBO-WEST-EDGE", "KILIMANI-ROUTER-2"],
+    highlightColor: "text-amber-400"
+  },
+  {
+    id: "NODE-NA-04",
+    name: "North Africa Node",
+    alias: "Cairo Administrative Hub",
+    region: "North Africa",
+    city: "Cairo / Administrative Plaza",
+    capitalPool: 1480000000,
+    activeWallets: 1122,
+    listings: 19,
+    occupancyRate: "92.4%",
+    avgYield: "9.6%",
+    status: "ONLINE",
+    multiplier: "1.20x Over 3y",
+    notaryStatus: "Decentralized Notary Synced",
+    latency: "18ms",
+    integrityScore: 99.1,
+    gateways: ["CAI-SMART-01", "GIZA-GATEWAY-2"],
+    highlightColor: "text-purple-400"
+  }
+];
+
+function RegionalNodeCard({ node, renderCurrency }: { node: any; renderCurrency: (val: number) => string }) {
+  const [isPinging, setIsPinging] = useState(false);
+  const [latencyState, setLatencyState] = useState(node.latency);
+  const [integrityState, setIntegrityState] = useState(node.integrityScore);
+  const [pingHistory, setPingHistory] = useState<string[]>([]);
+
+  const handlePing = () => {
+    setIsPinging(true);
+    setPingHistory(prev => [...prev.slice(-2), `[PING] Sending ICP packet to ${node.id}...`]);
+    setTimeout(() => {
+      setIsPinging(false);
+      const randomLatency = Math.floor(Math.random() * 25) + 8;
+      setLatencyState(`${randomLatency}ms`);
+      const scoreVariance = (Math.random() * 0.4 - 0.2);
+      setIntegrityState(Math.min(100, Math.max(95, parseFloat((node.integrityScore + scoreVariance).toFixed(1)))));
+      setPingHistory(prev => [...prev.slice(-2), `[PONG] Responded in ${randomLatency}ms. Security clean.`]);
+    }, 850);
+  };
+
+  return (
+    <div className="rounded-xl border border-slate-800 bg-[#090e1f] p-4 flex flex-col justify-between transition-all duration-300 hover:border-slate-700 hover:shadow-[0_0_20px_rgba(6,182,212,0.08)] relative overflow-hidden font-mono text-left">
+      <div className={`absolute top-0 left-0 right-0 h-[2px] ${node.status === "ONLINE" ? "bg-emerald-500" : "bg-amber-500"} ${isPinging ? "animate-pulse" : ""}`} />
+      
+      <div>
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <h4 className="text-xs font-bold text-white tracking-wide">{node.name}</h4>
+            <span className="text-[9.5px] text-slate-500">{node.alias}</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-slate-950 px-2 py-0.5 rounded border border-slate-850">
+            <span className={`h-1.5 w-1.5 rounded-full ${node.status === "ONLINE" ? "bg-emerald-400 animate-pulse" : "bg-amber-400 animate-pulse"}`} />
+            <span className="text-[8px] text-slate-400 font-extrabold uppercase">{node.status}</span>
+          </div>
+        </div>
+
+        <div className="space-y-1.5 border-t border-slate-900 pt-3 my-3 text-[10px] text-slate-400">
+          <div className="flex justify-between">
+            <span>Primary Hub:</span>
+            <span className="text-white font-semibold">{node.city}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Capital Pool:</span>
+            <span className="text-white font-bold">{renderCurrency(node.capitalPool)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Active Wallets:</span>
+            <span className="text-cyan-400 font-bold">{node.activeWallets.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Listings Base:</span>
+            <span className="text-white">{node.listings} properties</span>
+          </div>
+          <div className="flex justify-between border-t border-slate-900/50 pt-1.5 mt-1.5 text-[9.5px]">
+            <span>Avg Yield:</span>
+            <span className="text-emerald-405 font-bold">{node.avgYield} YoY</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Occupancy Predict:</span>
+            <span className="text-white">{node.occupancyRate}</span>
+          </div>
+          <div className="flex justify-between pb-1.5">
+            <span>Registry Security:</span>
+            <span className="text-purple-400 font-semibold text-[9px] uppercase">{node.notaryStatus}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2 border-t border-slate-900/50 pt-3">
+        <div className="flex items-center justify-between text-[9px] text-slate-500">
+          <span className="flex items-center gap-1">
+            <Cpu className="h-3 w-3 text-slate-500" /> Integrity: <strong className="text-slate-350 font-semibold">{integrityState}%</strong>
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3 text-slate-500" /> Ping: <strong className="text-cyan-400 font-bold">{latencyState}</strong>
+          </span>
+        </div>
+
+        {pingHistory.length > 0 && (
+          <div className="bg-slate-950 p-1.5 rounded text-[8.5px] text-slate-400 leading-tight space-y-0.5 border border-slate-900/80">
+            {pingHistory.map((h, i) => (
+              <div key={i} className="truncate text-slate-440 font-mono">{h}</div>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={handlePing}
+          disabled={isPinging}
+          className="w-full text-[9px] font-bold uppercase py-1 px-2.5 rounded border border-slate-800 hover:border-slate-700 bg-slate-950/60 hover:bg-slate-900 transition-all text-slate-350 hover:text-white flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
+        >
+          {isPinging ? <RefreshCw className="h-3 w-3 text-cyan-400 animate-spin" /> : "Verify Cadaster Connection"}
+        </button>
+      </div>
     </div>
   );
 }

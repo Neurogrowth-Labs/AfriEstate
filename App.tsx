@@ -117,6 +117,27 @@ const App: React.FC = () => {
   const [page, setPage] = useState<Page>('home');
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
   
+  const scrollToSection = (targetPage: Page, sectionId?: string) => {
+    if (page !== targetPage) {
+      setPage(targetPage);
+      setTimeout(() => {
+        const element = sectionId ? document.getElementById(sectionId) : null;
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 150);
+    } else {
+      const element = sectionId ? document.getElementById(sectionId) : null;
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+  
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [investmentProperties, setInvestmentProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
@@ -1202,24 +1223,18 @@ The other fields should follow these rules:
         onListPropertyClick={handleListPropertyClick}
         onNotificationClick={handleNotificationClick}
         onMarkAllNotificationsAsRead={handleMarkAllAsRead}
-        onHomeClick={() => setPage('home')}
-        onAboutClick={() => setPage('about')}
-        onServicesClick={() => setPage('services')}
-        onContactClick={() => setPage('contact')}
+        onHomeClick={() => scrollToSection('home')}
+        onAboutClick={() => scrollToSection('about', 'about')}
+        onServicesClick={() => scrollToSection('services', 'services')}
+        onContactClick={() => scrollToSection('contact', 'contact')}
       />
       <main className="flex-grow">
         {renderPage()}
       </main>
       <Footer 
-        onAboutClick={() => setPage('about')}
-        onContactClick={() => setPage('contact')}
-        onBlogClick={() => {
-            setPage('home');
-            setTimeout(() => {
-                const blog = document.getElementById('blog');
-                if (blog) blog.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }}
+        onAboutClick={() => scrollToSection('about', 'about')}
+        onContactClick={() => scrollToSection('contact', 'contact')}
+        onBlogClick={() => scrollToSection('home', 'blog')}
         onPrivacyPolicyClick={() => setIsPrivacyPolicyModalOpen(true)}
         onTermsOfServiceClick={() => setIsTermsOfServiceModalOpen(true)}
         onCareersClick={() => setIsCareersModalOpen(true)}

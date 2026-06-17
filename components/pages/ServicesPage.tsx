@@ -115,7 +115,7 @@ const FaqItem: React.FC<{ question: string, children: React.ReactNode }> = ({ qu
 
 const ServicesPage: React.FC<ServicesPageProps> = ({ onServiceClick }) => {
   return (
-    <div className="bg-brand-light text-brand-dark overflow-hidden font-sans">
+    <div id="services" className="bg-brand-light text-brand-dark overflow-hidden font-sans">
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">

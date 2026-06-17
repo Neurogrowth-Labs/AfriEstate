@@ -67,6 +67,17 @@
     </script>
     <style type="text/tailwindcss">
       @layer base {
+        /* Hide scrollbars globally but keep elements scrollable */
+        * {
+          -ms-overflow-style: none !important;  /* IE and Edge */
+          scrollbar-width: none !important;  /* Firefox */
+        }
+        *::-webkit-scrollbar {
+          width: 0px !important;
+          height: 0px !important;
+          background: transparent !important;
+          display: none !important;
+        }
         html {
             font-size: 15px;
             -webkit-font-smoothing: antialiased;

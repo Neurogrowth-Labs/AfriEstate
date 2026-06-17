@@ -56,7 +56,7 @@ const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="animate-fade-in bg-slate-50 dark:bg-slate-900">
+    <div id="contact" className="animate-fade-in bg-slate-50 dark:bg-slate-900">
         <header className="glass-panel py-16">
             <div className="container mx-auto px-6 text-center">
                 <h1 className="text-4xl md:text-5xl font-extrabold text-brand-dark dark:text-white">Contact Us</h1>
