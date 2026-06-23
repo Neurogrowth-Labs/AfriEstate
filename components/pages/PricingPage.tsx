@@ -25,7 +25,7 @@ const plans = [
     {
         role: 'agent' as 'user' | 'agent' | 'investor',
         name: 'Pay-per-Lead',
-        price: 'R250',
+        price: 'R50',
         priceDetail: '/ confirmed lead',
         features: [
             'Unlimited Property Listings',

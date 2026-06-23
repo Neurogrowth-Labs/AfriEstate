@@ -13,7 +13,7 @@ const plans = [
     },
     {
         name: 'Pay-per-Lead',
-        price: '$25',
+        price: 'R50',
         priceDetail: '/ confirmed lead',
         features: ['List for Free', 'Pay only for inquiries', 'Unlimited Photos', 'AI Description Writer'],
         cta: 'Upgrade Plan',

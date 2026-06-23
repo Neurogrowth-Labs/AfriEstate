@@ -208,21 +208,37 @@ export const getProperties = async (excludeMock = false): Promise<Property[]> =>
 export const saveProperties = async (properties: Property[]): Promise<void> => {
     try {
         const dbProperties = properties.map(p => ({
-            ...p,
+            id: p.id,
+            title: p.title,
             listing_type: p.listingType,
             property_type: p.propertyType,
+            address: p.address,
+            coordinates: p.coordinates,
+            price: p.price,
+            details: p.details,
+            description: p.description,
+            neighborhood_info: p.neighborhoodInfo || null,
+            amenities: p.amenities || [],
+            images: p.images || [],
+            virtual_tour_url: p.virtualTourUrl || null,
+            vr_tour_url: p.vrTourUrl || null,
+            agent_name: p.agent?.name || 'simao',
+            featured: p.featured || false,
+            verified: p.verified || false,
+            smart_contract_ready: p.smartContractReady || false,
+            views: p.views || 0,
+            status: p.status,
             date_listed: p.dateListed,
-            purchase_price: p.purchasePrice,
-            neighborhood_info: p.neighborhoodInfo,
-            virtual_tour_url: p.virtualTourUrl,
-            vr_tour_url: p.vrTourUrl,
-            smart_contract_ready: p.smartContractReady,
-            price_history: p.priceHistory,
-            occupancy_rate: p.occupancyRate,
-            market_roi: p.marketROI,
-            per_night_price: p.perNightPrice,
-            package_includes: p.packageIncludes,
-            vehicle_type: p.vehicleType
+            saves: p.saves || 0,
+            purchase_price: p.purchasePrice || null,
+            price_history: p.priceHistory || [],
+            occupancy_rate: p.occupancyRate || null,
+            market_roi: p.marketROI || null,
+            financials: p.financials || [],
+            guests: p.guests || null,
+            vehicle_type: p.vehicleType || null,
+            package_includes: p.packageIncludes || [],
+            per_night_price: p.perNightPrice || false
         }));
 
         const { error } = await supabase.from('properties').upsert(dbProperties);
@@ -487,14 +503,16 @@ export const getEvents = async (username: string): Promise<CalendarEvent[]> => {
 };
 
 export const addEvent = async (username: string, eventData: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> => {
-    const optimisticEvent = { 
-        ...eventData, 
-        username, 
+    const payload = {
+        username,
+        title: eventData.title,
+        date: eventData.date,
         start_time: eventData.startTime,
-        end_time: eventData.endTime
+        end_time: eventData.endTime,
+        description: eventData.description || null
     };
     try {
-        const { data, error } = await supabase.from('calendar_events').insert(optimisticEvent).select().single();
+        const { data, error } = await supabase.from('calendar_events').insert(payload).select().single();
         if (error) throw error;
         return {
              ...data,
@@ -507,12 +525,16 @@ export const addEvent = async (username: string, eventData: Omit<CalendarEvent, 
 };
 
 export const updateEvent = async (username: string, event: CalendarEvent): Promise<CalendarEvent> => {
+    const payload = {
+        username,
+        title: event.title,
+        date: event.date,
+        start_time: event.startTime,
+        end_time: event.endTime,
+        description: event.description || null
+    };
     try {
-        const { data, error } = await supabase.from('calendar_events').update({
-            ...event,
-            start_time: event.startTime,
-            end_time: event.endTime
-        }).eq('id', event.id).select().single();
+        const { data, error } = await supabase.from('calendar_events').update(payload).eq('id', event.id).select().single();
         if (error) throw error;
         return {
              ...data,
