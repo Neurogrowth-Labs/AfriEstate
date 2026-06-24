@@ -21,6 +21,7 @@ import {
 import { getUsers, getProperties } from "../../lib/data";
 import { supabase } from "../../lib/supabase";
 import { GoogleGenAI } from "@google/genai";
+import { useAdminState } from "../../contexts/AdminStateContext";
 
 import UsersTab from "./superadmin/components/UsersTab";
 import ListingsTab from "./superadmin/components/ListingsTab";
@@ -213,6 +214,7 @@ const generateRealTimeDetections = (
 };
 
 export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
+  const { broadcastAdminAction } = useAdminState();
   // --- CORE SELECTION AND TABS ---
   const [activeCategory, setActiveCategory] = useState("Dashboard");
   const [activeSub, setActiveSub] = useState("Executive Overview");
@@ -886,6 +888,7 @@ Use this live context to answer the operator's query accurately. Speak professio
         break;
     }
 
+    broadcastAdminAction(type, data);
     setActiveModal(null);
   };
 

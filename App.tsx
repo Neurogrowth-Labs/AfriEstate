@@ -50,6 +50,7 @@ import SessionTimeoutModal from './components/SessionTimeoutModal';
 import RealTimeNews from './components/RealTimeNews';
 import NewOfferings from './components/NewOfferings';
 import { useToast } from './contexts/ToastContext';
+import { useAdminState } from './contexts/AdminStateContext';
 import MapInterface from './components/MapInterface';
 
 import SuperAdminDashboard from './components/dashboards/SuperAdminDashboard';
@@ -114,6 +115,7 @@ const blogSchema = {
 };
 
 const App: React.FC = () => {
+  const { lastAction } = useAdminState();
   const [page, setPage] = useState<Page>('home');
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
   
@@ -324,6 +326,81 @@ const App: React.FC = () => {
       supabase.removeChannel(userChannel);
     };
   }, [currentUser]);
+
+  // Respond to real-time administrative changes (from Super Admin)
+  useEffect(() => {
+    if (!lastAction) return;
+    const { type, data } = lastAction;
+
+    switch (type) {
+      case "suspend": {
+        if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
+          addToast("Your account has been suspended by the administrator.", "error");
+          setCurrentUser(null);
+        } else {
+          addToast(`User ${data.name} has been suspended by administration.`, "info");
+        }
+        break;
+      }
+      case "freeze_wallet": {
+        if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
+          addToast("Your sovereign wallet has been frozen by administration.", "error");
+          setCurrentUser(prev => prev ? { ...prev, isWalletFrozen: true } : null);
+        } else {
+          addToast(`Wallet security lock applied to user ${data.name}.`, "info");
+        }
+        break;
+      }
+      case "kyc_audit": {
+        if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
+          addToast("Sovereign KYC biometric audit scheduled. Account restricted.", "warn");
+          setCurrentUser(prev => prev ? { ...prev, kycStatus: "Flagged", status: "Restricted" } : null);
+        }
+        break;
+      }
+      case "approve_verification": {
+        if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
+          addToast("Congratulations! Your biometrics have been approved by administration.", "success");
+          setCurrentUser(prev => prev ? { ...prev, status: "Active", kycStatus: "Approved" } : null);
+        } else {
+          addToast(`KYC biometrics cleared for ${data.name}.`, "success");
+        }
+        break;
+      }
+      case "approve_listing_asset": {
+        addToast(`Asset '${data.title}' has been successfully verified & published by administration.`, "success");
+        setAllProperties(prev => prev.map(p => {
+          if (p.id === data.id) {
+            return { ...p, status: PropertyStatus.ACTIVE, verified: true };
+          }
+          return p;
+        }));
+        break;
+      }
+      case "send_listing_warning": {
+        addToast(`Asset flag: '${data.title}' has been flagged and suspended for review.`, "error");
+        setAllProperties(prev => prev.map(p => {
+          if (p.id === data.id) {
+            return { ...p, status: PropertyStatus.PENDING };
+          }
+          return p;
+        }));
+        break;
+      }
+      case "verify_geo_property": {
+        addToast(`Geospatial data verified for asset '${data.title}'!`, "success");
+        setAllProperties(prev => prev.map(p => {
+          if (p.id === data.id) {
+            return { ...p, verified: true };
+          }
+          return p;
+        }));
+        break;
+      }
+      default:
+        break;
+    }
+  }, [lastAction, currentUser]);
 
   // Data Fetching and Initial Setup
   useEffect(() => {

@@ -6,6 +6,7 @@ import App from './App';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { AdminStateProvider } from './contexts/AdminStateContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -18,7 +19,9 @@ root.render(
     <LanguageProvider>
       <CurrencyProvider>
         <ToastProvider>
-          <App />
+          <AdminStateProvider>
+            <App />
+          </AdminStateProvider>
         </ToastProvider>
       </CurrencyProvider>
     </LanguageProvider>
