@@ -1,5 +1,5 @@
 
-import { ALL_PROPERTIES as initialProperties, MOCK_NOTIFICATIONS } from '../constants';
+import { ALL_PROPERTIES as initialProperties, RealTimeNews_NOTIFICATIONS } from '../constants';
 import type { Property, TourRequest, User, SearchFilters, Message, Review, CalendarEvent, AgentProfile, Lead, InvestorSettings, InvestmentRequest, PropertyAlert, UserDocument, Notification } from '../types';
 import { ListingType, PropertyStatus } from '../types';
 import { supabase } from './supabase';
@@ -509,7 +509,7 @@ export const addEvent = async (username: string, eventData: Omit<CalendarEvent, 
         date: eventData.date,
         start_time: eventData.startTime,
         end_time: eventData.endTime,
-        description: eventData.description || null
+        description: eventData.notes || null
     };
     try {
         const { data, error } = await supabase.from('calendar_events').insert(payload).select().single();
@@ -531,7 +531,7 @@ export const updateEvent = async (username: string, event: CalendarEvent): Promi
         date: event.date,
         start_time: event.startTime,
         end_time: event.endTime,
-        description: event.description || null
+        description: event.notes || null
     };
     try {
         const { data, error } = await supabase.from('calendar_events').update(payload).eq('id', event.id).select().single();

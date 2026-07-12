@@ -283,7 +283,7 @@ export const SEED_LISTINGS: PropertyListing[] = [
     reitEligible: true,
     investmentPotential: 92,
     size: "4,200 m²",
-    type: "REIT Commercial",
+    type: "Commercial Retail",
     ownerId: "USR-3401",
     valuationTrend: "+14.2% YoY"
   },
@@ -379,7 +379,7 @@ export const SEED_LISTINGS: PropertyListing[] = [
     reitEligible: true,
     investmentPotential: 97,
     size: "31,000 m²",
-    type: "REIT Commercial",
+    type: "Commercial Retail",
     ownerId: "USR-6204",
     valuationTrend: "+15.6% YoY"
   },

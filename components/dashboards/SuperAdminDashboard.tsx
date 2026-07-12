@@ -104,14 +104,15 @@ const generateRealTimeDetections = (
     txs.push({
       id: `TX-${user.id.substring(0, 4).toUpperCase()}-${idx}`,
       senderName: user.name,
-      senderRole: user.role,
       receiverName: receiver.name,
-      receiverRole: receiver.role,
-      assetName: property.title,
       amount: Math.floor((property.price * 0.15) || 75000),
       type: idx % 2 === 0 ? "REIT Dividend" : "Broker Commission",
-      status: idx % 3 === 0 ? "Pending Escrow" : "Completed Clear",
-      timestamp: new Date(Date.now() - idx * 3600000).toISOString().substring(11, 19) + " UTC"
+      status: idx % 3 === 0 ? "Pending Escrow" : "Completed",
+      date: new Date(Date.now() - idx * 3600000).toISOString().replace("T", " ").substring(0, 16),
+      fee: Math.floor(((property.price * 0.15) || 75000) * 0.01),
+      region: property.region as EscrowTransaction["region"],
+      amlFlagged: idx % 5 === 0,
+      currencyCodeUsed: "ZAR"
     });
   });
 
@@ -120,12 +121,14 @@ const generateRealTimeDetections = (
     if (idx < 5) {
       cases.push({
         id: `CASE-0${idx + 1}`,
-        userName: user.name,
-        userRole: user.role,
-        riskMetric: Math.floor(user.riskScore || (idx * 15 + 20)),
-        flagReason: idx % 2 === 0 ? "High Frequency Cross-Border Remittance" : "PEP Identity Discrepancy Lock",
-        status: idx % 3 === 0 ? "Under Review" : "Flagged High Risk",
-        timeline: [
+        subjectName: user.name,
+        subjectRole: user.role,
+        riskScore: Math.floor(user.riskScore || (idx * 15 + 20)),
+        details: idx % 2 === 0 ? "High Frequency Cross-Border Remittance" : "PEP Identity Discrepancy Lock",
+        dateCreated: new Date().toISOString().substring(0, 10),
+        status: idx % 3 === 0 ? "Under EDD Review" : "Action Required",
+        documentName: "Automated compliance dossier",
+        caselog: [
           "Case opened via real-time risk scan.",
           "Verification hash match: checking biometrics."
         ]
@@ -138,25 +141,27 @@ const generateRealTimeDetections = (
     if (idx < 4) {
       reports.push({
         id: `REP-0${idx + 1}`,
-        reporterName: fallbackUserList[(idx + 1) % fallbackUserList.length].name,
-        targetAsset: prop.title,
-        reason: idx % 2 === 0 ? "Duplicate CAD coordinates submitted" : "Suspected underpriced asset token evasion",
-        status: idx % 2 === 0 ? "Unresolved Alert" : "Resolved Archive",
-        timestamp: "Just now"
+        reportingUser: fallbackUserList[(idx + 1) % fallbackUserList.length].name,
+        contentType: "Property Listing",
+        issue: idx % 2 === 0 ? "Duplicate CAD coordinates submitted" : "Suspected underpriced asset token evasion",
+        severity: idx % 2 === 0 ? "High" : "Medium",
+        status: idx % 2 === 0 ? "Pending Investigation" : "Dismissed",
+        reportedValue: prop.title,
+        dateCreated: new Date().toISOString().substring(0, 10)
       });
     }
   });
 
   const servicesList: HealthService[] = [
-    { id: "node-jhb", name: "Sovereign JHB Main Database Node", endpoint: "/api/properties", latency: "14ms", status: "ONLINE", type: "Core RPC" },
-    { id: "node-cpt", name: "Cape Town Cadastral Verification API", endpoint: "/api/kyc", latency: "22ms", status: "ONLINE", type: "Identity Provider" },
-    { id: "node-los", name: "Lagos Smart Contract Ledger Sync", endpoint: "/api/escrow", latency: "48ms", status: "ONLINE", type: "Smart Contract Router" },
-    { id: "node-nbo", name: "Nairobi Escrow Settlement Validator", endpoint: "/api/settlement", latency: "31ms", status: "ONLINE", type: "Payment Processor" }
+    { id: "node-jhb", name: "Sovereign JHB Main Database Node", latency: "14ms", status: "ONLINE", cpuLoad: "32%", uptime: "99.99%" },
+    { id: "node-cpt", name: "Cape Town Cadastral Verification API", latency: "22ms", status: "ONLINE", cpuLoad: "28%", uptime: "99.98%" },
+    { id: "node-los", name: "Lagos Smart Contract Ledger Sync", latency: "48ms", status: "ONLINE", cpuLoad: "44%", uptime: "99.95%" },
+    { id: "node-nbo", name: "Nairobi Escrow Settlement Validator", latency: "31ms", status: "ONLINE", cpuLoad: "36%", uptime: "99.97%" }
   ];
 
   const threatsList: CyberThreat[] = [
-    { id: "THR-01", type: "Brute-force Admin Probe", sourceIp: "192.168.12.84", severity: "HIGH", status: "Mitigated Isolate", timestamp: "10 mins ago" },
-    { id: "THR-02", type: "SQL Injection Cadastral Route", sourceIp: "203.0.113.195", severity: "CRITICAL", status: "Mitigated Isolate", timestamp: "Just now" }
+    { id: "THR-01", attackType: "Brute Force Auth", sourceIp: "192.168.12.84", location: "Internal Edge", severity: "ELEVATED", status: "Mitigated Isolate", timestamp: "10 mins ago" },
+    { id: "THR-02", attackType: "API Unauthorized Probing", sourceIp: "203.0.113.195", location: "External Gateway", severity: "CRITICAL", status: "Mitigated Isolate", timestamp: "Just now" }
   ];
 
   const ticketsList: SupportTicket[] = [];
@@ -164,10 +169,13 @@ const generateRealTimeDetections = (
     if (idx < 5) {
       ticketsList.push({
         id: `TKT-4${idx + 1}2`,
-        senderEmail: user.email || "support@afriestate.co.za",
+        userEmail: user.email || "support@afriestate.co.za",
         subject: idx % 2 === 0 ? "KYC Facial Upload Error" : "Escrow payout verification link expired",
-        category: "System Core",
-        status: idx % 2 === 0 ? "OPEN" : "RESOLVED"
+        message: "Automatically synchronized support incident from live dashboard telemetry.",
+        priority: idx % 2 === 0 ? "HIGH" : "MEDIUM",
+        status: idx % 2 === 0 ? "Open Tickets" : "Resolved",
+        assignedTeam: "System Core",
+        dateCreated: new Date().toISOString().substring(0, 10)
       });
     }
   });
@@ -255,7 +263,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
   // --- CHRONOLOGICAL TIMELINE CHANNELS ---
   const [liveEvents, setLiveEvents] = useState<{ id: number; time: string; category: string; desc: string; type: string }[]>([]);
 
-  const [currencyCode, setCurrencyCode] = useState<"ZAR" | "USD" | "NGN" | "KES">("ZAR");
+  const [currencyCode, setCurrencyCode] = useState<"ZAR" | "USD" | "NGN" | "KES" | "GHS">("ZAR");
   const [selectedMapRegion, setSelectedMapRegion] = useState("Southern Africa");
   const [mapLayer, setMapLayer] = useState<"Appreciation" | "Investor Density" | "Fraud Hotspots">("Appreciation");
   const [chartRegionFilter, setChartRegionFilter] = useState("All Africa");
@@ -487,6 +495,8 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
         return "₦" + new Intl.NumberFormat("en-NG", { maximumFractionDigits: 0 }).format(randValue * 82);
       case "KES":
         return "KSh " + new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(randValue * 7.1);
+      case "GHS":
+        return "GH₵" + new Intl.NumberFormat("en-GH", { maximumFractionDigits: 0 }).format(randValue * 0.68);
       case "ZAR":
       default:
         return "R " + new Intl.NumberFormat("en-ZA", { maximumFractionDigits: 0 }).format(randValue);
@@ -2645,13 +2655,13 @@ Use this live context to answer the operator's query accurately. Speak professio
                       Select the primary base currency denomination for rendering reports, dividends, and listings valuation. The current base node currency is <strong className="text-cyan-400">{currencyCode}</strong>.
                     </p>
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {[
+                      {([
                         { code: "ZAR", symbol: "R", desc: "South African Rand" },
                         { code: "NGN", symbol: "₦", desc: "Nigerian Naira" },
                         { code: "KES", symbol: "KSh", desc: "Kenyan Shilling" },
                         { code: "GHS", symbol: "GH₵", desc: "Ghanaian Cedi" },
                         { code: "USD", symbol: "$", desc: "US Dollar" }
-                      ].map((curr) => (
+                      ] as const).map((curr) => (
                         <button
                           key={curr.code}
                           onClick={() => {
@@ -2726,7 +2736,7 @@ Use this live context to answer the operator's query accurately. Speak professio
                         <input type="text" defaultValue="sars_token_hash_49210e9" className="w-full bg-[#0c1224] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
                       </div>
                     </div>
-                    <button onClick={() => onAction("adjust_pricing_config", {} as any)} className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 py-2 rounded text-[10.5px] uppercase">Save API Config</button>
+                    <button onClick={() => handleOpenActionModal("adjust_pricing_config", {} as any)} className="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold px-4 py-2 rounded text-[10.5px] uppercase">Save API Config</button>
                   </div>
 
                   {/* Platform default variables configuring */}

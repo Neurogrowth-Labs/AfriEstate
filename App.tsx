@@ -353,7 +353,7 @@ const App: React.FC = () => {
       }
       case "kyc_audit": {
         if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
-          addToast("Sovereign KYC biometric audit scheduled. Account restricted.", "warn");
+          addToast("Sovereign KYC biometric audit scheduled. Account restricted.", "error");
           setCurrentUser(prev => prev ? { ...prev, kycStatus: "Flagged", status: "Restricted" } : null);
         }
         break;
