@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CloseIcon } from './icons/NavIcons';
 import { supabase } from '../lib/supabase';
+import { upsertProfileFromAuth } from '../lib/data';
 import type { User } from '../types';
 import { GoogleIcon, AppleIcon } from './icons/SocialIcons';
 import { EyeIcon, EyeSlashIcon, CheckIcon, CameraIcon, ArrowUpTrayIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
@@ -292,6 +293,16 @@ const UserSignupView: React.FC<{onSignupSuccess: () => void, onRequireEmailConfi
                  return;
             }
 
+            if (data.user?.email) {
+                await upsertProfileFromAuth({
+                    id: data.user.id,
+                    username: data.user.email,
+                    fullName: formData.fullName,
+                    email: data.user.email,
+                    role: 'user',
+                });
+            }
+
             if (!data.session) {
                 onRequireEmailConfirmation();
             } else {
@@ -353,6 +364,18 @@ const AgentSignupView: React.FC<{ onSignupSuccess: () => void, onSwitchToLogin: 
             if (data.user && data.user.identities && data.user.identities.length === 0) {
                  setError('This email is already in use. Please log in.');
                  return;
+            }
+
+            if (data.user?.email) {
+                await upsertProfileFromAuth({
+                    id: data.user.id,
+                    username: data.user.email,
+                    fullName: formData.fullName,
+                    email: data.user.email,
+                    role: 'agent',
+                    phone: formData.phone,
+                    officeAddress: formData.officeAddress,
+                });
             }
 
             onSignupSuccess(); 
@@ -429,6 +452,18 @@ const InvestorSignupView: React.FC<{ onSignupSuccess: () => void, setError: (e: 
                  setError('This email is already in use. Please log in.');
                  setStep(1);
                  return;
+            }
+
+            if (data.user?.email) {
+                await upsertProfileFromAuth({
+                    id: data.user.id,
+                    username: data.user.email,
+                    fullName: formData.fullName,
+                    email: data.user.email,
+                    role: 'investor',
+                    phone: formData.phone,
+                    companyName: formData.companyName,
+                });
             }
 
             onSignupSuccess(); 
