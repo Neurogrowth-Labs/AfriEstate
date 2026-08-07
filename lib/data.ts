@@ -1,8 +1,9 @@
 
 import { ALL_PROPERTIES as initialProperties, RealTimeNews_NOTIFICATIONS } from '../constants';
 import type { Property, TourRequest, User, SearchFilters, Message, Review, CalendarEvent, AgentProfile, Lead, InvestorSettings, InvestmentRequest, PropertyAlert, UserDocument, Notification } from '../types';
-import { ListingType, PropertyStatus } from '../types';
+import { ActivityType, ListingType, PropertyStatus } from '../types';
 import { supabase } from './supabase';
+import { isDemoMode, logger } from './logger';
 
 // --- Helper for handling Supabase errors ---
 const handleError = (error: any, message: string) => {
@@ -14,7 +15,7 @@ const handleError = (error: any, message: string) => {
             errorMessage = error.message || error.details || error.hint || JSON.stringify(error);
         }
 
-        // Downgrade network errors to warnings for cleaner console in demo/offline mode
+        // Demo mode can downgrade connectivity/schema errors for offline prototype work.
         const isNetworkError = errorMessage.includes('Failed to fetch') || 
                              errorMessage.includes('Network request failed') ||
                              errorMessage.includes('connection error');
@@ -22,11 +23,12 @@ const handleError = (error: any, message: string) => {
         const isMissingTableError = errorMessage.includes("Could not find the table") || 
                                    (errorMessage.includes("relation") && errorMessage.includes("does not exist"));
 
-        if (isNetworkError || isMissingTableError) {
+        if ((isNetworkError || isMissingTableError) && isDemoMode) {
+             logger.warn(`Demo fallback while ${message}: ${errorMessage}`);
              return true;
         }
 
-        console.error(`[AfriEstate] Error ${message}: ${errorMessage}`);
+        logger.error(`Error ${message}: ${errorMessage}`);
         return true;
     }
     return false;
@@ -150,7 +152,8 @@ export const addReview = async (reviewData: Omit<Review, 'id' | 'timestamp'>): P
         };
     } catch (error) {
         handleError(error, 'adding review');
-        return { ...reviewData, id: `rev_${Date.now()}`, timestamp: Date.now() } as Review; // Return optimistic review
+        if (isDemoMode) return { ...reviewData, id: `rev_${Date.now()}`, timestamp: Date.now() } as Review;
+        throw error;
     }
 };
 
@@ -163,10 +166,10 @@ export const getProperties = async (excludeMock = false): Promise<Property[]> =>
 
         if (error) {
             handleError(error, 'fetching properties');
-            return excludeMock ? [] : initialProperties;
+            return isDemoMode && !excludeMock ? initialProperties : [];
         }
 
-        if (!data || data.length === 0) return excludeMock ? [] : initialProperties;
+        if (!data || data.length === 0) return isDemoMode && !excludeMock ? initialProperties : [];
 
         const mappedData = data.map(p => ({
             ...p,
@@ -197,11 +200,11 @@ export const getProperties = async (excludeMock = false): Promise<Property[]> =>
 
     } catch (criticalErr: any) {
         if (criticalErr.message && (criticalErr.message.includes('Failed to fetch') || criticalErr.message.includes('Network request failed'))) {
-            console.warn('[AfriEstate] Backend unreachable (fetch exception). Using mock data.');
+            logger.warn('Backend unreachable while fetching properties.', criticalErr);
         } else {
-            console.warn("Failed to fetch properties from Supabase, using mock data.", criticalErr);
+            logger.error("Failed to fetch properties from Supabase.", criticalErr);
         }
-        return excludeMock ? [] : initialProperties;
+        return isDemoMode && !excludeMock ? initialProperties : [];
     }
 };
 
@@ -271,13 +274,33 @@ export const getUsers = async (): Promise<User[]> => {
     } catch (e) { return []; }
 };
 
+
+export const upsertProfileFromAuth = async (user: User): Promise<void> => {
+    const payload = {
+        id: user.id,
+        username: user.username,
+        full_name: user.fullName,
+        email: user.email,
+        role: user.role,
+        is_verified: user.role === 'user',
+        phone: user.phone || null,
+        office_address: user.officeAddress || null,
+        company_name: user.companyName || null,
+        profile_picture: user.profilePicture || null,
+    };
+    const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'username' });
+    if (error) {
+        handleError(error, 'upserting auth profile');
+        throw error;
+    }
+};
+
 export const addUser = async (user: User): Promise<{ success: boolean, message: string }> => {
     try {
         const { error } = await supabase.from('profiles').insert({
             username: user.username,
             full_name: user.fullName,
             email: user.email,
-            password: user.password,
             role: user.role,
             is_verified: user.role === 'user',
             phone: user.phone,
@@ -286,53 +309,17 @@ export const addUser = async (user: User): Promise<{ success: boolean, message: 
             // Add other fields mapping as needed
         });
         if (error) {
-             if (error.message.includes('Failed to fetch')) return { success: true, message: "Demo User created (Offline Mode)" };
              return { success: false, message: error.message };
         }
         return { success: true, message: "User created successfully." };
     } catch (e) {
-        return { success: true, message: "Demo User created (Offline Mode)" };
+        handleError(e, 'creating profile');
+        return { success: false, message: "Failed to create profile." };
     }
 };
 
-export const authenticateUser = async (email: string, password: string): Promise<{ user: User | null; error?: string }> => {
-    try {
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('email', email)
-            .eq('password', password)
-            .single();
-
-        if (error) {
-            if (error.message.includes('Failed to fetch') || error.code === 'PGRST116') {
-                 if (email === 'peter.vdm@example.com' && password === 'Password123!') {
-                     return { user: { username: 'Peter Van der Merwe', fullName: 'Peter Van der Merwe', email, role: 'agent', isVerified: true, profilePicture: 'https://i.pravatar.cc/150?u=Peter' } as any };
-                 }
-                 if (error.message.includes('Failed to fetch')) return { user: null, error: 'Network Error: Backend unreachable.' };
-            }
-            return { user: null, error: 'Invalid email or password.' };
-        }
-        
-        if (!data) return { user: null, error: 'Invalid email or password.' };
-        
-        const user = {
-            ...data,
-            isVerified: data.is_verified || data.isVerified,
-            fullName: data.full_name || data.fullName,
-            officeAddress: data.office_address,
-            companyName: data.company_name,
-            profilePicture: data.profile_picture || data.profilePicture,
-        } as User;
-
-        if ((user.role === 'agent' || user.role === 'investor') && !user.isVerified) {
-            return { user: null, error: `pending_verification_${user.role}` };
-        }
-        
-        return { user };
-    } catch (e) {
-        return { user: null, error: 'Database connection failed.' };
-    }
+export const authenticateUser = async (_email: string, _password: string): Promise<{ user: User | null; error?: string }> => {
+    return { user: null, error: 'Password authentication is disabled. Use Supabase Auth.' };
 };
 
 // --- Saved Properties Management (Per User) ---
@@ -440,7 +427,8 @@ export const addTourRequest = async (username: string, propertyId: string, prope
         };
     } catch (error) {
         handleError(error, 'adding tour request');
-        return { ...newRequest, propertyId, propertyTitle, id: `tr_${Date.now()}` }; // Optimistic return
+        if (isDemoMode) return { ...newRequest, propertyId, propertyTitle, id: `tr_${Date.now()}` };
+        throw error;
     }
 };
 
@@ -485,7 +473,8 @@ export const sendMessage = async (msgData: Omit<Message, 'id' | 'timestamp'>): P
         };
     } catch (error) {
         handleError(error, 'sending message');
-        return { ...msgData, timestamp: Date.now(), id: `msg_${Date.now()}` };
+        if (isDemoMode) return { ...msgData, timestamp: Date.now(), id: `msg_${Date.now()}` };
+        throw error;
     }
 };
 
@@ -584,7 +573,56 @@ export const getReadNotificationIds = async (username: string): Promise<Set<stri
 
 // --- Leads ---
 export const getLeadsForAgent = async (agentUsername: string): Promise<Lead[]> => {
-    return []; // Future implementation
+    const [properties, messages, inquiries] = await Promise.all([
+        getProperties(true),
+        getMessagesForUser(agentUsername),
+        getInquiriesForSeller(agentUsername),
+    ]);
+    const agentPropertyIds = new Set(properties.filter(p => p.agent.name === agentUsername).map(p => p.id));
+    const leads = new Map<string, Lead>();
+
+    const ensureLead = (username: string): Lead => {
+        if (!leads.has(username)) {
+            leads.set(username, {
+                id: username,
+                username,
+                email: username.includes('@') ? username : '',
+                phone: '',
+                score: 0,
+                lastContact: 0,
+                activity: [],
+            });
+        }
+        return leads.get(username)!;
+    };
+
+    messages
+        .filter(message => message.receiverUsername === agentUsername && (!message.propertyId || agentPropertyIds.has(message.propertyId)))
+        .forEach(message => {
+            const lead = ensureLead(message.senderUsername);
+            lead.score += 10;
+            lead.lastContact = Math.max(lead.lastContact, message.timestamp);
+            lead.activity.push({
+                type: ActivityType.MESSAGE_SENT,
+                timestamp: message.timestamp,
+                propertyTitle: message.propertyTitle,
+                detail: message.text,
+            });
+        });
+
+    inquiries.forEach(inquiry => {
+        const lead = ensureLead(inquiry.username);
+        lead.score += 20;
+        lead.lastContact = Math.max(lead.lastContact, inquiry.timestamp);
+        lead.activity.push({
+            type: ActivityType.TOUR_REQUESTED,
+            timestamp: inquiry.timestamp,
+            propertyTitle: inquiry.propertyTitle,
+            detail: `${inquiry.date} ${inquiry.time}`.trim(),
+        });
+    });
+
+    return Array.from(leads.values()).sort((a, b) => b.lastContact - a.lastContact);
 };
 
 // --- Investor Settings ---
@@ -627,7 +665,11 @@ export const addInvestmentRequest = async (username: string, requestDetails: str
             investorUsername: data.investor_username,
             requestDetails: data.request_details
         };
-    } catch(e) { return { ...optimistic, id: `ir_${Date.now()}` } as any; }
+    } catch(e) {
+        handleError(e, 'adding investment request');
+        if (isDemoMode) return { ...optimistic, id: `ir_${Date.now()}` } as any;
+        throw e;
+    }
 };
 
 export const getInvestorReturns = () => {
@@ -668,7 +710,8 @@ export const addUserDocument = async (username: string, file: File): Promise<Use
         return { ...data, uploadDate: data.upload_date };
     } catch (error) {
         handleError(error, 'adding document');
-        return { ...newDoc, id: `doc_${Date.now()}`, uploadDate: newDoc.upload_date } as any;
+        if (isDemoMode) return { ...newDoc, id: `doc_${Date.now()}`, uploadDate: newDoc.upload_date } as any;
+        throw error;
     }
 };
 
@@ -696,7 +739,11 @@ export const addPropertyAlert = async (username: string, alertData: Omit<Propert
              ...data,
              criteria: typeof data.criteria === 'string' ? JSON.parse(data.criteria) : data.criteria
         };
-    } catch (e) { return { ...optimistic, id: `alert_${Date.now()}` } as any; }
+    } catch (e) {
+        handleError(e, 'adding property alert');
+        if (isDemoMode) return { ...optimistic, id: `alert_${Date.now()}` } as any;
+        throw e;
+    }
 };
 
 export const deletePropertyAlert = async (username: string, alertId: string): Promise<void> => {
