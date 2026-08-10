@@ -181,8 +181,3 @@ CREATE POLICY car_rentals_public_read ON public.car_rentals FOR SELECT USING (tr
 CREATE POLICY wellness_services_public_read ON public.wellness_services FOR SELECT USING (true);
 CREATE POLICY audit_logs_select_actor ON public.audit_logs FOR SELECT USING (actor_username = public.current_username());
 CREATE POLICY audit_logs_insert_actor ON public.audit_logs FOR INSERT WITH CHECK (actor_username = public.current_username());
-
--- 5) Biometric KYC backend reinforcement.
--- Apply the dedicated `supabase_kyc_backend.sql` migration after this file to install
--- FaceOnLive-backed KYC tables, private storage policies, service-role RPCs, audit events,
--- and database-level investor request gating.

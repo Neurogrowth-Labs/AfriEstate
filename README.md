@@ -39,7 +39,3 @@ Production deployment guidance:
 - Upload identity documents and selfies to private storage, then pass only signed URLs or encrypted object references to the KYC service.
 - Persist normalized status, provider reference, face-match score, and liveness score in Supabase; never store raw biometric templates in frontend state.
 - Keep investor deal requests gated behind an approved KYC status.
-
-### Backend SQL
-
-Apply `supabase_kyc_backend.sql` after `supabase_production_hardening.sql` to install the reinforced KYC backend: owner-scoped verification records, private `kyc-documents` storage policies, service-role RPCs for the FaceOnLive Windows worker, KYC audit events, and database-level blocking of investor requests unless KYC is approved.
