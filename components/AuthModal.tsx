@@ -356,6 +356,7 @@ const AgentSignupView: React.FC<{ onSignupSuccess: () => void, onSwitchToLogin: 
                         officeAddress: formData.officeAddress,
                         businessRegNumber: formData.businessRegNumber,
                         agentLicense: formData.agentLicense,
+                        kyc_status: 'Pending Review',
                     }
                 }
             });
@@ -375,6 +376,7 @@ const AgentSignupView: React.FC<{ onSignupSuccess: () => void, onSwitchToLogin: 
                     role: 'agent',
                     phone: formData.phone,
                     officeAddress: formData.officeAddress,
+                    kycStatus: 'Pending Review',
                 });
             }
 
@@ -443,6 +445,7 @@ const InvestorSignupView: React.FC<{ onSignupSuccess: () => void, setError: (e: 
                         phone: formData.phone,
                         investment_type: formData.investmentType,
                         company_name: formData.companyName,
+                        kyc_status: 'Pending Review',
                     }
                 }
             });
@@ -463,6 +466,7 @@ const InvestorSignupView: React.FC<{ onSignupSuccess: () => void, setError: (e: 
                     role: 'investor',
                     phone: formData.phone,
                     companyName: formData.companyName,
+                    kycStatus: 'Pending Review',
                 });
             }
 

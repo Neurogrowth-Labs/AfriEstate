@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import type { InvestorSettings, User } from '../../../types';
 import { ClipboardDocumentIcon, CheckBadgeIcon } from '../../icons/ActionIcons';
+import KycVerificationPanel from '../../KycVerificationPanel';
 
 interface InvestorSettingsProps {
     settings: InvestorSettings | null;
@@ -129,6 +130,8 @@ const InvestorSettingsPage: React.FC<InvestorSettingsProps> = ({ settings, onUpd
                     )}
                 </div>
             </Section>
+
+            <KycVerificationPanel user={user} />
 
             <Section title="Data Export & API" description="Export your portfolio data or integrate with your own tools.">
                 <div className="flex items-center gap-4">

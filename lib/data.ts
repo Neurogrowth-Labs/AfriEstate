@@ -1,6 +1,6 @@
 
 import { ALL_PROPERTIES as initialProperties, RealTimeNews_NOTIFICATIONS } from '../constants';
-import type { Property, TourRequest, User, SearchFilters, Message, Review, CalendarEvent, AgentProfile, Lead, InvestorSettings, InvestmentRequest, PropertyAlert, UserDocument, Notification } from '../types';
+import type { Property, TourRequest, User, SearchFilters, Message, Review, CalendarEvent, AgentProfile, Lead, InvestorSettings, InvestmentRequest, PropertyAlert, UserDocument, Notification, KycVerification } from '../types';
 import { ActivityType, ListingType, PropertyStatus } from '../types';
 import { supabase } from './supabase';
 import { isDemoMode, logger } from './logger';
@@ -287,6 +287,7 @@ export const upsertProfileFromAuth = async (user: User): Promise<void> => {
         office_address: user.officeAddress || null,
         company_name: user.companyName || null,
         profile_picture: user.profilePicture || null,
+        kyc_status: user.kycStatus || (user.role === 'user' ? 'Approved' : 'Pending Review'),
     };
     const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'username' });
     if (error) {
@@ -624,6 +625,9 @@ export const getLeadsForAgent = async (agentUsername: string): Promise<Lead[]> =
 
     return Array.from(leads.values()).sort((a, b) => b.lastContact - a.lastContact);
 };
+
+export { createKycVerification, getKycVerificationForUser, isKycApproved } from './kyc';
+export type { KycVerification };
 
 // --- Investor Settings ---
 export const getInvestorSettings = async (username: string): Promise<InvestorSettings> => {
