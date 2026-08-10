@@ -134,6 +134,9 @@ export interface User {
   commissionPreference?: string;
   idDocumentUrl?: string; // Represents uploaded file
   isVerified?: boolean; // For agent/investor verification flow
+  kycStatus?: KycVerificationStatus;
+  status?: 'Active' | 'Restricted' | 'Suspended';
+  isWalletFrozen?: boolean;
   
   // Investor-specific
   companyName?: string;
@@ -375,6 +378,25 @@ export interface DashboardWidget {
     id: 'total_investment' | 'portfolio_value' | 'asset_appreciation' | 'monthly_income' | 'global_map' | 'watchlist_properties';
     label: string;
     isVisible: boolean;
+}
+
+export type KycVerificationStatus = 'Not Started' | 'Pending Review' | 'Needs Manual Review' | 'Approved' | 'Rejected';
+
+export interface KycVerification {
+  id: string;
+  userId?: string;
+  username: string;
+  role: User['role'];
+  status: KycVerificationStatus;
+  provider: 'FaceOnLive Face Recognition SDK for Windows';
+  repositoryUrl: string;
+  faceMatchScore?: number;
+  livenessScore?: number;
+  providerReference?: string;
+  documentType?: string;
+  rejectionReason?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface InvestorSettings {

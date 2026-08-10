@@ -23,7 +23,7 @@ import PropertyFormModal from './components/PropertyFormModal';
 import ServiceListingFormModal from './components/ServiceListingFormModal';
 import FinancialServices from './components/FinancialServices';
 import AIResponseModal from './components/AIResponseModal';
-import { getProperties, saveProperties, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead } from './lib/data';
+import { getProperties, saveProperties, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead, getKycVerificationForUser, isKycApproved } from './lib/data';
 import PersonalizedMatches from './components/PersonalizedMatches';
 import AgentContactModal from './components/AgentContactModal';
 import VRTourModal from './components/VRTourModal';
@@ -262,6 +262,7 @@ const App: React.FC = () => {
           fullName: session.user.user_metadata?.full_name || 'Supabase User',
           email: session.user.email || '',
           role: session.user.user_metadata?.role || 'user',
+          kycStatus: session.user.user_metadata?.kyc_status || 'Not Started',
         });
       } else {
         setCurrentUser(null);
@@ -354,7 +355,7 @@ const App: React.FC = () => {
       case "kyc_audit": {
         if (currentUser && (currentUser.username === data.id || currentUser.email === data.email)) {
           addToast("Sovereign KYC biometric audit scheduled. Account restricted.", "error");
-          setCurrentUser(prev => prev ? { ...prev, kycStatus: "Flagged", status: "Restricted" } : null);
+          setCurrentUser(prev => prev ? { ...prev, kycStatus: "Needs Manual Review", status: "Restricted" } : null);
         }
         break;
       }
@@ -883,6 +884,11 @@ The other fields should follow these rules:
   
   const handleSendInvestmentRequest = async (details: string) => {
       if (!currentUser) return;
+      const kycVerification = await getKycVerificationForUser(currentUser.username);
+      if (!isKycApproved(kycVerification)) {
+        addToast('Complete biometric KYC verification before submitting investor deal requests.', 'error');
+        return;
+      }
       const newRequest = await addInvestmentRequest(currentUser.username, details);
       setInvestmentRequests(prev => [newRequest, ...prev]);
       setIsInvestmentRequestModalOpen(false);

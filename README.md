@@ -28,3 +28,14 @@ Apply `supabase_production_hardening.sql` to remove the legacy plaintext passwor
 - `npm run typecheck`
 - `npm run build`
 - `npm test`
+
+## Biometric KYC provider integration
+
+AfriEstate includes a KYC verification surface for agents and investors. The frontend records the user's KYC state in `kyc_verifications` and expects face matching to be performed by a private backend service that wraps FaceOnLive's open-source Windows SDK: https://github.com/FaceOnLive/Face-Recognition-SDK-Windows.git.
+
+Production deployment guidance:
+
+- Run the FaceOnLive SDK on a locked-down Windows worker or API service; do not execute biometric matching in the browser.
+- Upload identity documents and selfies to private storage, then pass only signed URLs or encrypted object references to the KYC service.
+- Persist normalized status, provider reference, face-match score, and liveness score in Supabase; never store raw biometric templates in frontend state.
+- Keep investor deal requests gated behind an approved KYC status.
