@@ -68,6 +68,31 @@ import BookAStayPage from './components/pages/BookAStayPage';
 type AuthView = 'login' | 'signup' | 'userSignup' | 'agentSignup' | 'investorSignup' | 'pendingVerificationAgent' | 'pendingVerificationInvestor' | 'forgotPassword' | 'resetConfirmation';
 type Page = 'home' | 'about' | 'services' | 'contact' | 'pricing' | 'rent-a-car' | 'find-wellness' | 'book-a-stay';
 
+const PAGE_ROUTES: Record<Page, string> = {
+  home: '/',
+  about: '/about',
+  services: '/services',
+  contact: '/contact',
+  pricing: '/pricing',
+  'rent-a-car': '/rent-a-car',
+  'find-wellness': '/find-wellness',
+  'book-a-stay': '/book-a-stay',
+};
+
+const ROUTE_PAGES = new Map<string, Page>(
+  Object.entries(PAGE_ROUTES).map(([pageName, path]) => [path, pageName as Page])
+);
+
+const getPageFromLocation = (location: Location): Page => {
+  const normalizedPath = location.pathname.replace(/\/$/, '') || '/';
+  return ROUTE_PAGES.get(normalizedPath) ?? 'home';
+};
+
+const getRouteForPage = (targetPage: Page, sectionId?: string) => {
+  const path = PAGE_ROUTES[targetPage];
+  return sectionId ? `${path}#${sectionId}` : path;
+};
+
 const initialFilters: SearchFilters = {
     location: '',
     listingType: ListingType.ALL,
@@ -116,28 +141,32 @@ const blogSchema = {
 
 const App: React.FC = () => {
   const { lastAction } = useAdminState();
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>(() => getPageFromLocation(window.location));
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
   
   const scrollToSection = (targetPage: Page, sectionId?: string) => {
-    if (page !== targetPage) {
-      setPage(targetPage);
-      setTimeout(() => {
-        const element = sectionId ? document.getElementById(sectionId) : null;
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 150);
+    navigateToPage(targetPage, sectionId);
+  };
+
+  const scrollToCurrentTarget = (sectionId?: string, behavior: ScrollBehavior = 'smooth') => {
+    const element = sectionId ? document.getElementById(sectionId) : null;
+    if (element) {
+      element.scrollIntoView({ behavior, block: 'start' });
     } else {
-      const element = sectionId ? document.getElementById(sectionId) : null;
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      window.scrollTo({ top: 0, behavior });
     }
+  };
+
+  const navigateToPage = (targetPage: Page, sectionId?: string) => {
+    const nextUrl = getRouteForPage(targetPage, sectionId);
+    const currentUrl = `${window.location.pathname}${window.location.hash}`;
+
+    if (currentUrl !== nextUrl) {
+      window.history.pushState({ page: targetPage }, '', nextUrl);
+    }
+
+    setPage(targetPage);
+    setTimeout(() => scrollToCurrentTarget(sectionId), page === targetPage ? 0 : 150);
   };
   
   const [allProperties, setAllProperties] = useState<Property[]>([]);
@@ -717,7 +746,7 @@ The other fields should follow these rules:
 
   const handleListPropertyClick = () => {
     if (!currentUser) {
-        setPage('pricing');
+        navigateToPage('pricing');
         return;
     }
     
@@ -946,13 +975,13 @@ The other fields should follow these rules:
   };
 
   const handleOpenProviderServices = (service: string) => {
-    setPage('home');
+    navigateToPage('home');
     setProviderServiceFilter(service);
     setIsProviderServicesModalOpen(true);
   };
 
   const handlePlanSelect = (role: 'user' | 'agent' | 'investor') => {
-      setPage('home');
+      navigateToPage('home');
       if (role === 'user') {
           setAuthModalView('userSignup');
       } else if (role === 'agent') {
@@ -1017,6 +1046,24 @@ The other fields should follow these rules:
       }
   };
 
+
+  useEffect(() => {
+      const syncPageWithLocation = () => {
+          const nextPage = getPageFromLocation(window.location);
+          setPage(nextPage);
+          setTimeout(() => scrollToCurrentTarget(window.location.hash.slice(1), 'auto'), 0);
+      };
+
+      if (!ROUTE_PAGES.has((window.location.pathname.replace(/\/$/, '') || '/'))) {
+          window.history.replaceState({ page: 'home' }, '', getRouteForPage('home'));
+      } else {
+          window.history.replaceState({ page: getPageFromLocation(window.location) }, '', `${window.location.pathname}${window.location.hash}`);
+      }
+
+      window.addEventListener('popstate', syncPageWithLocation);
+      return () => window.removeEventListener('popstate', syncPageWithLocation);
+  }, []);
+
   useEffect(() => {
       if (currentUser) {
           const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
@@ -1060,9 +1107,9 @@ The other fields should follow these rules:
                   />
 
                   <NewOfferings 
-                      onRentCarClick={() => setPage('rent-a-car')} 
-                      onFindWellnessClick={() => setPage('find-wellness')}
-                      onBookStayClick={() => setPage('book-a-stay')}
+                      onRentCarClick={() => navigateToPage('rent-a-car')} 
+                      onFindWellnessClick={() => navigateToPage('find-wellness')}
+                      onBookStayClick={() => navigateToPage('book-a-stay')}
                   />
                   
                   <section id="just-listed" className="py-24 bg-brand-light relative z-10 -mt-8 rounded-t-[3xl]">
@@ -1136,87 +1183,86 @@ The other fields should follow these rules:
                       </div>
                   </section>
 
-                  <section id="all-listings" className="py-24 bg-brand-light">
-                  <div className="container mx-auto px-4 sm:px-6">
-                      <div className="flex flex-col items-center mb-12">
-                          <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading mb-6">{t.app.findYourProperty}</h2>
+                  <section id="all-listings" className="py-24 bg-brand-light dark:bg-dark-bg">
+                  <div className="container mx-auto px-4 sm:px-6 max-w-[1500px]">
+                      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+                          <div>
+                              <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold mb-3">Map-first discovery</p>
+                              <h2 className="text-4xl md:text-5xl font-black text-brand-dark dark:text-[#F5F5EF] font-heading mb-4">{t.app.findYourProperty}</h2>
+                              <p className="text-brand-muted dark:text-dark-muted max-w-2xl">Browse refined property cards beside an interactive map, built for fast shortlisting across Africa's leading cities.</p>
+                          </div>
+                          <button onClick={handleSaveSearch} className="flex items-center justify-center gap-2 bg-white dark:bg-dark-surface text-brand-dark dark:text-white px-5 py-3 rounded-2xl font-bold hover:bg-brand-surface-muted dark:hover:bg-dark-elevated transition-colors border border-brand-border dark:border-dark-border">
+                              <BookmarkIcon className="w-5 h-5 text-brand-primary dark:text-brand-gold" />
+                              {t.app.saveSearch}
+                          </button>
                       </div>
-                      <div className="flex justify-between items-center w-full mb-10">
-                          <div className="flex items-center gap-4">
-                              <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>{t.app.allListings}</button>
-                              <button onClick={() => setActiveTab('saved')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white' : 'bg-white/50 text-brand-dark'}`}>
+
+                      <div className="flex flex-wrap justify-between items-center gap-4 w-full mb-8">
+                          <div className="flex items-center gap-3 rounded-full bg-white/80 dark:bg-dark-surface border border-brand-border dark:border-dark-border p-1">
+                              <button onClick={() => setActiveTab('all')} className={`px-5 py-2.5 text-sm font-bold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white dark:bg-brand-gold dark:text-dark-bg' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>{t.app.allListings}</button>
+                              <button onClick={() => setActiveTab('saved')} className={`px-5 py-2.5 text-sm font-bold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white dark:bg-brand-gold dark:text-dark-bg' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>
                               {t.app.savedProperties}
                               {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
                               </button>
                           </div>
-                          
-                          <div className="flex items-center gap-4">
-                              <div className="flex bg-white/50 rounded-lg p-1 border border-brand-primary/20">
-                                  <button onClick={() => setIsMapView(false)} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all ${!isMapView ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-dark'}`}>
-                                      List View
-                                  </button>
-                                  <button onClick={() => setIsMapView(true)} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all flex items-center gap-1.5 ${isMapView ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-500 hover:text-brand-dark'}`}>
-                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-                                      Map View
-                                  </button>
-                              </div>
-                              <button onClick={handleSaveSearch} className="flex items-center gap-2 bg-white/50 text-brand-dark dark:text-white px-4 py-2 rounded-lg font-semibold hover:bg-white transition-colors border border-brand-primary/20">
-                                  <BookmarkIcon className="w-5 h-5 text-brand-primary" />
-                                  {t.app.saveSearch}
-                              </button>
+                          <div className="flex lg:hidden bg-white/80 dark:bg-dark-surface rounded-xl p-1 border border-brand-border dark:border-dark-border">
+                              <button onClick={() => setIsMapView(false)} className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${!isMapView ? 'bg-brand-primary text-white' : 'text-brand-muted dark:text-dark-muted'}`}>List</button>
+                              <button onClick={() => setIsMapView(true)} className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${isMapView ? 'bg-brand-primary text-white' : 'text-brand-muted dark:text-dark-muted'}`}>Map</button>
                           </div>
                       </div>
-                      
-                      {activeTab === 'all' && !isMapView && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.showingResults.replace('{{count}}', String(filteredProperties.length))}</p>}
-                      {activeTab === 'saved' && !isMapView && <p className="text-center text-slate-500 dark:text-slate-400 mb-8">{t.app.savedCount.replace('{{count}}', String(savedProperties.length))}</p>}
-                      
-                      {isMapView ? (
-                        <div className="mb-12">
+
+                      {activeTab === 'all' && !isMapView && <p className="text-center lg:text-left text-brand-muted dark:text-dark-muted mb-8">{t.app.showingResults.replace('{{count}}', String(filteredProperties.length))}</p>}
+                      {activeTab === 'saved' && !isMapView && <p className="text-center lg:text-left text-brand-muted dark:text-dark-muted mb-8">{t.app.savedCount.replace('{{count}}', String(savedProperties.length))}</p>}
+
+                      <div className="lg:grid lg:grid-cols-[55fr_45fr] lg:gap-8 lg:items-start">
+                        <div className={`${isMapView ? 'hidden lg:block' : 'block'}`}>
+                          {activeTab === 'all' ? (
+                              filteredProperties.length > 0 ? (
+                                  <PropertyList 
+                                      properties={filteredProperties}
+                                      currentUser={currentUser}
+                                      onSaveToggle={handleSaveToggle}
+                                      savedPropertyIds={savedPropertyIds}
+                                      onOpenCalculator={handleOpenCalculator}
+                                      onOpenTourModal={handleOpenTourModal}
+                                      onFindSimilar={handleFindSimilar}
+                                      onOpenDetailModal={handleOpenDetailModal}
+                                      onToggleCompare={handleToggleCompare}
+                                      onOpenVRTour={handleOpenVRTour}
+                                      compareList={compareList}
+                                      onEdit={handleEditProperty}
+                                      onDelete={handleDeleteProperty}
+                                      isLoading={isLoadingProperties}
+                                  />
+                              ) : <p className="text-center text-brand-muted dark:text-dark-muted">{t.app.noPropertiesFound}<br/>{t.app.adjustFilters}</p>
+                          ) : (
+                              savedProperties.length > 0 ? (
+                                  <PropertyList 
+                                      properties={savedProperties}
+                                      currentUser={currentUser}
+                                      onSaveToggle={handleSaveToggle}
+                                      savedPropertyIds={savedPropertyIds}
+                                      onOpenCalculator={handleOpenCalculator}
+                                      onOpenTourModal={handleOpenTourModal}
+                                      onFindSimilar={handleFindSimilar}
+                                      onOpenDetailModal={handleOpenDetailModal}
+                                      onToggleCompare={handleToggleCompare}
+                                      onOpenVRTour={handleOpenVRTour}
+                                      compareList={compareList}
+                                      onEdit={handleEditProperty}
+                                      onDelete={handleDeleteProperty}
+                                      isLoading={isLoadingProperties}
+                                  />
+                              ) : <p className="text-center text-brand-muted dark:text-dark-muted">{t.app.noSavedProperties}</p>
+                          )}
+                        </div>
+                        <aside className={`${isMapView ? 'block' : 'hidden lg:block'} lg:sticky lg:top-24`}>
                            <MapInterface 
                               properties={activeTab === 'all' ? filteredProperties : savedProperties} 
                               onOpenDetailModal={handleOpenDetailModal}
                            />
-                        </div>
-                      ) : activeTab === 'all' ? (
-                          filteredProperties.length > 0 ? (
-                              <PropertyList 
-                                  properties={filteredProperties}
-                                  currentUser={currentUser}
-                                  onSaveToggle={handleSaveToggle}
-                                  savedPropertyIds={savedPropertyIds}
-                                  onOpenCalculator={handleOpenCalculator}
-                                  onOpenTourModal={handleOpenTourModal}
-                                  onFindSimilar={handleFindSimilar}
-                                  onOpenDetailModal={handleOpenDetailModal}
-                                  onToggleCompare={handleToggleCompare}
-                                  onOpenVRTour={handleOpenVRTour}
-                                  compareList={compareList}
-                                  onEdit={handleEditProperty}
-                                  onDelete={handleDeleteProperty}
-                                  isLoading={isLoadingProperties}
-                              />
-                          ) : <p className="text-center text-slate-500 dark:text-slate-400">{t.app.noPropertiesFound}<br/>{t.app.adjustFilters}</p>
-                      ) : (
-                          savedProperties.length > 0 ? (
-                              <PropertyList 
-                                  properties={savedProperties}
-                                  currentUser={currentUser}
-                                  onSaveToggle={handleSaveToggle}
-                                  savedPropertyIds={savedPropertyIds}
-                                  onOpenCalculator={handleOpenCalculator}
-                                  onOpenTourModal={handleOpenTourModal}
-                                  onFindSimilar={handleFindSimilar}
-                                  onOpenDetailModal={handleOpenDetailModal}
-                                  onToggleCompare={handleToggleCompare}
-                                  onOpenVRTour={handleOpenVRTour}
-                                  compareList={compareList}
-                                  onEdit={handleEditProperty}
-                                  onDelete={handleDeleteProperty}
-                                  isLoading={isLoadingProperties}
-                              />
-                          ) : <p className="text-center text-slate-500 dark:text-slate-400">{t.app.noSavedProperties}</p>
-                      )}
-
+                        </aside>
+                      </div>
                   </div>
                   </section>
                   
@@ -1278,7 +1324,7 @@ The other fields should follow these rules:
                                   </p>
                               </div>
                               <div className="flex-shrink-0 w-full md:w-auto">
-                                  <button onClick={() => setPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
+                                  <button onClick={() => navigateToPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
                                       Sign Up Now <ArrowRightIcon className="w-6 h-6"/>
                                   </button>
                               </div>
@@ -1301,7 +1347,7 @@ The other fields should follow these rules:
         notifications={notificationsWithReadStatus}
         readNotificationIds={readNotificationIds}
         onLoginClick={() => { setAuthModalView('login'); setIsAuthModalOpen(true); }}
-        onSignUpClick={() => setPage('pricing')}
+        onSignUpClick={() => navigateToPage('pricing')}
         onDashboardClick={() => setIsDashboardOpen(true)}
         onListPropertyClick={handleListPropertyClick}
         onNotificationClick={handleNotificationClick}
@@ -1310,11 +1356,23 @@ The other fields should follow these rules:
         onAboutClick={() => scrollToSection('about', 'about')}
         onServicesClick={() => scrollToSection('services', 'services')}
         onContactClick={() => scrollToSection('contact', 'contact')}
+        onPricingClick={() => navigateToPage('pricing')}
+        links={{
+          home: getRouteForPage('home'),
+          buy: getRouteForPage('home', 'all-listings'),
+          rent: getRouteForPage('home', 'all-listings'),
+          sell: getRouteForPage('pricing'),
+          invest: getRouteForPage('pricing'),
+          developments: getRouteForPage('services', 'services'),
+          agents: getRouteForPage('services', 'services'),
+          contact: getRouteForPage('contact', 'contact'),
+        }}
       />
       <main className="flex-grow">
         {renderPage()}
       </main>
       <Footer 
+        onHomeClick={() => scrollToSection('home')}
         onAboutClick={() => scrollToSection('about', 'about')}
         onContactClick={() => scrollToSection('contact', 'contact')}
         onBlogClick={() => scrollToSection('home', 'blog')}
@@ -1322,6 +1380,16 @@ The other fields should follow these rules:
         onTermsOfServiceClick={() => setIsTermsOfServiceModalOpen(true)}
         onCareersClick={() => setIsCareersModalOpen(true)}
         onFindAProClick={() => setIsProviderServicesModalOpen(true)}
+        links={{
+          home: getRouteForPage('home'),
+          about: getRouteForPage('about', 'about'),
+          contact: getRouteForPage('contact', 'contact'),
+          blog: getRouteForPage('home', 'blog'),
+          careers: '/careers',
+          providers: getRouteForPage('services'),
+          privacy: '/privacy-policy',
+          terms: '/terms-of-service',
+        }}
       />
       <Chatbot />
       
@@ -1337,7 +1405,7 @@ The other fields should follow these rules:
         initialView={authModalView}
         onSwitchToPricing={() => {
             setIsAuthModalOpen(false);
-            setPage('pricing');
+            navigateToPage('pricing');
         }}
         onSuperAdminLogin={() => {
           setIsAuthModalOpen(false);
@@ -1441,7 +1509,7 @@ The other fields should follow these rules:
               post={selectedBlogPost}
               onContactClick={() => {
                   setIsBlogDetailModalOpen(false);
-                  setPage('contact');
+                  navigateToPage('contact');
               }}
           />
        )}

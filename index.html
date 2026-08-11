@@ -6,7 +6,7 @@
     <title>AfriEstate - Real Estate Marketplace</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -14,8 +14,8 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              heading: ['Playfair Display', 'serif'],
+              sans: ['Manrope', 'Inter', 'sans-serif'],
+              heading: ['Instrument Sans', 'Manrope', 'sans-serif'],
             },
             fontSize: {
               'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -53,13 +53,23 @@
               'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
             },
             colors: {
-              'brand-primary': '#0F2D25',
-              'brand-secondary': '#C9A35D',
-              'brand-accent': '#1FA971',
-              'brand-gold': '#C9A35D',
-              'brand-light': '#FAF8F5',
-              'brand-dark': '#1D1D1D',
-              'brand-success': '#1FA971',
+              'brand-primary': '#123C2A',
+              'brand-secondary': '#C79A45',
+              'brand-accent': '#B9683B',
+              'brand-gold': '#C79A45',
+              'brand-light': '#F7F7F4',
+              'brand-dark': '#17201B',
+              'brand-success': '#247A50',
+              'brand-error': '#C84B4B',
+              'brand-surface': '#FFFFFF',
+              'brand-surface-muted': '#F0F1ED',
+              'brand-border': '#E4E6E1',
+              'brand-muted': '#66706A',
+              'dark-bg': '#08120E',
+              'dark-surface': '#0E1B15',
+              'dark-elevated': '#14251D',
+              'dark-border': '#24362D',
+              'dark-muted': '#9AA69F',
             },
           },
         },
@@ -84,7 +94,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
         body {
-          @apply font-sans min-h-screen overflow-x-hidden bg-brand-light text-brand-dark dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300;
+          @apply font-sans min-h-screen overflow-x-hidden bg-brand-light text-brand-dark dark:bg-dark-bg dark:text-[#F5F5EF] transition-colors duration-300;
         }
         h1, h2, h3, h4, h5, h6 {
           @apply font-heading;
@@ -113,19 +123,19 @@
           animation: heartbeat 0.8s ease-in-out;
         }
         .glass-panel {
-          @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/60 dark:border-slate-700/60 rounded-xl shadow-lg;
+          @apply bg-white/82 dark:bg-dark-surface/82 backdrop-blur-xl border border-brand-border/80 dark:border-dark-border rounded-2xl shadow-sm;
         }
         .glass-header {
-          @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-700/50 shadow-sm;
+          @apply bg-brand-light/86 dark:bg-dark-bg/86 backdrop-blur-xl border-b border-brand-border dark:border-dark-border shadow-none;
         }
         .glass-card {
-          @apply bg-white dark:bg-slate-800 hover:bg-brand-light/50 dark:hover:bg-slate-700/50 border border-slate-200 dark:border-slate-700 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md;
+          @apply bg-white dark:bg-dark-surface hover:bg-brand-surface-muted/50 dark:hover:bg-dark-elevated border border-brand-border dark:border-dark-border transition-all duration-300 rounded-2xl shadow-none hover:-translate-y-1;
         }
         .glass-button {
-          @apply bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all rounded-lg text-brand-dark dark:text-slate-200 shadow-sm;
+          @apply bg-white/70 dark:bg-dark-surface hover:bg-brand-surface-muted dark:hover:bg-dark-elevated border border-brand-border dark:border-dark-border transition-all rounded-xl text-brand-dark dark:text-[#F5F5EF] shadow-none;
         }
         .glass-badge {
-          @apply bg-brand-light dark:bg-slate-800 border border-brand-accent dark:border-brand-primary text-brand-dark dark:text-brand-light rounded-full flex items-center justify-center;
+          @apply bg-[#F2E7CF]/90 dark:bg-[#3A2E19]/80 border border-brand-gold/35 text-brand-dark dark:text-[#F5F5EF] rounded-full flex items-center justify-center;
         }
       }
     </style>

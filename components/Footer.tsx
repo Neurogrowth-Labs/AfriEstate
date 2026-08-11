@@ -7,6 +7,7 @@ import { currencyOptions } from '../constants';
 import { Currency } from '../types';
 
 interface FooterProps {
+  onHomeClick: () => void;
   onAboutClick: () => void;
   onContactClick: () => void;
   onBlogClick: () => void;
@@ -14,9 +15,10 @@ interface FooterProps {
   onTermsOfServiceClick: () => void;
   onCareersClick: () => void;
   onFindAProClick: () => void;
+  links?: { home: string; about: string; contact: string; blog: string; careers: string; providers: string; privacy: string; terms: string };
 }
 
-const Footer: React.FC<FooterProps> = ({ onAboutClick, onContactClick, onBlogClick, onPrivacyPolicyClick, onTermsOfServiceClick, onCareersClick, onFindAProClick }) => {
+const Footer: React.FC<FooterProps> = ({ onHomeClick, onAboutClick, onContactClick, onBlogClick, onPrivacyPolicyClick, onTermsOfServiceClick, onCareersClick, onFindAProClick, links = { home: '/', about: '/about', contact: '/contact', blog: '/#blog', careers: '/careers', providers: '/services#providers', privacy: '/privacy-policy', terms: '/terms-of-service' } }) => {
   const { t } = useTranslations();
   const { currency, setCurrency } = useCurrency();
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
@@ -51,26 +53,26 @@ const Footer: React.FC<FooterProps> = ({ onAboutClick, onContactClick, onBlogCli
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="md:col-span-1">
-            <button onClick={(e) => handleLinkClick(e, () => window.scrollTo({ top: 0, behavior: 'smooth' }))} className="flex items-center space-x-2 mb-4">
+            <a href={links.home} onClick={(e) => handleLinkClick(e, onHomeClick)} className="flex items-center space-x-2 mb-4">
               <h2 className="text-2xl font-semibold text-white">AfriEstate</h2>
-            </button>
+            </a>
             <p className="text-slate-400">{t.footer.tagline}</p>
           </div>
           <div>
             <h3 className="font-bold text-white mb-4 tracking-wide">{t.footer.quickLinks}</h3>
             <ul className="space-y-2">
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onAboutClick)} className="hover:text-brand-gold transition">{t.footer.aboutUs}</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onContactClick)} className="hover:text-brand-gold transition">{t.footer.contact}</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onCareersClick)} className="hover:text-brand-gold transition">{t.footer.careers}</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onBlogClick)} className="hover:text-brand-gold transition">{t.footer.blog}</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onFindAProClick)} className="hover:text-brand-gold transition">{t.footer.findAPro}</a></li>
+              <li><a href={links.about} onClick={(e) => handleLinkClick(e, onAboutClick)} className="hover:text-brand-gold transition">{t.footer.aboutUs}</a></li>
+              <li><a href={links.contact} onClick={(e) => handleLinkClick(e, onContactClick)} className="hover:text-brand-gold transition">{t.footer.contact}</a></li>
+              <li><a href={links.careers} onClick={(e) => handleLinkClick(e, onCareersClick)} className="hover:text-brand-gold transition">{t.footer.careers}</a></li>
+              <li><a href={links.blog} onClick={(e) => handleLinkClick(e, onBlogClick)} className="hover:text-brand-gold transition">{t.footer.blog}</a></li>
+              <li><a href={links.providers} onClick={(e) => handleLinkClick(e, onFindAProClick)} className="hover:text-brand-gold transition">{t.footer.findAPro}</a></li>
             </ul>
           </div>
           <div>
             <h3 className="font-bold text-white mb-4 tracking-wide">{t.footer.legal}</h3>
             <ul className="space-y-2">
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onPrivacyPolicyClick)} className="hover:text-brand-gold transition">{t.footer.privacyPolicy}</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, onTermsOfServiceClick)} className="hover:text-brand-gold transition">{t.footer.termsOfService}</a></li>
+              <li><a href={links.privacy} onClick={(e) => handleLinkClick(e, onPrivacyPolicyClick)} className="hover:text-brand-gold transition">{t.footer.privacyPolicy}</a></li>
+              <li><a href={links.terms} onClick={(e) => handleLinkClick(e, onTermsOfServiceClick)} className="hover:text-brand-gold transition">{t.footer.termsOfService}</a></li>
             </ul>
           </div>
           <div>
