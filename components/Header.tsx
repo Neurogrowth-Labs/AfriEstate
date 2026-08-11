@@ -24,12 +24,6 @@ interface HeaderProps {
   onAboutClick: () => void;
   onServicesClick: () => void;
   onContactClick: () => void;
-  onPricingClick: () => void;
-  links?: { home: string; buy: string; rent: string; sell: string; invest: string; developments: string; agents: string; contact: string };
-}
-
-const Header: React.FC<HeaderProps> = (props) => {
-  const { currentUser, notifications, onLoginClick, onSignUpClick, onDashboardClick, onListPropertyClick, onNotificationClick, onMarkAllNotificationsAsRead, onHomeClick, onAboutClick, onServicesClick, onContactClick, onPricingClick, links = { home: '/', buy: '/#all-listings', rent: '/#all-listings', sell: '/pricing', invest: '/pricing', developments: '/services', agents: '/services', contact: '/contact' } } = props;
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -86,13 +80,6 @@ const Header: React.FC<HeaderProps> = (props) => {
         <button onClick={onHomeClick} className="flex items-center space-x-2 flex-shrink-0 group">
           <span className="text-xl font-bold text-black tracking-tight">AfriEstate</span>
         </button>
-        <nav className="hidden lg:flex items-center space-x-7 text-sm font-semibold">
-          <a href={links.buy} onClick={(e) => { e.preventDefault(); onHomeClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Buy</a>
-          <a href={links.rent} onClick={(e) => { e.preventDefault(); onHomeClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Rent</a>
-          <a href={links.sell} onClick={(e) => { e.preventDefault(); onPricingClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Sell</a>
-          <a href={links.invest} onClick={(e) => { e.preventDefault(); onPricingClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Invest</a>
-          <a href={links.developments} onClick={(e) => { e.preventDefault(); onServicesClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Developments</a>
-          <a href={links.agents} onClick={(e) => { e.preventDefault(); onServicesClick(); }} className="text-slate-600 dark:text-dark-muted hover:text-brand-primary dark:hover:text-brand-gold transition duration-200">Agents</a>
         </nav>
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative" ref={currencyRef}>
@@ -193,13 +180,6 @@ const Header: React.FC<HeaderProps> = (props) => {
        {/* Mobile Menu */}
       <div className={`absolute top-full left-0 w-full glass-panel lg:hidden transition-all duration-300 ease-in-out overflow-hidden shadow-2xl ${isMobileMenuOpen ? 'max-h-96 border-b border-slate-100 dark:border-slate-800' : 'max-h-0'}`}>
         <nav className="flex flex-col p-4 space-y-2">
-            <a href={links.home} onClick={(e) => mobileLinkClick(onHomeClick, e)} className="mobile-nav-link">Home</a>
-            <a href={links.buy} onClick={(e) => mobileLinkClick(onHomeClick, e)} className="mobile-nav-link">Buy</a>
-            <a href={links.rent} onClick={(e) => mobileLinkClick(onHomeClick, e)} className="mobile-nav-link">Rent</a>
-            <a href={links.sell} onClick={(e) => mobileLinkClick(onPricingClick, e)} className="mobile-nav-link">Sell</a>
-            <a href={links.invest} onClick={(e) => mobileLinkClick(onPricingClick, e)} className="mobile-nav-link">Invest</a>
-            <a href={links.agents} onClick={(e) => mobileLinkClick(onServicesClick, e)} className="mobile-nav-link">Agents</a>
-            <a href={links.contact} onClick={(e) => mobileLinkClick(onContactClick, e)} className="mobile-nav-link">Contact</a>
             {!currentUser && <a href="/login" onClick={(e) => mobileLinkClick(onLoginClick, e)} className="mobile-nav-link md:hidden">{t.header.login}</a>}
             <button onClick={() => mobileLinkClick(currentUser ? onListPropertyClick : onSignUpClick)} className="bg-brand-primary text-white px-5 py-2.5 rounded-lg font-semibold w-full mt-2 sm:hidden">
               {getButtonText()}

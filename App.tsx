@@ -1356,15 +1356,6 @@ The other fields should follow these rules:
         onAboutClick={() => scrollToSection('about', 'about')}
         onServicesClick={() => scrollToSection('services', 'services')}
         onContactClick={() => scrollToSection('contact', 'contact')}
-        onPricingClick={() => navigateToPage('pricing')}
-        links={{
-          home: getRouteForPage('home'),
-          buy: getRouteForPage('home', 'all-listings'),
-          rent: getRouteForPage('home', 'all-listings'),
-          sell: getRouteForPage('pricing'),
-          invest: getRouteForPage('pricing'),
-          developments: getRouteForPage('services', 'services'),
-          agents: getRouteForPage('services', 'services'),
           contact: getRouteForPage('contact', 'contact'),
         }}
       />
