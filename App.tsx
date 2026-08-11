@@ -68,6 +68,31 @@ import BookAStayPage from './components/pages/BookAStayPage';
 type AuthView = 'login' | 'signup' | 'userSignup' | 'agentSignup' | 'investorSignup' | 'pendingVerificationAgent' | 'pendingVerificationInvestor' | 'forgotPassword' | 'resetConfirmation';
 type Page = 'home' | 'about' | 'services' | 'contact' | 'pricing' | 'rent-a-car' | 'find-wellness' | 'book-a-stay';
 
+const PAGE_ROUTES: Record<Page, string> = {
+  home: '/',
+  about: '/about',
+  services: '/services',
+  contact: '/contact',
+  pricing: '/pricing',
+  'rent-a-car': '/rent-a-car',
+  'find-wellness': '/find-wellness',
+  'book-a-stay': '/book-a-stay',
+};
+
+const ROUTE_PAGES = new Map<string, Page>(
+  Object.entries(PAGE_ROUTES).map(([pageName, path]) => [path, pageName as Page])
+);
+
+const getPageFromLocation = (location: Location): Page => {
+  const normalizedPath = location.pathname.replace(/\/$/, '') || '/';
+  return ROUTE_PAGES.get(normalizedPath) ?? 'home';
+};
+
+const getRouteForPage = (targetPage: Page, sectionId?: string) => {
+  const path = PAGE_ROUTES[targetPage];
+  return sectionId ? `${path}#${sectionId}` : path;
+};
+
 const initialFilters: SearchFilters = {
     location: '',
     listingType: ListingType.ALL,
@@ -116,28 +141,32 @@ const blogSchema = {
 
 const App: React.FC = () => {
   const { lastAction } = useAdminState();
-  const [page, setPage] = useState<Page>('home');
+  const [page, setPage] = useState<Page>(() => getPageFromLocation(window.location));
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
   
   const scrollToSection = (targetPage: Page, sectionId?: string) => {
-    if (page !== targetPage) {
-      setPage(targetPage);
-      setTimeout(() => {
-        const element = sectionId ? document.getElementById(sectionId) : null;
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 150);
+    navigateToPage(targetPage, sectionId);
+  };
+
+  const scrollToCurrentTarget = (sectionId?: string, behavior: ScrollBehavior = 'smooth') => {
+    const element = sectionId ? document.getElementById(sectionId) : null;
+    if (element) {
+      element.scrollIntoView({ behavior, block: 'start' });
     } else {
-      const element = sectionId ? document.getElementById(sectionId) : null;
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      window.scrollTo({ top: 0, behavior });
     }
+  };
+
+  const navigateToPage = (targetPage: Page, sectionId?: string) => {
+    const nextUrl = getRouteForPage(targetPage, sectionId);
+    const currentUrl = `${window.location.pathname}${window.location.hash}`;
+
+    if (currentUrl !== nextUrl) {
+      window.history.pushState({ page: targetPage }, '', nextUrl);
+    }
+
+    setPage(targetPage);
+    setTimeout(() => scrollToCurrentTarget(sectionId), page === targetPage ? 0 : 150);
   };
   
   const [allProperties, setAllProperties] = useState<Property[]>([]);
@@ -717,7 +746,7 @@ The other fields should follow these rules:
 
   const handleListPropertyClick = () => {
     if (!currentUser) {
-        setPage('pricing');
+        navigateToPage('pricing');
         return;
     }
     
@@ -946,13 +975,13 @@ The other fields should follow these rules:
   };
 
   const handleOpenProviderServices = (service: string) => {
-    setPage('home');
+    navigateToPage('home');
     setProviderServiceFilter(service);
     setIsProviderServicesModalOpen(true);
   };
 
   const handlePlanSelect = (role: 'user' | 'agent' | 'investor') => {
-      setPage('home');
+      navigateToPage('home');
       if (role === 'user') {
           setAuthModalView('userSignup');
       } else if (role === 'agent') {
@@ -1017,6 +1046,24 @@ The other fields should follow these rules:
       }
   };
 
+
+  useEffect(() => {
+      const syncPageWithLocation = () => {
+          const nextPage = getPageFromLocation(window.location);
+          setPage(nextPage);
+          setTimeout(() => scrollToCurrentTarget(window.location.hash.slice(1), 'auto'), 0);
+      };
+
+      if (!ROUTE_PAGES.has((window.location.pathname.replace(/\/$/, '') || '/'))) {
+          window.history.replaceState({ page: 'home' }, '', getRouteForPage('home'));
+      } else {
+          window.history.replaceState({ page: getPageFromLocation(window.location) }, '', `${window.location.pathname}${window.location.hash}`);
+      }
+
+      window.addEventListener('popstate', syncPageWithLocation);
+      return () => window.removeEventListener('popstate', syncPageWithLocation);
+  }, []);
+
   useEffect(() => {
       if (currentUser) {
           const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
@@ -1060,9 +1107,9 @@ The other fields should follow these rules:
                   />
 
                   <NewOfferings 
-                      onRentCarClick={() => setPage('rent-a-car')} 
-                      onFindWellnessClick={() => setPage('find-wellness')}
-                      onBookStayClick={() => setPage('book-a-stay')}
+                      onRentCarClick={() => navigateToPage('rent-a-car')} 
+                      onFindWellnessClick={() => navigateToPage('find-wellness')}
+                      onBookStayClick={() => navigateToPage('book-a-stay')}
                   />
                   
                   <section id="just-listed" className="py-24 bg-brand-light relative z-10 -mt-8 rounded-t-[3xl]">
@@ -1278,7 +1325,7 @@ The other fields should follow these rules:
                                   </p>
                               </div>
                               <div className="flex-shrink-0 w-full md:w-auto">
-                                  <button onClick={() => setPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
+                                  <button onClick={() => navigateToPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
                                       Sign Up Now <ArrowRightIcon className="w-6 h-6"/>
                                   </button>
                               </div>
@@ -1301,7 +1348,7 @@ The other fields should follow these rules:
         notifications={notificationsWithReadStatus}
         readNotificationIds={readNotificationIds}
         onLoginClick={() => { setAuthModalView('login'); setIsAuthModalOpen(true); }}
-        onSignUpClick={() => setPage('pricing')}
+        onSignUpClick={() => navigateToPage('pricing')}
         onDashboardClick={() => setIsDashboardOpen(true)}
         onListPropertyClick={handleListPropertyClick}
         onNotificationClick={handleNotificationClick}
@@ -1310,11 +1357,18 @@ The other fields should follow these rules:
         onAboutClick={() => scrollToSection('about', 'about')}
         onServicesClick={() => scrollToSection('services', 'services')}
         onContactClick={() => scrollToSection('contact', 'contact')}
+        links={{
+          home: getRouteForPage('home'),
+          about: getRouteForPage('about', 'about'),
+          services: getRouteForPage('services', 'services'),
+          contact: getRouteForPage('contact', 'contact'),
+        }}
       />
       <main className="flex-grow">
         {renderPage()}
       </main>
       <Footer 
+        onHomeClick={() => scrollToSection('home')}
         onAboutClick={() => scrollToSection('about', 'about')}
         onContactClick={() => scrollToSection('contact', 'contact')}
         onBlogClick={() => scrollToSection('home', 'blog')}
@@ -1322,6 +1376,16 @@ The other fields should follow these rules:
         onTermsOfServiceClick={() => setIsTermsOfServiceModalOpen(true)}
         onCareersClick={() => setIsCareersModalOpen(true)}
         onFindAProClick={() => setIsProviderServicesModalOpen(true)}
+        links={{
+          home: getRouteForPage('home'),
+          about: getRouteForPage('about', 'about'),
+          contact: getRouteForPage('contact', 'contact'),
+          blog: getRouteForPage('home', 'blog'),
+          careers: '/careers',
+          providers: getRouteForPage('services'),
+          privacy: '/privacy-policy',
+          terms: '/terms-of-service',
+        }}
       />
       <Chatbot />
       
@@ -1337,7 +1401,7 @@ The other fields should follow these rules:
         initialView={authModalView}
         onSwitchToPricing={() => {
             setIsAuthModalOpen(false);
-            setPage('pricing');
+            navigateToPage('pricing');
         }}
         onSuperAdminLogin={() => {
           setIsAuthModalOpen(false);
@@ -1441,7 +1505,7 @@ The other fields should follow these rules:
               post={selectedBlogPost}
               onContactClick={() => {
                   setIsBlogDetailModalOpen(false);
-                  setPage('contact');
+                  navigateToPage('contact');
               }}
           />
        )}
