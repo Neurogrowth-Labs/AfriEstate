@@ -33,11 +33,11 @@ const MapInterface: React.FC<MapInterfaceProps> = ({ properties, onOpenDetailMod
   const defaultCenter: [number, number] = [-33.9249, 18.4241]; // Default to Cape Town
 
   return (
-    <div className="w-full h-[600px] rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 relative z-0">
+    <div className="w-full h-[620px] rounded-[2rem] overflow-hidden shadow-none border border-brand-border dark:border-dark-border relative z-0 bg-[#0A1712]">
       <MapContainer center={defaultCenter} zoom={10} scrollWheelZoom={true} style={{ height: '100%', width: '100%', zIndex: 1 }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         <UpdateMapCenter properties={properties} />
         {properties.map(property => {

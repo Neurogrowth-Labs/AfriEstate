@@ -24,11 +24,6 @@ interface HeaderProps {
   onAboutClick: () => void;
   onServicesClick: () => void;
   onContactClick: () => void;
-  links?: { home: string; about: string; services: string; contact: string };
-}
-
-const Header: React.FC<HeaderProps> = (props) => {
-  const { currentUser, notifications, onLoginClick, onSignUpClick, onDashboardClick, onListPropertyClick, onNotificationClick, onMarkAllNotificationsAsRead, onHomeClick, onAboutClick, onServicesClick, onContactClick, links = { home: '/', about: '/about', services: '/services', contact: '/contact' } } = props;
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -80,16 +75,11 @@ const Header: React.FC<HeaderProps> = (props) => {
   };
 
   return (
-    <header className="glass-header sticky top-0 z-40 border-b border-slate-100 dark:border-slate-800 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+    <header className="glass-header sticky top-0 z-40 border-b border-slate-100 dark:border-slate-800 shadow-none">
       <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
         <button onClick={onHomeClick} className="flex items-center space-x-2 flex-shrink-0 group">
           <span className="text-xl font-bold text-black tracking-tight">AfriEstate</span>
         </button>
-        <nav className="hidden lg:flex items-center space-x-8 text-sm font-medium">
-          <a href={links.home} onClick={(e) => { e.preventDefault(); onHomeClick(); }} className="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-white transition duration-200">{t.header.home}</a>
-          <a href={links.about} onClick={(e) => { e.preventDefault(); onAboutClick(); }} className="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-white transition duration-200">{t.header.about}</a>
-          <a href={links.services} onClick={(e) => { e.preventDefault(); onServicesClick(); }} className="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-white transition duration-200">{t.header.services}</a>
-          <a href={links.contact} onClick={(e) => { e.preventDefault(); onContactClick(); }} className="text-slate-600 dark:text-slate-300 hover:text-brand-primary dark:hover:text-white transition duration-200">{t.header.contact}</a>
         </nav>
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative" ref={currencyRef}>
@@ -190,10 +180,6 @@ const Header: React.FC<HeaderProps> = (props) => {
        {/* Mobile Menu */}
       <div className={`absolute top-full left-0 w-full glass-panel lg:hidden transition-all duration-300 ease-in-out overflow-hidden shadow-2xl ${isMobileMenuOpen ? 'max-h-96 border-b border-slate-100 dark:border-slate-800' : 'max-h-0'}`}>
         <nav className="flex flex-col p-4 space-y-2">
-            <a href={links.home} onClick={(e) => mobileLinkClick(onHomeClick, e)} className="mobile-nav-link">{t.header.home}</a>
-            <a href={links.about} onClick={(e) => mobileLinkClick(onAboutClick, e)} className="mobile-nav-link">{t.header.about}</a>
-            <a href={links.services} onClick={(e) => mobileLinkClick(onServicesClick, e)} className="mobile-nav-link">{t.header.services}</a>
-            <a href={links.contact} onClick={(e) => mobileLinkClick(onContactClick, e)} className="mobile-nav-link">{t.header.contact}</a>
             {!currentUser && <a href="/login" onClick={(e) => mobileLinkClick(onLoginClick, e)} className="mobile-nav-link md:hidden">{t.header.login}</a>}
             <button onClick={() => mobileLinkClick(currentUser ? onListPropertyClick : onSignUpClick)} className="bg-brand-primary text-white px-5 py-2.5 rounded-lg font-semibold w-full mt-2 sm:hidden">
               {getButtonText()}

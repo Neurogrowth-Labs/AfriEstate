@@ -145,10 +145,10 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
     const showStandardActions = property.propertyType !== PropertyType.TRANSPORT && property.propertyType !== PropertyType.WELLNESS;
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden group flex flex-col">
+    <div className="glass-card rounded-[1.75rem] overflow-hidden group flex flex-col">
       <div className="relative overflow-hidden group/image">
         <button onClick={() => onOpenDetailModal(property)} className="absolute inset-0 z-0"></button>
-        <img src={(property.images && property.images.length > 0) ? property.images[currentImageIndex] : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" referrerPolicy="no-referrer" />
+        <img src={(property.images && property.images.length > 0) ? property.images[currentImageIndex] : 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80'} alt={property.title} className="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-[1.04]" referrerPolicy="no-referrer" />
         
         {property.images && property.images.length > 1 && (
             <>
@@ -242,18 +242,18 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
             )}
         </div>
       </div>
-      <div onClick={() => onOpenDetailModal(property)} className="p-4 flex-grow flex flex-col text-left cursor-pointer">
+      <div onClick={() => onOpenDetailModal(property)} className="p-5 flex-grow flex flex-col text-left cursor-pointer">
         <div className="flex justify-between items-start mb-2">
             <span className="text-[10px] font-bold text-brand-primary uppercase tracking-widest">{property.propertyType}</span>
-            <p className="text-xl font-bold text-brand-dark dark:text-white">{formattedPrice}</p>
+            <p className="text-2xl font-extrabold text-brand-dark dark:text-[#F5F5EF]">{formattedPrice}</p>
         </div>
-        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1 truncate group-hover:text-brand-primary transition-colors">{property.title}</h3>
-        <div className="flex items-center text-slate-500 dark:text-slate-400 mb-4 text-xs">
+        <h3 className="text-lg font-extrabold text-brand-dark dark:text-[#F5F5EF] mb-1 truncate group-hover:text-brand-primary transition-colors">{property.title}</h3>
+        <div className="flex items-center text-brand-muted dark:text-dark-muted mb-4 text-xs">
           <LocationPinIcon className="w-3.5 h-3.5 mr-1 text-slate-400 flex-shrink-0" />
           <span className="truncate">{property.address.street}, {property.address.city}</span>
         </div>
         
-        <div className="grid grid-cols-3 gap-2 text-slate-600 dark:text-slate-300 glass-card p-3 rounded-lg mb-4 text-xs">
+        <div className="grid grid-cols-3 gap-2 text-brand-muted dark:text-dark-muted bg-brand-surface-muted/60 dark:bg-dark-elevated/60 border border-brand-border dark:border-dark-border p-3 rounded-2xl mb-4 text-xs">
             <div className="flex flex-col items-center border-r border-slate-200 dark:border-slate-600">
                 <BedIcon className="w-4 h-4 text-brand-primary mb-1"/>
                 <span className="font-semibold">{property.details.beds} Beds</span>
@@ -289,7 +289,7 @@ const PropertyCard: React.FC<PropertyCardProps> = (props) => {
                     onClick={(e) => handleActionClick(e, onOpenTourModal)}
                     className="flex-1 glass-button text-xs font-bold py-2.5 rounded-lg transition-all"
                 >
-                    Book Tour
+                    Schedule Viewing
                 </button>
                 <button 
                     onClick={(e) => handleActionClick(e, onFindSimilar)}

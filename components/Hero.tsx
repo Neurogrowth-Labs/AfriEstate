@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from './SearchBar';
 import type { SearchFilters } from '../types';
-import { useTranslations } from '../contexts/LanguageContext';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
@@ -47,10 +46,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = (props) => {
-  const { t } = useTranslations();
-
   return (
-    <div className="relative h-[80vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden font-sans">
+    <div className="relative min-h-[620px] h-[65vh] flex items-center justify-center text-center overflow-hidden font-sans">
       <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80" 
@@ -65,12 +62,12 @@ const Hero: React.FC<HeroProps> = (props) => {
       <div className="relative z-10 px-6 w-full max-w-7xl mx-auto mt-16">
         <FadeInSection>
             <span className="inline-block py-1 px-3 rounded-full bg-white/10 text-white backdrop-blur-sm border border-white/20 text-sm font-semibold tracking-widest uppercase mb-6 shadow-xl">
-                Discover Premium Real Estate
+                African property, presented globally
             </span>
             <h1 
               className="text-5xl sm:text-6xl md:text-8xl font-black mb-6 tracking-tight text-white font-heading drop-shadow-2xl" 
             >
-              {t.hero.title}
+              Find a place to call home.
             </h1>
         </FadeInSection>
         
@@ -78,7 +75,7 @@ const Hero: React.FC<HeroProps> = (props) => {
             <p 
               className="text-xl md:text-3xl mb-12 max-w-3xl mx-auto font-light leading-relaxed text-slate-100 drop-shadow-lg"
             >
-              Find a place you'll love to call home. Secure your future with the continent's most premier property platform.
+              Discover exceptional properties across Africa with a refined, map-first marketplace built for buyers, renters, and investors.
             </p>
         </FadeInSection>
 
@@ -92,7 +89,7 @@ const Hero: React.FC<HeroProps> = (props) => {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <div className="text-white text-sm opacity-80 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse"></span>
-                    Over 10,000 Verified Listings
+                    Popular: Cape Town · Johannesburg · Lagos · Nairobi · Accra · Luanda
                 </div>
             </div>
         </FadeInSection>
