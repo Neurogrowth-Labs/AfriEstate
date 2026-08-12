@@ -24,6 +24,9 @@ interface HeaderProps {
   onAboutClick: () => void;
   onServicesClick: () => void;
   onContactClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotificationIds, onLoginClick, onSignUpClick, onDashboardClick, onListPropertyClick, onNotificationClick, onMarkAllNotificationsAsRead, onHomeClick, onAboutClick, onServicesClick, onContactClick }) => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -80,7 +83,6 @@ interface HeaderProps {
         <button onClick={onHomeClick} className="flex items-center space-x-2 flex-shrink-0 group">
           <span className="text-xl font-bold text-black tracking-tight">AfriEstate</span>
         </button>
-        </nav>
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative" ref={currencyRef}>
             <button onClick={() => setIsCurrencyOpen(!isCurrencyOpen)} className="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">

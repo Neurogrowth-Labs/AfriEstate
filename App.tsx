@@ -1356,8 +1356,6 @@ The other fields should follow these rules:
         onAboutClick={() => scrollToSection('about', 'about')}
         onServicesClick={() => scrollToSection('services', 'services')}
         onContactClick={() => scrollToSection('contact', 'contact')}
-          contact: getRouteForPage('contact', 'contact'),
-        }}
       />
       <main className="flex-grow">
         {renderPage()}
