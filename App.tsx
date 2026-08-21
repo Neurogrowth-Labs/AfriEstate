@@ -275,6 +275,11 @@ const App: React.FC = () => {
   const { t } = useTranslations();
   const { addToast } = useToast();
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.theme = theme;
+  }, [theme]);
+
   // Session Timeout Logic
   const warningTimerRef = useRef<number | null>(null);
   const logoutTimerRef = useRef<number | null>(null);
@@ -1115,7 +1120,7 @@ The other fields should follow these rules:
                   <section id="just-listed" className="py-24 bg-brand-light relative z-10 -mt-8 rounded-t-[3xl]">
                   <div className="container mx-auto px-4 sm:px-6">
                       <div className="flex flex-col items-center mb-16">
-                          <div className="w-12 h-1 bg-brand-secondary mb-6"></div>
+                          <div className="w-12 h-1 bg-brand-primary mb-6"></div>
                           <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading">Just Listed</h2>
                           <p className="mt-4 text-slate-500 font-light text-center max-w-2xl text-lg">Discover the newest properties added to our exclusive collection. Your next investment starts here.</p>
                       </div>
@@ -1141,7 +1146,7 @@ The other fields should follow these rules:
                   <section id="featured-listings" className="py-24 bg-white">
                   <div className="container mx-auto px-4 sm:px-6">
                       <div className="flex flex-col items-center mb-16">
-                          <div className="w-12 h-1 bg-brand-secondary mb-6"></div>
+                          <div className="w-12 h-1 bg-brand-primary mb-6"></div>
                           <h2 className="text-4xl md:text-5xl font-black text-center text-brand-dark font-heading">{t.app.featuredListings}</h2>
                           <p className="mt-4 text-slate-500 font-light text-center max-w-2xl text-lg">Curated selections that represent the pinnacle of luxury, comfort, and value across the continent.</p>
                       </div>
@@ -1164,9 +1169,9 @@ The other fields should follow these rules:
                   </div>
                   </section>
 
-                  <section className="py-24 bg-brand-dark text-white relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-secondary rounded-full filter blur-[120px] opacity-10 -mr-[400px] -mt-[400px]"></div>
-                      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-primary rounded-full filter blur-[100px] opacity-10 -ml-[300px] -mb-[300px]"></div>
+                  <section className="py-24 bg-dark-bg text-white relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-primary rounded-lg filter blur-[120px] opacity-10 -mr-[400px] -mt-[400px]"></div>
+                      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-primary rounded-lg filter blur-[100px] opacity-10 -ml-[300px] -mb-[300px]"></div>
                       
                       <div className="container mx-auto px-4 sm:px-6 relative z-10">
                           <div className="text-center mb-16">
@@ -1187,22 +1192,22 @@ The other fields should follow these rules:
                   <div className="container mx-auto px-4 sm:px-6 max-w-[1500px]">
                       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
                           <div>
-                              <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold mb-3">Map-first discovery</p>
-                              <h2 className="text-4xl md:text-5xl font-black text-brand-dark dark:text-[#F5F5EF] font-heading mb-4">{t.app.findYourProperty}</h2>
+                              <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-primary mb-3">Map-first discovery</p>
+                              <h2 className="text-4xl md:text-5xl font-black text-brand-dark dark:text-white font-heading mb-4">{t.app.findYourProperty}</h2>
                               <p className="text-brand-muted dark:text-dark-muted max-w-2xl">Browse refined property cards beside an interactive map, built for fast shortlisting across Africa's leading cities.</p>
                           </div>
                           <button onClick={handleSaveSearch} className="flex items-center justify-center gap-2 bg-white dark:bg-dark-surface text-brand-dark dark:text-white px-5 py-3 rounded-2xl font-bold hover:bg-brand-surface-muted dark:hover:bg-dark-elevated transition-colors border border-brand-border dark:border-dark-border">
-                              <BookmarkIcon className="w-5 h-5 text-brand-primary dark:text-brand-gold" />
+                              <BookmarkIcon className="w-5 h-5 text-brand-primary dark:text-brand-primary" />
                               {t.app.saveSearch}
                           </button>
                       </div>
 
                       <div className="flex flex-wrap justify-between items-center gap-4 w-full mb-8">
-                          <div className="flex items-center gap-3 rounded-full bg-white/80 dark:bg-dark-surface border border-brand-border dark:border-dark-border p-1">
-                              <button onClick={() => setActiveTab('all')} className={`px-5 py-2.5 text-sm font-bold rounded-full transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white dark:bg-brand-gold dark:text-dark-bg' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>{t.app.allListings}</button>
-                              <button onClick={() => setActiveTab('saved')} className={`px-5 py-2.5 text-sm font-bold rounded-full transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white dark:bg-brand-gold dark:text-dark-bg' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>
+                          <div className="flex items-center gap-3 rounded-lg bg-white/80 dark:bg-dark-surface border border-brand-border dark:border-dark-border p-1">
+                              <button onClick={() => setActiveTab('all')} className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-colors ${activeTab === 'all' ? 'bg-brand-primary text-white dark:bg-brand-primary dark:text-white' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>{t.app.allListings}</button>
+                              <button onClick={() => setActiveTab('saved')} className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-colors relative ${activeTab === 'saved' ? 'bg-brand-primary text-white dark:bg-brand-primary dark:text-white' : 'text-brand-muted dark:text-dark-muted hover:text-brand-dark dark:hover:text-white'}`}>
                               {t.app.savedProperties}
-                              {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
+                              {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-lg bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
                               </button>
                           </div>
                           <div className="flex lg:hidden bg-white/80 dark:bg-dark-surface rounded-xl p-1 border border-brand-border dark:border-dark-border">
@@ -1313,8 +1318,8 @@ The other fields should follow these rules:
                   
                   {/* Home Page Call to Action */}
                   <section className="py-24 bg-brand-light relative overflow-hidden text-center sm:text-left">
-                      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-secondary rounded-full filter blur-[100px] opacity-20 -mr-48 -mt-48"></div>
-                      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary rounded-full filter blur-[100px] opacity-20 -ml-48 -mb-48"></div>
+                      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary rounded-lg filter blur-[100px] opacity-20 -mr-48 -mt-48"></div>
+                      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary rounded-lg filter blur-[100px] opacity-20 -ml-48 -mb-48"></div>
                       <div className="container mx-auto px-6 relative z-10 max-w-5xl">
                           <div className="bg-brand-dark rounded-[3rem] p-12 md:p-20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-12 text-white">
                               <div className="text-left flex-1">
@@ -1324,7 +1329,7 @@ The other fields should follow these rules:
                                   </p>
                               </div>
                               <div className="flex-shrink-0 w-full md:w-auto">
-                                  <button onClick={() => navigateToPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-full hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
+                                  <button onClick={() => navigateToPage('pricing')} className="bg-brand-primary text-white font-bold text-lg px-10 py-5 rounded-lg hover:bg-white hover:text-brand-dark transition-all transform hover:-translate-y-1 shadow-2xl flex items-center justify-center gap-3 w-full sm:w-auto">
                                       Sign Up Now <ArrowRightIcon className="w-6 h-6"/>
                                   </button>
                               </div>
@@ -1356,6 +1361,8 @@ The other fields should follow these rules:
         onAboutClick={() => scrollToSection('about', 'about')}
         onServicesClick={() => scrollToSection('services', 'services')}
         onContactClick={() => scrollToSection('contact', 'contact')}
+        theme={theme}
+        onThemeToggle={handleThemeToggle}
       />
       <main className="flex-grow">
         {renderPage()}

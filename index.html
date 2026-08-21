@@ -53,23 +53,23 @@
               'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
             },
             colors: {
-              'brand-primary': '#123C2A',
-              'brand-secondary': '#C79A45',
-              'brand-accent': '#B9683B',
-              'brand-gold': '#C79A45',
-              'brand-light': '#F7F7F4',
-              'brand-dark': '#17201B',
-              'brand-success': '#247A50',
-              'brand-error': '#C84B4B',
+              'brand-primary': '#1746D1',
+              'brand-secondary': '#1746D1',
+              'brand-accent': '#1746D1',
+              'brand-gold': '#1746D1',
+              'brand-light': '#FFFFFF',
+              'brand-dark': '#0A0A0A',
+              'brand-success': '#1746D1',
+              'brand-error': '#0A0A0A',
               'brand-surface': '#FFFFFF',
-              'brand-surface-muted': '#F0F1ED',
-              'brand-border': '#E4E6E1',
-              'brand-muted': '#66706A',
-              'dark-bg': '#08120E',
-              'dark-surface': '#0E1B15',
-              'dark-elevated': '#14251D',
-              'dark-border': '#24362D',
-              'dark-muted': '#9AA69F',
+              'brand-surface-muted': 'rgb(10 10 10 / 0.04)',
+              'brand-border': 'rgb(10 10 10 / 0.10)',
+              'brand-muted': 'rgb(10 10 10 / 0.62)',
+              'dark-bg': '#050505',
+              'dark-surface': '#050505',
+              'dark-elevated': 'rgb(255 255 255 / 0.06)',
+              'dark-border': 'rgb(255 255 255 / 0.14)',
+              'dark-muted': 'rgb(255 255 255 / 0.68)',
             },
           },
         },
@@ -94,7 +94,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
         body {
-          @apply font-sans min-h-screen overflow-x-hidden bg-brand-light text-brand-dark dark:bg-dark-bg dark:text-[#F5F5EF] transition-colors duration-300;
+          @apply font-sans min-h-screen overflow-x-hidden bg-brand-light text-brand-dark dark:bg-dark-bg dark:text-white transition-colors duration-300;
         }
         h1, h2, h3, h4, h5, h6 {
           @apply font-heading;
@@ -132,10 +132,10 @@
           @apply bg-white dark:bg-dark-surface hover:bg-brand-surface-muted/50 dark:hover:bg-dark-elevated border border-brand-border dark:border-dark-border transition-all duration-300 rounded-2xl shadow-none hover:-translate-y-1;
         }
         .glass-button {
-          @apply bg-white/70 dark:bg-dark-surface hover:bg-brand-surface-muted dark:hover:bg-dark-elevated border border-brand-border dark:border-dark-border transition-all rounded-xl text-brand-dark dark:text-[#F5F5EF] shadow-none;
+          @apply bg-white/70 dark:bg-dark-surface hover:bg-brand-surface-muted dark:hover:bg-dark-elevated border border-brand-border dark:border-dark-border transition-all rounded-xl text-brand-dark dark:text-white shadow-none;
         }
         .glass-badge {
-          @apply bg-[#F2E7CF]/90 dark:bg-[#3A2E19]/80 border border-brand-gold/35 text-brand-dark dark:text-[#F5F5EF] rounded-full flex items-center justify-center;
+          @apply bg-brand-primary/10 dark:bg-brand-primary/20 border border-brand-primary/30 text-brand-dark dark:text-white rounded-lg flex items-center justify-center;
         }
       }
     </style>
