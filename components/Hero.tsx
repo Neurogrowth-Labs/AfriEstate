@@ -55,32 +55,32 @@ const Hero: React.FC<HeroProps> = (props) => {
             className="w-full h-full object-cover transform scale-105 animate-slow-zoom"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-brand-dark/50 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-black/20"></div>
       </div>
       
       <div className="relative z-10 px-6 w-full max-w-7xl mx-auto mt-16">
         <FadeInSection>
             <span className="inline-block py-1 px-3 rounded-full bg-white/10 text-white backdrop-blur-sm border border-white/20 text-sm font-semibold tracking-widest uppercase mb-6 shadow-xl">
-                African property, presented globally
+                Bloomberg meets African luxury real estate
             </span>
             <h1 
               className="text-5xl sm:text-6xl md:text-8xl font-black mb-6 tracking-tight text-white font-heading drop-shadow-2xl" 
             >
-              Find a place to call home.
+              African property intelligence, built for private-market decisions.
             </h1>
         </FadeInSection>
         
         <FadeInSection delay={200}>
             <p 
-              className="text-xl md:text-3xl mb-12 max-w-3xl mx-auto font-light leading-relaxed text-slate-100 drop-shadow-lg"
+              className="text-xl md:text-3xl mb-12 max-w-3xl mx-auto font-light leading-relaxed text-white/90 drop-shadow-lg"
             >
-              Discover exceptional properties across Africa with a refined, map-first marketplace built for buyers, renters, and investors.
+              Discover premium listings, investment analytics, and market intelligence across Africa in one institutional-grade marketplace.
             </p>
         </FadeInSection>
 
         <FadeInSection delay={400}>
-            <div className="max-w-5xl mx-auto bg-white/10 backdrop-blur-md p-3 md:p-4 rounded-3xl border border-white/20 shadow-2xl">
+            <div className="max-w-5xl mx-auto bg-white/10 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-white/20 shadow-2xl">
               <div className="bg-white rounded-2xl p-2 shadow-inner">
                 <SearchBar {...props} />
               </div>
@@ -88,7 +88,7 @@ const Hero: React.FC<HeroProps> = (props) => {
             
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <div className="text-white text-sm opacity-80 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse"></span>
+                    <span className="w-2 h-2 rounded-sm bg-brand-primary animate-pulse"></span>
                     Popular: Cape Town · Johannesburg · Lagos · Nairobi · Accra · Luanda
                 </div>
             </div>

@@ -7,7 +7,7 @@ import { Language, Currency } from '../types';
 import { useTranslations } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { languageOptions, currencyOptions } from '../constants';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import NotificationsPanel from './NotificationsPanel';
 
 interface HeaderProps {
@@ -24,9 +24,11 @@ interface HeaderProps {
   onAboutClick: () => void;
   onServicesClick: () => void;
   onContactClick: () => void;
+  theme: 'light' | 'dark';
+  onThemeToggle: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotificationIds, onLoginClick, onSignUpClick, onDashboardClick, onListPropertyClick, onNotificationClick, onMarkAllNotificationsAsRead, onHomeClick, onAboutClick, onServicesClick, onContactClick }) => {
+const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotificationIds, onLoginClick, onSignUpClick, onDashboardClick, onListPropertyClick, onNotificationClick, onMarkAllNotificationsAsRead, onHomeClick, onAboutClick, onServicesClick, onContactClick, theme, onThemeToggle }) => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,14 +80,23 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
   };
 
   return (
-    <header className="glass-header sticky top-0 z-40 border-b border-slate-100 dark:border-slate-800 shadow-none">
-      <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+    <header className="glass-header sticky top-0 z-40 shadow-none">
+      <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
         <button onClick={onHomeClick} className="flex items-center space-x-2 flex-shrink-0 group">
-          <span className="text-xl font-bold text-black tracking-tight">AfriEstate</span>
+          <span className="text-xl font-bold text-brand-dark dark:text-white tracking-tight">AfriEstate</span>
         </button>
         <div className="flex items-center space-x-2 sm:space-x-3">
+          <button
+            onClick={onThemeToggle}
+            type="button"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            className="inline-flex items-center gap-2 rounded-lg border border-brand-primary/25 bg-white px-3 py-2 text-sm font-black text-brand-dark transition-colors hover:bg-brand-primary hover:text-white dark:bg-dark-bg dark:text-white dark:hover:bg-brand-primary"
+          >
+            {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
+            <span className="hidden md:inline">{theme === 'light' ? 'Dark' : 'Light'} mode</span>
+          </button>
           <div className="relative" ref={currencyRef}>
-            <button onClick={() => setIsCurrencyOpen(!isCurrencyOpen)} className="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
+            <button onClick={() => setIsCurrencyOpen(!isCurrencyOpen)} className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
                 <BanknotesIcon className="w-5 h-5" />
                 <span className="text-xs font-semibold hidden sm:inline">{currencyOptions[currency].symbol}</span>
             </button>
@@ -108,10 +119,10 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
             )}
           </div>
           <div className="relative" ref={langRef}>
-            <button onClick={() => setIsLangOpen(!isLangOpen)} className="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
+            <button onClick={() => setIsLangOpen(!isLangOpen)} className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
                 <GlobeAltIcon className="w-5 h-5" />
                 {isTranslating ? (
-                    <div className="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-lg animate-spin"></div>
                 ) : (
                     <span className="text-xs font-semibold hidden sm:inline">{languageOptions[language].flag}</span>
                 )}
@@ -137,11 +148,11 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
           <div className="relative" ref={notificationsRef}>
             <button
                 onClick={() => setIsNotificationsOpen(prev => !prev)}
-                className="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-primary dark:hover:text-white transition-colors relative"
+                className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors relative"
             >
                 <BellIcon className="w-5 h-5" />
                 {currentUser && unreadCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold">
+                <span className="absolute top-0.5 right-0.5 flex h-3 w-3 items-center justify-center rounded-lg bg-brand-primary text-white text-[9px] font-bold">
                     {unreadCount}
                 </span>
                 )}
@@ -157,11 +168,11 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
           
           {currentUser ? (
             <div className="relative">
-              <button onClick={onDashboardClick} className="p-1.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-primary dark:hover:text-white transition-colors">
+              <button onClick={onDashboardClick} className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors">
                 <UserCircleIcon className="w-6 h-6" />
               </button>
               {currentUser.isVerified && (currentUser.role === 'agent' || currentUser.role === 'investor') && (
-                <CheckBadgeIcon className="absolute -bottom-0.5 -right-0.5 w-4 h-4 text-brand-primary bg-white rounded-full" />
+                <CheckBadgeIcon className="absolute -bottom-0.5 -right-0.5 w-4 h-4 text-brand-primary bg-white rounded-lg" />
               )}
             </div>
           ) : (

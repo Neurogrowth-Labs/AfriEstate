@@ -19,6 +19,11 @@ View your app in AI Studio: https://ai.studio/apps/431f6619-2bb6-47f8-88cb-c451b
 3. Run the app:
    `npm run dev`
 
+
+## Platform architecture diagnostic
+
+See [`docs/afriestate-platform-diagnostic.md`](docs/afriestate-platform-diagnostic.md) for the full end-to-end platform diagnostic, current-state assessment, future-state unified ecosystem architecture, data-model recommendations, payment and Agent Wallet architecture, role matrix, realtime event model, implementation roadmap, testing strategy, and recovery plan.
+
 ## Production hardening
 
 Apply `supabase_production_hardening.sql` to remove the legacy plaintext password surface, align table columns with the frontend data layer, add investor deal/commitment foundations, and replace prototype public policies with role-aware RLS. Keep `VITE_DEMO_MODE=false` in production so failed backend writes surface as errors instead of demo fallbacks.
