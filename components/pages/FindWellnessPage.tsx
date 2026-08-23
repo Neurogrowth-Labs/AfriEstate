@@ -176,11 +176,6 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
             </section>
 
             {/* Featured Companies Directory */}
-            <section className="py-24 bg-stone-100 text-stone-800">
-                <div className="container mx-auto px-6">
-                    <FadeInSection>
-                        <h2 className="text-4xl font-heading font-semibold mb-6 text-center text-stone-800">Wellness Business Directory</h2>
-                        <p className="text-center text-stone-600 max-w-2xl mx-auto mb-16">Connect with Africa's leading healthcare providers, therapeutic professionals, fitness centers, and comprehensive wellness sanctuaries.</p>
                     </FadeInSection>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         {displayCompanies.slice(0, visibleCount).map((company, i) => (
