@@ -1169,19 +1169,16 @@ The other fields should follow these rules:
                   </div>
                   </section>
 
-                  <section className="py-24 bg-dark-bg text-white relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-primary rounded-lg filter blur-[120px] opacity-10 -mr-[400px] -mt-[400px]"></div>
-                      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-primary rounded-lg filter blur-[100px] opacity-10 -ml-[300px] -mb-[300px]"></div>
-                      
+                  <section className="py-24 bg-white dark:bg-dark-bg relative overflow-hidden">
                       <div className="container mx-auto px-4 sm:px-6 relative z-10">
                           <div className="text-center mb-16">
-                              <h2 className="text-4xl md:text-5xl font-black font-heading tracking-tight mb-6">{t.app.exploreByLifestyle}</h2>
-                              <p className="text-center text-slate-300 font-light mt-4 max-w-2xl mx-auto text-lg">{t.app.exploreByLifestyleSubtitle}</p>
+                              <h2 className="text-4xl md:text-5xl font-black font-heading tracking-tight text-brand-dark dark:text-white mb-6">{t.app.exploreByLifestyle}</h2>
+                              <p className="text-center text-slate-500 dark:text-slate-400 font-light mt-4 max-w-2xl mx-auto text-lg">{t.app.exploreByLifestyleSubtitle}</p>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                           {CATEGORIES.map(category => (
-                              <div key={category.titleKey} className="transform hover:-translate-y-2 transition-all duration-300">
-                                <CategoryCard title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} Icon={category.Icon} />
+                              <div key={category.titleKey}>
+                                <CategoryCard title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} />
                               </div>
                           ))}
                           </div>
