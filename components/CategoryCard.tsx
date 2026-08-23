@@ -3,20 +3,15 @@ import React from 'react';
 interface CategoryCardProps {
   title: string;
   description: string;
-  Icon: React.ElementType;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ title, description, Icon }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ title, description }) => {
   return (
-    <div className="glass-card p-8 rounded-2xl text-center group">
-      <div className="flex justify-center mb-6">
-        <div className="glass-card group-hover:bg-brand-primary/20 p-5 rounded-2xl transition-colors duration-300">
-          <Icon className="w-10 h-10 text-brand-primary transition-transform duration-300 group-hover:scale-110" />
-        </div>
-      </div>
-      <h3 className="text-xl font-bold text-brand-dark dark:text-white mb-2">{title}</h3>
+    <article className="bg-white dark:bg-dark-surface p-7 rounded-2xl text-left shadow-sm">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-primary mb-3">Lifestyle collection</p>
+      <h3 className="text-lg font-bold text-brand-dark dark:text-white mb-3">{title}</h3>
       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{description}</p>
-    </div>
+    </article>
   );
 };
 

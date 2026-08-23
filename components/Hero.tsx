@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from './SearchBar';
 import type { SearchFilters } from '../types';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
   const [isVisible, setVisible] = useState(false);
@@ -47,7 +46,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = (props) => {
   return (
-    <div className="relative min-h-[620px] h-[65vh] flex items-center justify-center text-center overflow-hidden font-sans">
+    <section className="relative min-h-[540px] h-[62vh] flex items-center justify-center text-center overflow-hidden font-sans">
       <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80" 
@@ -55,17 +54,17 @@ const Hero: React.FC<HeroProps> = (props) => {
             className="w-full h-full object-cover transform scale-105 animate-slow-zoom"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-slate-950/65"></div>
+          <div className="absolute inset-0 bg-brand-primary/15 mix-blend-multiply"></div>
       </div>
       
-      <div className="relative z-10 px-6 w-full max-w-7xl mx-auto mt-16">
+      <div className="relative z-10 px-5 w-full max-w-6xl mx-auto pt-20">
         <FadeInSection>
-            <span className="inline-block py-1 px-3 rounded-full bg-white/10 text-white backdrop-blur-sm border border-white/20 text-sm font-semibold tracking-widest uppercase mb-6 shadow-xl">
+            <span className="inline-block py-1 px-3 rounded-full bg-white/15 text-white backdrop-blur-sm text-xs font-semibold tracking-[0.16em] uppercase mb-4">
                 Bloomberg meets African luxury real estate
             </span>
             <h1 
-              className="text-5xl sm:text-6xl md:text-8xl font-black mb-6 tracking-tight text-white font-heading drop-shadow-2xl" 
+              className="text-4xl sm:text-5xl md:text-6xl font-black mb-4 tracking-tight text-white font-heading drop-shadow-2xl"
             >
               African property intelligence, built for private-market decisions.
             </h1>
@@ -73,22 +72,20 @@ const Hero: React.FC<HeroProps> = (props) => {
         
         <FadeInSection delay={200}>
             <p 
-              className="text-xl md:text-3xl mb-12 max-w-3xl mx-auto font-light leading-relaxed text-white/90 drop-shadow-lg"
+              className="text-base md:text-lg mb-7 max-w-2xl mx-auto font-medium leading-relaxed text-white/90 drop-shadow-lg"
             >
               Discover premium listings, investment analytics, and market intelligence across Africa in one institutional-grade marketplace.
             </p>
         </FadeInSection>
 
         <FadeInSection delay={400}>
-            <div className="max-w-5xl mx-auto bg-white/10 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-white/20 shadow-2xl">
-              <div className="bg-white rounded-2xl p-2 shadow-inner">
-                <SearchBar {...props} />
-              </div>
+            <div className="max-w-5xl mx-auto">
+              <SearchBar {...props} />
             </div>
             
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <div className="text-white text-sm opacity-80 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-sm bg-brand-primary animate-pulse"></span>
+            <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="text-white text-xs opacity-80 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></span>
                     Popular: Cape Town · Johannesburg · Lagos · Nairobi · Accra · Luanda
                 </div>
             </div>
@@ -104,7 +101,7 @@ const Hero: React.FC<HeroProps> = (props) => {
             animation: slowZoom 20s ease-in-out infinite alternate;
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 
