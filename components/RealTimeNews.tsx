@@ -50,7 +50,7 @@ const RealTimeNews: React.FC = () => {
   };
 
   return (
-    <section id="real-time-news" className="py-12 lg:py-16 glass-panel">
+    <section id="real-time-news" className="py-12 lg:py-16 bg-white dark:bg-dark-surface">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-brand-dark dark:text-white">Real-Time News & Trends</h2>
@@ -63,7 +63,7 @@ const RealTimeNews: React.FC = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g., 'Latest mortgage rate trends in South Africa'"
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary dark:bg-slate-800 dark:border-slate-600 dark:text-white"
+                className="w-full px-4 py-3 border-0 rounded-lg focus:ring-2 focus:ring-brand-primary/30 dark:bg-dark-elevated dark:text-white shadow-sm"
             />
             <button onClick={handleSearch} disabled={loading} className="bg-brand-primary text-white px-5 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all disabled:bg-slate-400 flex items-center justify-center space-x-2 h-[50px] w-48">
                 {loading ? (
@@ -78,7 +78,7 @@ const RealTimeNews: React.FC = () => {
         </div>
         
         {loading && (
-             <div className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl p-6 animate-pulse">
+             <div className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-800 rounded-xl p-6 animate-pulse">
                 <div className="space-y-3">
                     <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded w-5/6"></div>
                     <div className="h-4 bg-slate-200 dark:bg-slate-600 rounded"></div>
@@ -90,12 +90,12 @@ const RealTimeNews: React.FC = () => {
         {error && <p className="text-center text-red-500">{error}</p>}
 
         {result && (
-            <div className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl p-8 transform transition-all duration-500 opacity-0 animate-fade-in-up">
+            <div className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-800 rounded-xl p-8 transform transition-all duration-500 opacity-0 animate-fade-in-up">
                 <div className="prose dark:prose-invert max-w-none">
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>{result.text}</ReactMarkdown>
                 </div>
                 {result.sources.length > 0 && (
-                    <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <div className="mt-6 pt-4">
                         <h4 className="font-semibold text-sm text-slate-600 dark:text-slate-300 mb-2">Sources:</h4>
                         <ul className="list-decimal list-inside space-y-1">
                             {result.sources.map((source, index) => source.web && (
