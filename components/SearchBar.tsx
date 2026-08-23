@@ -25,14 +25,14 @@ const TabButton: React.FC<{
     <button
         type="button"
         onClick={onClick}
-        className={`flex items-center gap-2 px-6 py-4 text-sm font-black rounded-t-2xl transition-all flex-shrink-0 ${
+        className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-colors flex-shrink-0 ${
             isActive
-                ? `glass-panel ${color} shadow-[0_-4px_10px_rgba(0,0,0,0.1)]`
-                : 'text-black/70 hover:text-black hover:bg-slate-50'
+                ? `bg-white ${color} shadow-sm`
+                : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
         }`}
     >
-        <Icon className="w-5 h-5" />
-        <span className="uppercase tracking-widest">{label}</span>
+        <Icon className="w-4 h-4" />
+        <span className="uppercase tracking-[0.12em]">{label}</span>
     </button>
 );
 
@@ -41,7 +41,7 @@ const SearchButton: React.FC<{ isSearchingAI: boolean }> = ({ isSearchingAI }) =
     <button
         type="submit"
         disabled={isSearchingAI}
-        className="bg-brand-primary text-white font-black uppercase tracking-widest px-5 py-4 rounded-xl hover:bg-brand-dark dark:hover:bg-brand-gold dark:hover:text-dark-bg transition-all disabled:bg-slate-400 shadow-none border border-brand-primary/10 transform hover:-translate-y-0.5 active:translate-y-0 w-full h-full text-sm"
+        className="bg-brand-primary text-white font-bold uppercase tracking-[0.12em] px-4 py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:bg-slate-400 w-full h-full text-xs"
     >
         {isSearchingAI ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -67,7 +67,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
         switch (activeTab) {
             case 'stays':
                 return (
-                    <div className="grid grid-cols-2 lg:grid-cols-7 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-7 gap-2">
                         <input type="text" placeholder="Location: e.g. Cape Town" name="location" value={filters.location} onChange={(e) => onFilterChange('location', e.target.value)} className="input-field col-span-2 lg:col-span-2" />
                         <input type="date" name="checkIn" value={filters.checkIn || ''} onChange={(e) => onFilterChange('checkIn', e.target.value)} className="input-field" title="Check-in Date" />
                         <input type="date" name="checkOut" value={filters.checkOut || ''} onChange={(e) => onFilterChange('checkOut', e.target.value)} className="input-field" title="Check-out Date" />
@@ -78,7 +78,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
                 );
             case 'transport':
                  return (
-                     <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
+                     <div className="grid grid-cols-2 lg:grid-cols-6 gap-2">
                         <input type="text" placeholder="Pick-up location" name="location" value={filters.location} onChange={(e) => onFilterChange('location', e.target.value)} className="input-field col-span-2 lg:col-span-2" />
                         <input type="date" name="checkIn" value={filters.checkIn || ''} onChange={(e) => onFilterChange('checkIn', e.target.value)} className="input-field" title="Pick-up Date" />
                         <select name="vehicleType" value={filters.vehicleType || ''} onChange={(e) => onFilterChange('vehicleType', e.target.value)} className="input-field">
@@ -94,7 +94,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
                 );
              case 'wellness':
                 return (
-                     <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
                         <input type="text" placeholder="Destination" name="location" value={filters.location} onChange={(e) => onFilterChange('location', e.target.value)} className="input-field col-span-2 lg:col-span-2" />
                         <input type="date" name="checkIn" value={filters.checkIn || ''} onChange={(e) => onFilterChange('checkIn', e.target.value)} className="input-field" title="Start Date" />
                         <input type="number" placeholder="Max Price" name="priceMax" value={filters.priceMax === 10000000 ? '' : filters.priceMax} onChange={(e) => onFilterChange('priceMax', e.target.value === '' ? 10000000 : Number(e.target.value))} className="input-field" />
@@ -104,14 +104,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
             case 'buy_rent':
             default:
                 return (
-                     <div className="grid grid-cols-2 lg:grid-cols-7 gap-3">
+                     <div className="grid grid-cols-2 lg:grid-cols-7 gap-2">
                         <input type="text" placeholder="Location" name="location" value={filters.location} onChange={(e) => onFilterChange('location', e.target.value)} className="input-field col-span-2 lg:col-span-2" />
                         <select name="listingType" value={filters.listingType} onChange={(e) => onFilterChange('listingType', e.target.value)} className="input-field">
                             <option value={ListingType.ALL}>Property type</option>
                             <option value={ListingType.SALE}>For Sale</option>
                             <option value={ListingType.RENT}>For Rent</option>
                         </select>
-                        <div className="col-span-2 lg:col-span-2 flex flex-col justify-center px-4 input-field gap-1" style={{paddingTop: '0.4rem', paddingBottom: '0.4rem'}}>
+                        <div className="col-span-2 lg:col-span-2 flex flex-col justify-center px-3 input-field gap-1" style={{paddingTop: '0.35rem', paddingBottom: '0.35rem'}}>
                             <div className="flex justify-between items-center w-full">
                                 <span className="text-xs font-bold text-slate-500 uppercase">Max Price</span>
                                 <span className="text-sm font-bold text-brand-dark dark:text-white">R {filters.priceMax === 10000000 || !filters.priceMax ? 'Any' : (filters.priceMax).toLocaleString()}</span>
@@ -137,17 +137,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
     };
 
     return (
-        <div className="bg-white/10 dark:bg-dark-surface/20 backdrop-blur-2xl p-3 rounded-[2rem] shadow-none w-full border border-white/20 dark:border-dark-border/60">
+        <div className="bg-white/90 backdrop-blur-xl p-2 rounded-2xl shadow-2xl shadow-slate-950/20 w-full">
             <div className="bg-transparent">
                 <div className="overflow-x-auto no-scrollbar">
-                    <div className="flex items-center px-2 whitespace-nowrap">
-                        <TabButton label="Buy" icon={BuildingStorefrontIcon} isActive={activeTab === 'buy_rent'} onClick={() => setTabAndPropertyType('buy_rent', PropertyType.ALL)} color="text-black" />
-                        <TabButton label="Rent" icon={MapPinIcon} isActive={activeTab === 'stays'} onClick={() => setTabAndPropertyType('stays', PropertyType.SHORT_TERM_RENTAL)} color="text-black" />
-                        <TabButton label="Invest" icon={TruckIcon} isActive={activeTab === 'transport'} onClick={() => setTabAndPropertyType('transport', PropertyType.TRANSPORT)} color="text-black" />
-                        <TabButton label="Stays" icon={WellnessIcon} isActive={activeTab === 'wellness'} onClick={() => setTabAndPropertyType('wellness', PropertyType.WELLNESS)} color="text-black" />
+                    <div className="flex items-center gap-1 px-1 whitespace-nowrap">
+                        <TabButton label="Buy & Rent" icon={BuildingStorefrontIcon} isActive={activeTab === 'buy_rent'} onClick={() => setTabAndPropertyType('buy_rent', PropertyType.ALL)} color="text-slate-900" />
+                        <TabButton label="Stays" icon={MapPinIcon} isActive={activeTab === 'stays'} onClick={() => setTabAndPropertyType('stays', PropertyType.SHORT_TERM_RENTAL)} color="text-slate-900" />
+                        <TabButton label="Transport" icon={TruckIcon} isActive={activeTab === 'transport'} onClick={() => setTabAndPropertyType('transport', PropertyType.TRANSPORT)} color="text-slate-900" />
+                        <TabButton label="Wellness" icon={WellnessIcon} isActive={activeTab === 'wellness'} onClick={() => setTabAndPropertyType('wellness', PropertyType.WELLNESS)} color="text-slate-900" />
                     </div>
                 </div>
-                <div className="p-5 md:p-6 glass-panel rounded-2xl shadow-none">
+                <div className="p-3 md:p-4 bg-slate-50/90 rounded-xl mt-2">
                     <form onSubmit={handleSearch}>
                         {renderFilters()}
                     </form>
@@ -156,7 +156,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isSearchingAI, filters,
              <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                .input-field { @apply w-full px-4 py-3.5 text-base border border-brand-border dark:border-dark-border rounded-xl focus:ring-2 focus:ring-brand-primary dark:bg-dark-elevated dark:text-white placeholder:text-brand-muted font-medium transition-all hover:border-brand-primary/30 bg-brand-surface-muted/70; }
+                .input-field { @apply w-full px-3 py-2.5 text-sm border-0 rounded-lg focus:ring-2 focus:ring-brand-primary/30 bg-white text-slate-800 placeholder:text-slate-400 font-medium transition-colors; }
              `}</style>
         </div>
     );
