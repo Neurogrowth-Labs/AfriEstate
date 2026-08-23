@@ -79,10 +79,10 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
     return (
         <div className="bg-brand-light text-brand-dark font-sans min-h-screen">
             {/* Hero Section */}
-            <section className="relative pt-32 pb-48 lg:pt-48 lg:pb-64 overflow-hidden bg-brand-primary">
+            <section className="relative pt-32 pb-48 lg:pt-48 lg:pb-64 overflow-hidden bg-black">
                 <div className="absolute inset-0 z-0">
                     <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070" alt="Hero" className="w-full h-full object-cover opacity-30"  referrerPolicy="no-referrer" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-primary via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
 
                 <div className="container mx-auto px-6 relative z-10 text-center">
@@ -102,24 +102,24 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                 <div className="container mx-auto px-6">
                     <div className="bg-white/90 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-2xl max-w-5xl mx-auto border border-white/50">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-brand-primary relative">
+                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-black relative">
                                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-8">Destination</label>
-                                <MapPinIcon className="w-5 h-5 text-brand-primary absolute left-4 bottom-4" />
+                                <MapPinIcon className="w-5 h-5 text-black absolute left-4 bottom-4" />
                                 <input type="text" placeholder="Where to?" className="w-full bg-transparent outline-none font-medium text-brand-dark pl-6" />
                             </div>
-                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-brand-primary relative">
+                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-black relative">
                                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-8">Check-in</label>
-                                <CalendarIcon className="w-5 h-5 text-brand-primary absolute left-4 bottom-4" />
+                                <CalendarIcon className="w-5 h-5 text-black absolute left-4 bottom-4" />
                                 <input type="date" className="w-full bg-transparent outline-none font-medium text-brand-dark pl-6" />
                             </div>
-                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-brand-primary relative">
+                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-black relative">
                                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-8">Check-out</label>
-                                <CalendarIcon className="w-5 h-5 text-brand-primary absolute left-4 bottom-4" />
+                                <CalendarIcon className="w-5 h-5 text-black absolute left-4 bottom-4" />
                                 <input type="date" className="w-full bg-transparent outline-none font-medium text-brand-dark pl-6" />
                             </div>
-                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-brand-primary relative">
+                            <div className="bg-brand-light rounded-2xl p-4 border border-gray-100 focus-within:ring-2 ring-black relative">
                                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 ml-8">Guests</label>
-                                <UsersIcon className="w-5 h-5 text-brand-primary absolute left-4 bottom-4" />
+                                <UsersIcon className="w-5 h-5 text-black absolute left-4 bottom-4" />
                                 <select className="w-full bg-transparent outline-none font-medium text-brand-dark appearance-none pr-6 pl-6 cursor-pointer">
                                     <option>2 Guests, 1 Room</option>
                                     <option>1 Guest, 1 Room</option>
@@ -128,7 +128,7 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                 </select>
                                 <ChevronDownIcon className="w-4 h-4 text-gray-500 absolute right-4 bottom-5 pointer-events-none" />
                             </div>
-                            <button className="bg-brand-primary text-white rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-brand-primary/90 transition-colors shadow-lg py-5 lg:h-[72px]">
+                            <button className="bg-black text-white rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-black/90 transition-colors shadow-lg py-5 lg:h-[72px]">
                                 <SearchIcon className="w-5 h-5"/> Search
                             </button>
                         </div>
@@ -165,7 +165,7 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                      <FadeInSection>
                         <div className="flex justify-between items-end mb-16 border-b border-gray-100 pb-8">
                             <h2 className="text-4xl font-heading font-heading font-semibold text-brand-dark">Trending Properties</h2>
-                            <button className="text-brand-gold hover:text-brand-gold/80 font-semibold flex items-center gap-2">Explore All &rarr;</button>
+                            <button className="text-zinc-700 hover:text-zinc-700/80 font-semibold flex items-center gap-2">Explore All &rarr;</button>
                         </div>
                      </FadeInSection>
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -174,7 +174,7 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                  <div className="bg-white rounded-[24px] border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow group flex flex-col h-full cursor-pointer" onClick={() => setSelectedPropertyForDetails(property)}>
                                      <div className="relative h-56 overflow-hidden">
                                         <img src={property.image} alt={property.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"  referrerPolicy="no-referrer" />
-                                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-brand-primary shadow-sm">
+                                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-black shadow-sm">
                                             {property.badge}
                                         </div>
                                         <button onClick={(e) => e.stopPropagation()} className="absolute top-4 right-4 p-2 bg-white/50 backdrop-blur rounded-full hover:bg-white transition-colors">
@@ -185,13 +185,13 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                          <div className="flex justify-between items-start mb-2">
                                             <h4 className="font-semibold text-lg text-brand-dark leading-tight">{property.name}</h4>
                                             <div className="flex items-center gap-1 text-sm font-semibold">
-                                                <StarIcon className="w-4 h-4 solid text-brand-gold fill-current" /> {property.rating}
+                                                <StarIcon className="w-4 h-4 solid text-zinc-700 fill-current" /> {property.rating}
                                             </div>
                                          </div>
                                          <p className="text-gray-500 text-sm mb-4">{property.type} • {property.location}</p>
                                          <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-100">
-                                             <div className="font-semibold text-xl text-brand-primary">{property.price} <span className="text-sm text-gray-500 font-normal">/night</span></div>
-                                             <button onClick={(e) => { e.stopPropagation(); setSelectedPropertyForDetails(property); }} className="bg-brand-dark text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-brand-primary transition-colors">Book</button>
+                                             <div className="font-semibold text-xl text-black">{property.price} <span className="text-sm text-gray-500 font-normal">/night</span></div>
+                                             <button onClick={(e) => { e.stopPropagation(); setSelectedPropertyForDetails(property); }} className="bg-brand-dark text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-black transition-colors">Book</button>
                                          </div>
                                      </div>
                                  </div>
@@ -202,13 +202,13 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
              </section>
 
              {/* AI Concierge */}
-             <section className="py-24 bg-brand-primary text-white">
+             <section className="py-24 bg-black text-white">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <FadeInSection>
                             <div className="flex items-center gap-3 mb-4">
-                                <SparklesIcon className="w-8 h-8 text-brand-gold" />
-                                <span className="text-xl font-bold tracking-widest uppercase text-brand-gold">Meet Ntanta</span>
+                                <SparklesIcon className="w-8 h-8 text-zinc-200" />
+                                <span className="text-xl font-bold tracking-widest uppercase text-zinc-200">Meet Ntanta</span>
                             </div>
                             <h2 className="text-5xl font-heading font-semibold mb-6">Your Intelligent Travel AI</h2>
                             <p className="text-xl text-white/80 mb-8 max-w-lg">Skip the scrolling. Tell Ntanta exactly what you want, and our smart AI will instantly curate the perfect stays and experiences for your hospitality and tourism needs.</p>
@@ -217,14 +217,14 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                 <p className="italic text-lg">"Find me a beachfront villa under R2,000 in Cape Town for next weekend."</p>
                             </div>
                             
-                            <button onClick={() => setIsChatBotOpen(true)} className="bg-brand-secondary text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-brand-secondary/80 transition-colors flex items-center gap-2">
+                            <button onClick={() => setIsChatBotOpen(true)} className="bg-zinc-800 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-zinc-800/80 transition-colors flex items-center gap-2">
                                 <ChatBubbleBottomCenterTextIcon className="w-5 h-5" /> Start a Conversation with Ntanta
                             </button>
                         </FadeInSection>
                         <div className="relative hidden lg:flex justify-center items-center">
-                            <div className="absolute inset-0 bg-brand-secondary/30 blur-3xl opacity-50 rounded-full w-96 h-96 m-auto animate-pulse"></div>
-                            <div className="relative z-10 w-80 h-80 bg-gradient-to-br from-brand-secondary to-brand-primary border-4 border-white/20 rounded-[40px] shadow-2xl flex flex-col items-center justify-center p-8 text-center backdrop-blur-sm">
-                                <SparklesIcon className="w-32 h-32 text-brand-gold mb-6" />
+                            <div className="absolute inset-0 bg-zinc-800/30 blur-3xl opacity-50 rounded-full w-96 h-96 m-auto animate-pulse"></div>
+                            <div className="relative z-10 w-80 h-80 bg-gradient-to-br from-zinc-800 to-black border-4 border-white/20 rounded-[40px] shadow-2xl flex flex-col items-center justify-center p-8 text-center backdrop-blur-sm">
+                                <SparklesIcon className="w-32 h-32 text-zinc-200 mb-6" />
                                 <h3 className="text-2xl font-bold font-heading">Ntanta AI</h3>
                                 <p className="text-sm font-medium text-white/70 mt-2">Hospitality & Tourism Chatbot</p>
                             </div>
@@ -243,9 +243,9 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                         {destinations.map((dest, i) => (
                              <FadeInSection key={dest.name} delay={i * 50}>
                                 <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col items-center text-center cursor-pointer group">
-                                    <h4 className="font-semibold text-xl text-brand-dark mb-2 group-hover:text-brand-gold transition-colors">{dest.name}</h4>
+                                    <h4 className="font-semibold text-xl text-brand-dark mb-2 group-hover:text-zinc-700 transition-colors">{dest.name}</h4>
                                     <p className="text-sm text-gray-500 mb-1">{dest.stays} Stays</p>
-                                    <p className="text-xs font-medium text-brand-primary bg-brand-light px-3 py-1 rounded-full mt-2">From {dest.price}</p>
+                                    <p className="text-xs font-medium text-black bg-brand-light px-3 py-1 rounded-full mt-2">From {dest.price}</p>
                                 </div>
                              </FadeInSection>
                         ))}
@@ -258,21 +258,21 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                         <FadeInSection delay={0}>
-                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brand-primary">
+                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-black">
                                 <ShieldCheckIcon className="w-10 h-10" />
                             </div>
                             <h3 className="text-xl font-semibold mb-3 font-heading">Verified Properties</h3>
                             <p className="text-gray-500">Every host and property is rigorously vetted to ensure safety and quality.</p>
                         </FadeInSection>
                         <FadeInSection delay={100}>
-                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brand-primary">
+                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-black">
                                 <StarIcon className="w-10 h-10" />
                             </div>
                             <h3 className="text-xl font-semibold mb-3 font-heading">Real Guest Reviews</h3>
                             <p className="text-gray-500">Read authentic experiences from travelers who have actually stayed there.</p>
                         </FadeInSection>
                         <FadeInSection delay={200}>
-                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-brand-primary">
+                            <div className="bg-brand-light w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-black">
                                 <SearchIcon className="w-10 h-10" />
                             </div>
                             <h3 className="text-xl font-semibold mb-3 font-heading">AI Fraud Detection</h3>
@@ -291,10 +291,10 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                       {/* Dialog */}
                       <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col h-[600px] max-h-[90vh]">
                           {/* Header */}
-                          <div className="p-4 bg-brand-primary text-white flex justify-between items-center">
+                          <div className="p-4 bg-black text-white flex justify-between items-center">
                               <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-brand-secondary rounded-full flex items-center justify-center">
-                                      <SparklesIcon className="w-6 h-6 text-brand-gold" />
+                                  <div className="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center">
+                                      <SparklesIcon className="w-6 h-6 text-zinc-200" />
                                   </div>
                                   <div>
                                       <h3 className="font-semibold text-lg leading-tight">Ntanta</h3>
@@ -315,9 +315,9 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                   <p className="text-sm text-brand-dark">Hi there! I'm Ntanta, your AI travel concierge. Where are you dreaming of going next?</p>
                               </div>
                               <div className="self-start inline-flex flex-wrap gap-2 mt-2">
-                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Beachfront in Cape Town</button>
-                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Safari lodges in Kenya</button>
-                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-brand-primary hover:text-brand-primary transition-colors text-gray-600">Luxury stays in Zanzibar</button>
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-black hover:text-black transition-colors text-gray-600">Beachfront in Cape Town</button>
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-black hover:text-black transition-colors text-gray-600">Safari lodges in Kenya</button>
+                                  <button className="text-xs px-3 py-1.5 bg-white border border-gray-200 rounded-full hover:border-black hover:text-black transition-colors text-gray-600">Luxury stays in Zanzibar</button>
                               </div>
                           </div>
 
@@ -327,9 +327,9 @@ const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] 
                                   <input 
                                       type="text" 
                                       placeholder="Ask Ntanta anything..." 
-                                      className="w-full bg-gray-50 border border-gray-200 rounded-full py-3 pl-4 pr-12 text-sm outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                                      className="w-full bg-gray-50 border border-gray-200 rounded-full py-3 pl-4 pr-12 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black"
                                   />
-                                  <button className="absolute right-2 top-1.5 w-9 h-9 bg-brand-primary text-white rounded-full flex items-center justify-center hover:bg-brand-primary/90 transition-colors">
+                                  <button className="absolute right-2 top-1.5 w-9 h-9 bg-black text-white rounded-full flex items-center justify-center hover:bg-black/90 transition-colors">
                                       <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                       </svg>

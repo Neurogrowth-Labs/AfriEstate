@@ -1169,19 +1169,16 @@ The other fields should follow these rules:
                   </div>
                   </section>
 
-                  <section className="py-24 bg-dark-bg text-white relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-primary rounded-lg filter blur-[120px] opacity-10 -mr-[400px] -mt-[400px]"></div>
-                      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-primary rounded-lg filter blur-[100px] opacity-10 -ml-[300px] -mb-[300px]"></div>
-                      
+                  <section className="py-24 bg-white dark:bg-dark-bg relative overflow-hidden">
                       <div className="container mx-auto px-4 sm:px-6 relative z-10">
                           <div className="text-center mb-16">
-                              <h2 className="text-4xl md:text-5xl font-black font-heading tracking-tight mb-6">{t.app.exploreByLifestyle}</h2>
-                              <p className="text-center text-slate-300 font-light mt-4 max-w-2xl mx-auto text-lg">{t.app.exploreByLifestyleSubtitle}</p>
+                              <h2 className="text-4xl md:text-5xl font-black font-heading tracking-tight text-brand-dark dark:text-white mb-6">{t.app.exploreByLifestyle}</h2>
+                              <p className="text-center text-slate-500 dark:text-slate-400 font-light mt-4 max-w-2xl mx-auto text-lg">{t.app.exploreByLifestyleSubtitle}</p>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                           {CATEGORIES.map(category => (
-                              <div key={category.titleKey} className="transform hover:-translate-y-2 transition-all duration-300">
-                                <CategoryCard title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} Icon={category.Icon} />
+                              <div key={category.titleKey}>
+                                <CategoryCard title={t.categories[category.titleKey as keyof typeof t.categories]} description={t.categories[category.descriptionKey as keyof typeof t.categories]} />
                               </div>
                           ))}
                           </div>
@@ -1192,9 +1189,9 @@ The other fields should follow these rules:
                   <div className="container mx-auto px-4 sm:px-6 max-w-[1500px]">
                       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
                           <div>
-                              <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-primary mb-3">Map-first discovery</p>
+                              <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-primary mb-3">Property discovery</p>
                               <h2 className="text-4xl md:text-5xl font-black text-brand-dark dark:text-white font-heading mb-4">{t.app.findYourProperty}</h2>
-                              <p className="text-brand-muted dark:text-dark-muted max-w-2xl">Browse refined property cards beside an interactive map, built for fast shortlisting across Africa's leading cities.</p>
+                              <p className="text-brand-muted dark:text-dark-muted max-w-2xl">Browse refined property cards and shortlist opportunities across Africa's leading cities.</p>
                           </div>
                           <button onClick={handleSaveSearch} className="flex items-center justify-center gap-2 bg-white dark:bg-dark-surface text-brand-dark dark:text-white px-5 py-3 rounded-2xl font-bold hover:bg-brand-surface-muted dark:hover:bg-dark-elevated transition-colors border border-brand-border dark:border-dark-border">
                               <BookmarkIcon className="w-5 h-5 text-brand-primary dark:text-brand-primary" />
@@ -1210,16 +1207,16 @@ The other fields should follow these rules:
                               {savedPropertyIds.size > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-lg bg-brand-accent text-white text-xs font-bold">{savedPropertyIds.size}</span>}
                               </button>
                           </div>
-                          <div className="flex lg:hidden bg-white/80 dark:bg-dark-surface rounded-xl p-1 border border-brand-border dark:border-dark-border">
+                          {theme === 'dark' && <div className="flex lg:hidden bg-white/80 dark:bg-dark-surface rounded-xl p-1 border border-brand-border dark:border-dark-border">
                               <button onClick={() => setIsMapView(false)} className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${!isMapView ? 'bg-brand-primary text-white' : 'text-brand-muted dark:text-dark-muted'}`}>List</button>
                               <button onClick={() => setIsMapView(true)} className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${isMapView ? 'bg-brand-primary text-white' : 'text-brand-muted dark:text-dark-muted'}`}>Map</button>
-                          </div>
+                          </div>}
                       </div>
 
                       {activeTab === 'all' && !isMapView && <p className="text-center lg:text-left text-brand-muted dark:text-dark-muted mb-8">{t.app.showingResults.replace('{{count}}', String(filteredProperties.length))}</p>}
                       {activeTab === 'saved' && !isMapView && <p className="text-center lg:text-left text-brand-muted dark:text-dark-muted mb-8">{t.app.savedCount.replace('{{count}}', String(savedProperties.length))}</p>}
 
-                      <div className="lg:grid lg:grid-cols-[55fr_45fr] lg:gap-8 lg:items-start">
+                      <div className={theme === 'dark' ? 'lg:grid lg:grid-cols-[55fr_45fr] lg:gap-8 lg:items-start' : ''}>
                         <div className={`${isMapView ? 'hidden lg:block' : 'block'}`}>
                           {activeTab === 'all' ? (
                               filteredProperties.length > 0 ? (
@@ -1261,12 +1258,12 @@ The other fields should follow these rules:
                               ) : <p className="text-center text-brand-muted dark:text-dark-muted">{t.app.noSavedProperties}</p>
                           )}
                         </div>
-                        <aside className={`${isMapView ? 'block' : 'hidden lg:block'} lg:sticky lg:top-24`}>
+                        {theme === 'dark' && <aside className={`${isMapView ? 'block' : 'hidden lg:block'} lg:sticky lg:top-24`}>
                            <MapInterface 
                               properties={activeTab === 'all' ? filteredProperties : savedProperties} 
                               onOpenDetailModal={handleOpenDetailModal}
                            />
-                        </aside>
+                        </aside>}
                       </div>
                   </div>
                   </section>
