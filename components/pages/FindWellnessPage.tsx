@@ -75,10 +75,10 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
         phone: p.agent?.phone || '+27 12 345 6789',
         website: 'www.wellness.com'
     })) : [
-        { name: 'Serenity Wellness Center', location: 'Cape Town', rating: 4.9, category: 'Mental Health • Coaching • Therapy', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop', notes: '', phone: '+27 21 555 1234', website: 'serenitywellness.co.za' },
-        { name: 'Vital Health Clinic', location: 'Johannesburg', rating: 4.8, category: 'Medical Wellness • Preventive Care', image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80', notes: '', phone: '+27 11 444 8888', website: 'vitalhealth.co.za' },
-        { name: 'Zen Retreat Africa', location: 'Garden Route', rating: 5.0, category: 'Retreats • Mindfulness • Yoga', image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80', notes: '', phone: '+27 44 333 9999', website: 'zenretreat.co.za' },
-        { name: 'Balance Corporate Wellness', location: 'Pretoria', rating: 4.7, category: 'Employee Wellness Programs', image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800&q=80', notes: '', phone: '+27 12 222 7777', website: 'balancewellness.co.za' }
+        { name: 'Serenity Wellness Center', location: 'Cape Town', rating: 4.9, category: 'Mental Health • Coaching • Therapy', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop', notes: 'Premier mental wellness center', phone: '+27 21 555 0001', website: 'www.serenity.co.za' },
+        { name: 'Vital Health Clinic', location: 'Johannesburg', rating: 4.8, category: 'Medical Wellness • Preventive Care', image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2070&auto=format&fit=crop', notes: 'Comprehensive health clinic', phone: '+27 11 555 0002', website: 'www.vitalhealth.co.za' },
+        { name: 'Zen Retreat Africa', location: 'Garden Route', rating: 5.0, category: 'Retreats • Mindfulness • Yoga', image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=2070&auto=format&fit=crop', notes: 'Tranquil wellness retreat', phone: '+27 44 555 0003', website: 'www.zenretreat.co.za' },
+        { name: 'Balance Corporate Wellness', location: 'Pretoria', rating: 4.7, category: 'Employee Wellness Programs', image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=2070&auto=format&fit=crop', notes: 'Corporate wellness solutions', phone: '+27 12 555 0004', website: 'www.balance.co.za' },
     ];
 
     const closeModal = () => {
@@ -167,7 +167,9 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                             <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm text-stone-700/80">
                                 <span className="font-medium mr-2 self-center">Popular Searches:</span>
                                 {['Mental Health', 'Therapy', 'Spa Treatments', 'Nutrition', 'Personal Training', 'Corporate Wellness'].map(tag => (
-                                    <span key={tag} className="bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 cursor-pointer hover:bg-white font-medium transition-colors">{tag}</span>
+                                    <span key={tag} className="bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200 cursor-pointer hover:bg-white font-medium transition-colors">
+                                        {tag}
+                                    </span>
                                 ))}
                             </div>
                         </FadeInSection>
@@ -176,14 +178,18 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
             </section>
 
             {/* Featured Companies Directory */}
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-6">
+                    <FadeInSection>
+                        <h2 className="text-4xl font-heading font-semibold text-stone-700 mb-12">Featured Wellness Providers</h2>
                     </FadeInSection>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         {displayCompanies.slice(0, visibleCount).map((company, i) => (
                             <FadeInSection key={company.name + i} delay={(i % 4) * 100}>
                                 <div className="bg-white text-gray-800 rounded-3xl overflow-hidden shadow-2xl group cursor-pointer flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300">
                                     <div className="h-40 relative flex-shrink-0 overflow-hidden">
-                                        <img src={company.image} alt={company.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"  referrerPolicy="no-referrer" />
-                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-stone-500 flex items-center gap-1 shadow-sm">
+                                        <img src={company.image} alt={company.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" referrerPolicy="no-referrer" />
+                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-stone-500 flex items-center gap-1 shadow-md">
                                             <StarIcon className="w-3 h-3 solid text-stone-500 fill-current" /> {company.rating}
                                         </div>
                                     </div>
@@ -195,7 +201,7 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                                         <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col gap-2">
                                             <p className="text-brand-dark text-sm flex items-center gap-2"><MapPinIcon className="w-4 h-4 text-gray-400"/> {company.location}</p>
                                             {company.phone !== 'N/A' && <p className="text-brand-dark text-sm flex items-center gap-2"><PhoneIcon className="w-4 h-4 text-gray-400"/> {company.phone}</p>}
-                                            {company.website !== 'N/A' && <p className="text-brand-dark text-sm flex items-center gap-2"><GlobeAltIcon className="w-4 h-4 text-gray-400"/> {company.website.replace('www.', '')}</p>}
+                                            {company.website !== 'N/A' && <p className="text-brand-dark text-sm flex items-center gap-2"><GlobeAltIcon className="w-4 h-4 text-gray-400"/> {company.website}</p>}
                                         </div>
                                         
                                         <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -229,40 +235,40 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                 </div>
             </section>
 
-             {/* Popular Services */}
-             <section className="py-24 bg-white">
-                 <div className="container mx-auto px-6">
-                     <FadeInSection>
+            {/* Popular Services */}
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-6">
+                    <FadeInSection>
                         <div className="flex justify-between items-end mb-16 border-b border-gray-100 pb-8">
                             <h2 className="text-4xl font-heading font-semibold text-stone-700">Popular Services Near You</h2>
                             <button className="text-stone-500 hover:text-stone-500/80 font-semibold flex items-center gap-2">View All &rarr;</button>
                         </div>
-                     </FadeInSection>
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                         {popularServices.map((service, i) => (
-                             <FadeInSection key={service.name} delay={i * 50}>
-                                 <div className="flex items-center justify-between p-6 rounded-[24px] border border-gray-100 hover:border-stone-500/30 hover:shadow-lg transition-all group bg-stone-50/30">
-                                     <div className="flex items-center gap-4">
+                    </FadeInSection>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {popularServices.map((service, i) => (
+                            <FadeInSection key={service.name} delay={i * 50}>
+                                <div className="flex items-center justify-between p-6 rounded-[24px] border border-gray-100 hover:border-stone-500/30 hover:shadow-lg transition-all group bg-stone-50/30">
+                                    <div className="flex items-center gap-4">
                                         <div className="text-3xl bg-white w-14 h-14 rounded-full flex items-center justify-center shadow-sm">{service.icon}</div>
                                         <div>
                                             <h4 className="font-semibold text-gray-900 border-b border-transparent group-hover:border-gray-900 transition-colors inline-block">{service.name}</h4>
                                             <p className="text-sm text-gray-500 font-medium">{service.price}</p>
                                         </div>
-                                     </div>
-                                     <button className="bg-stone-700 text-white px-5 py-2 rounded-full text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-0 translate-x-4">
-                                         {service.button}
-                                     </button>
-                                 </div>
-                             </FadeInSection>
-                         ))}
-                     </div>
-                 </div>
-             </section>
+                                    </div>
+                                    <button className="bg-stone-700 text-white px-5 py-2 rounded-full text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-105">
+                                        {service.button}
+                                    </button>
+                                </div>
+                            </FadeInSection>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-             {/* Retreats */}
-             <section className="py-32 relative overflow-hidden bg-gray-900">
+            {/* Retreats */}
+            <section className="py-32 relative overflow-hidden bg-gray-900">
                 <div className="absolute inset-0 z-0">
-                    <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=2070" className="w-full h-full object-cover opacity-40" alt="Retreat"  referrerPolicy="no-referrer" />
+                    <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=2070" className="w-full h-full object-cover opacity-40" alt="Retreat" referrerPolicy="no-referrer" />
                     <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-transparent"></div>
                 </div>
                 <div className="container mx-auto px-6 relative z-10">
@@ -271,7 +277,9 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                             <h2 className="text-5xl font-heading font-semibold tracking-tight mb-8 text-stone-200">Immersive Wellness Retreats</h2>
                             <div className="flex flex-wrap gap-4 mb-12">
                                 {retreats.map(r => (
-                                    <span key={r} className="backdrop-blur-md bg-white/10 px-5 py-2 rounded-full text-sm font-medium border border-white/20 hover:bg-white hover:text-gray-900 cursor-pointer transition-colors">{r}</span>
+                                    <span key={r} className="backdrop-blur-md bg-white/10 px-5 py-2 rounded-full text-sm font-medium border border-white/20 hover:bg-white hover:text-gray-900 cursor-pointer transition-colors">
+                                        {r}
+                                    </span>
                                 ))}
                             </div>
                             <button className="bg-stone-600 text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:bg-stone-600/80 transition-colors">
@@ -280,14 +288,14 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                         </div>
                     </FadeInSection>
                 </div>
-             </section>
+            </section>
 
-             {/* AI Matchmaker */}
-             <section className="py-24 bg-stone-200">
+            {/* AI Matchmaker */}
+            <section className="py-24 bg-stone-200">
                 <div className="container mx-auto px-6">
-                    <div className="bg-white rounded-[40px] p-12 shadow-2xl relative overflow-hidden overflow-hidden">
+                    <div className="bg-white rounded-[40px] p-12 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-stone-50/50 rounded-full -mr-20 -mt-20 blur-3xl opacity-60 pointer-events-none"></div>
-                         <div className="absolute bottom-0 left-0 w-80 h-80 bg-stone-500 rounded-full -ml-32 -mb-32 blur-3xl opacity-40 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-80 h-80 bg-stone-500 rounded-full -ml-32 -mb-32 blur-3xl opacity-40 pointer-events-none"></div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10 items-center">
                             <div>
                                 <h2 className="text-4xl md:text-5xl font-heading font-semibold text-stone-700 mb-6">Find Your Perfect Wellness Journey</h2>
@@ -297,7 +305,7 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                                     <h4 className="font-semibold text-gray-800">What are your wellness goals?</h4>
                                     <div className="flex flex-wrap gap-3">
                                         {['Stress Management', 'Weight Loss', 'Better Sleep', 'Fitness', 'Mental Health'].map(goal => (
-                                            <button key={goal} className="px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:border-stone-500 hover:text-stone-500 hover:bg-stone-600/5 transition-all text-sm font-medium">
+                                            <button key={goal} className="px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:border-stone-500 hover:text-stone-500 hover:bg-stone-600/10 transition-colors">
                                                 {goal}
                                             </button>
                                         ))}
@@ -308,7 +316,7 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                                 </button>
                             </div>
                             <div className="hidden lg:block relative">
-                                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070" className="rounded-3xl shadow-xl transform rotate-3" alt="Matchmaker"  referrerPolicy="no-referrer" />
+                                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070" className="rounded-3xl shadow-xl transform rotate-3" alt="Matchmaker" referrerPolicy="no-referrer" />
                                 <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-3xl shadow-2xl flex items-center gap-4">
                                     <div className="text-4xl font-heading">🧘‍♀️</div>
                                     <div>
@@ -320,10 +328,10 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                         </div>
                     </div>
                 </div>
-             </section>
+            </section>
 
-             {/* Provider CTA */}
-             <section className="py-24 text-center">
+            {/* Provider CTA */}
+            <section className="py-24 text-center">
                 <div className="container mx-auto px-6">
                     <FadeInSection>
                         <h2 className="text-4xl font-heading font-semibold text-stone-700 mb-6">Grow Your Wellness Business</h2>
@@ -338,81 +346,81 @@ const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = 
                         </div>
                     </FadeInSection>
                 </div>
-             </section>
+            </section>
 
-             {/* Booking / Enquiry Modal */}
-             {selectedCompany && modalMode && (
-                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                     {/* Backdrop */}
-                     <div className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" onClick={closeModal}></div>
-                     
-                     {/* Dialog */}
-                     <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
-                         {/* Header */}
-                         <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-stone-50/30">
-                             <div>
-                                 <h3 className="text-2xl font-heading font-semibold text-stone-700 mb-1">
-                                     {modalMode === 'book' ? 'Book a Session' : 'Send Enquiry'}
-                                 </h3>
-                                 <p className="text-gray-500 text-sm">with {selectedCompany.name}</p>
-                             </div>
-                             <button 
-                                 onClick={closeModal}
-                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
-                             >
-                                 <XMarkIcon className="w-5 h-5" />
-                             </button>
-                         </div>
-                         
-                         {/* Body */}
-                         <div className="p-6 overflow-y-auto">
-                             <form className="flex flex-col gap-5">
-                                 <div className="grid grid-cols-2 gap-4">
-                                     <div className="flex flex-col gap-1.5">
-                                         <label className="text-sm font-semibold text-stone-700">First Name</label>
-                                         <input type="text" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" placeholder="Your first name" required />
-                                     </div>
-                                     <div className="flex flex-col gap-1.5">
-                                         <label className="text-sm font-semibold text-stone-700">Last Name</label>
-                                         <input type="text" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" placeholder="Your last name" required />
-                                     </div>
-                                 </div>
-                                 
-                                 <div className="flex flex-col gap-1.5">
-                                     <label className="text-sm font-semibold text-stone-700">Email Address</label>
-                                     <input type="email" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" placeholder="you@example.com" required />
-                                 </div>
+            {/* Booking / Enquiry Modal */}
+            {selectedCompany && modalMode && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" onClick={closeModal}></div>
+                    
+                    {/* Dialog */}
+                    <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-start bg-stone-50/30">
+                            <div>
+                                <h3 className="text-2xl font-heading font-semibold text-stone-700 mb-1">
+                                    {modalMode === 'book' ? 'Book a Session' : 'Send Enquiry'}
+                                </h3>
+                                <p className="text-gray-500 text-sm">with {selectedCompany.name}</p>
+                            </div>
+                            <button 
+                                onClick={closeModal}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
+                            >
+                                <XMarkIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        {/* Body */}
+                        <div className="p-6 overflow-y-auto">
+                            <form className="flex flex-col gap-5">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-sm font-semibold text-stone-700">First Name</label>
+                                        <input type="text" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" />
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-sm font-semibold text-stone-700">Last Name</label>
+                                        <input type="text" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" />
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-sm font-semibold text-stone-700">Email Address</label>
+                                    <input type="email" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" />
+                                </div>
 
-                                 {modalMode === 'book' && (
-                                     <div className="flex flex-col gap-1.5">
-                                         <label className="text-sm font-semibold text-stone-700">Preferred Date</label>
-                                         <input type="date" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm text-gray-700" required />
-                                     </div>
-                                 )}
-                                 
-                                 <div className="flex flex-col gap-1.5">
-                                     <label className="text-sm font-semibold text-stone-700">
-                                       {modalMode === 'book' ? 'Reason for Visit (Optional)' : 'Message'}
-                                     </label>
-                                     <textarea 
-                                         rows={4} 
-                                         className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm resize-none"
-                                         placeholder={modalMode === 'book' ? "Any specific goals or conditions?" : "How can they help you?"}
-                                         required={modalMode === 'enquire'}
-                                     ></textarea>
-                                 </div>
+                                {modalMode === 'book' && (
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-sm font-semibold text-stone-700">Preferred Date</label>
+                                        <input type="date" className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm" />
+                                    </div>
+                                )}
+                                
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-sm font-semibold text-stone-700">
+                                        {modalMode === 'book' ? 'Reason for Visit (Optional)' : 'Message'}
+                                    </label>
+                                    <textarea 
+                                        rows={4} 
+                                        className="px-4 py-3 bg-stone-50 rounded-xl border border-gray-100 outline-none focus:border-stone-700 focus:ring-1 focus:ring-stone-700 text-sm resize-none"
+                                        placeholder={modalMode === 'book' ? "Any specific goals or conditions?" : "How can they help you?"}
+                                        required={modalMode === 'enquire'}
+                                    ></textarea>
+                                </div>
 
-                                 <button type="button" onClick={handleFormSubmit} className="mt-2 w-full bg-stone-700 text-white py-4 rounded-xl font-semibold shadow-lg hover:bg-stone-700/90 transition-colors">
-                                     {modalMode === 'book' ? 'Request Appointment' : 'Send Message'}
-                                 </button>
-                                 <p className="text-xs text-center text-gray-400 mt-2">
-                                   By submitting, you agree to our Terms of Service.
-                                 </p>
-                             </form>
-                         </div>
-                     </div>
-                 </div>
-             )}
+                                <button type="button" onClick={handleFormSubmit} className="mt-2 w-full bg-stone-700 text-white py-4 rounded-xl font-semibold shadow-lg hover:bg-stone-700/90 transition-colors">
+                                    {modalMode === 'book' ? 'Request Appointment' : 'Send Message'}
+                                </button>
+                                <p className="text-xs text-center text-gray-400 mt-2">
+                                    By submitting, you agree to our Terms of Service.
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
