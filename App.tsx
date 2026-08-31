@@ -462,7 +462,7 @@ const App: React.FC = () => {
                 setAgentProfile(profile);
                 setAgentReviews(await getAllReviewsForAgent(currentUser.username));
                 setLeads(await getLeadsForAgent(currentUser.username));
-                setInvestmentRequests(await getInvestmentRequests());
+                setInvestmentRequests(await getInvestmentRequests(currentUser.username));
             }
 
             if (currentUser.role === 'investor') {
