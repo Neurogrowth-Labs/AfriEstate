@@ -46,13 +46,13 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
   }, [notifications]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
         if (langRef.current && !langRef.current.contains(event.target as Node)) setIsLangOpen(false);
         if (currencyRef.current && !currencyRef.current.contains(event.target as Node)) setIsCurrencyOpen(false);
         if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) setIsNotificationsOpen(false);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
   const getButtonText = () => {
@@ -96,12 +96,19 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
             <span className="hidden md:inline">{theme === 'light' ? 'Dark' : 'Light'} mode</span>
           </button>
           <div className="relative" ref={currencyRef}>
-            <button onClick={() => setIsCurrencyOpen(!isCurrencyOpen)} className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label="Choose display currency"
+              aria-expanded={isCurrencyOpen}
+              aria-haspopup="menu"
+              onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+              className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5"
+            >
                 <BanknotesIcon className="w-5 h-5" />
                 <span className="text-xs font-semibold hidden sm:inline">{currencyOptions[currency].symbol}</span>
             </button>
             {isCurrencyOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 max-h-60 overflow-y-auto custom-scrollbar glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
+                <div role="menu" aria-label="Display currency" className="absolute top-full right-0 mt-2 w-48 max-h-60 overflow-y-auto custom-scrollbar glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
                     {Object.entries(currencyOptions).map(([code, details]) => (
                          <button 
                             key={code}
@@ -109,6 +116,8 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
                                 setCurrency(code as Currency);
                                 setIsCurrencyOpen(false);
                             }}
+                            role="menuitemradio"
+                            aria-checked={currency === code}
                             className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
                          >
                             <span>{details.symbol} {details.name}</span>
@@ -119,7 +128,14 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
             )}
           </div>
           <div className="relative" ref={langRef}>
-            <button onClick={() => setIsLangOpen(!isLangOpen)} className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label="Choose language"
+              aria-expanded={isLangOpen}
+              aria-haspopup="menu"
+              onClick={() => setIsLangOpen(!isLangOpen)}
+              className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors flex items-center gap-1.5"
+            >
                 <GlobeAltIcon className="w-5 h-5" />
                 {isTranslating ? (
                     <div className="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-lg animate-spin"></div>
@@ -128,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
                 )}
             </button>
             {isLangOpen && (
-                <div className="absolute top-full right-0 mt-2 w-40 glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
+                <div role="menu" aria-label="Language" className="absolute top-full right-0 mt-2 w-40 glass-panel rounded-lg shadow-xl border border-slate-100 dark:border-slate-700 py-1 z-50">
                     {Object.entries(languageOptions).map(([langCode, langDetails]) => (
                          <button 
                             key={langCode}
@@ -136,6 +152,8 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
                                 setLanguage(langCode as Language);
                                 setIsLangOpen(false);
                             }}
+                            role="menuitemradio"
+                            aria-checked={language === langCode}
                             className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-between"
                          >
                             <span>{langDetails.flag} {langDetails.name}</span>
@@ -147,7 +165,11 @@ const Header: React.FC<HeaderProps> = ({ currentUser, notifications, readNotific
           </div>
           <div className="relative" ref={notificationsRef}>
             <button
-                onClick={() => setIsNotificationsOpen(prev => !prev)}
+                type="button"
+                aria-label={currentUser ? `Notifications${unreadCount ? `, ${unreadCount} unread` : ''}` : 'Sign in to view notifications'}
+                aria-expanded={isNotificationsOpen}
+                aria-haspopup={currentUser ? 'dialog' : undefined}
+                onClick={() => currentUser ? setIsNotificationsOpen(prev => !prev) : onLoginClick()}
                 className="p-1.5 rounded-lg text-brand-dark/70 dark:text-white/70 hover:bg-brand-primary/10 hover:text-brand-primary dark:hover:text-white transition-colors relative"
             >
                 <BellIcon className="w-5 h-5" />

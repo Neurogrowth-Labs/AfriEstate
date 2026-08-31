@@ -26,6 +26,15 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('currency', currency);
   }, [currency]);
 
+  useEffect(() => {
+    const syncCurrency = (event: StorageEvent) => {
+      if (event.key !== 'currency' || !event.newValue || !Object.values(Currency).includes(event.newValue as Currency)) return;
+      setCurrencyState(event.newValue as Currency);
+    };
+    window.addEventListener('storage', syncCurrency);
+    return () => window.removeEventListener('storage', syncCurrency);
+  }, []);
+
   const setCurrency = (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
   };

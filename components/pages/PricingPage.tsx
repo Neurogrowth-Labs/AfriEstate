@@ -1,153 +1,121 @@
-
 import React from 'react';
-import { CheckBadgeIcon } from '../icons/ActionIcons';
+import { ArrowRightIcon, CheckIcon, ShieldCheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 interface PricingPageProps {
   onPlanSelect: (role: 'user' | 'agent' | 'investor') => void;
 }
 
-const plans = [
-    {
-        role: 'user' as 'user' | 'agent' | 'investor',
-        name: 'Freemium',
-        price: 'Free',
-        priceDetail: 'For Property Seekers',
-        features: [
-            'Save & Compare Properties',
-            'Schedule Property Tours',
-            'Get Personalized Matches',
-            'Create Property Alerts',
-            'Secure Document Vault',
-        ],
-        cta: 'Sign Up for Free',
-        isRecommended: false,
-    },
-    {
-        role: 'agent' as 'user' | 'agent' | 'investor',
-        name: 'Pay-per-Lead',
-        price: 'R50',
-        priceDetail: '/ confirmed lead',
-        features: [
-            'Unlimited Property Listings',
-            'Lead & Inquiry Management',
-            'AI Description Writer',
-            'Performance Analytics',
-            'Calendar & Scheduling',
-        ],
-        cta: 'Become an Agent',
-        isRecommended: true,
-    },
-    {
-        role: 'investor' as 'user' | 'agent' | 'investor',
-        name: 'Investor Pro',
-        price: 'R1490',
-        priceDetail: '/ month',
-        features: [
-            'Exclusive Investment Marketplace',
-            'AI Portfolio Analysis',
-            'Advanced Financial & ROI Tools',
-            'Global Market Analysis',
-            'Community & Networking',
-        ],
-        cta: 'Become an Investor',
-        isRecommended: false,
-    },
+type PlanRole = 'user' | 'agent' | 'investor';
+
+const plans: Array<{
+  role: PlanRole;
+  name: string;
+  eyebrow: string;
+  price?: number;
+  priceDetail: string;
+  description: string;
+  features: string[];
+  cta: string;
+  featured?: boolean;
+}> = [
+  {
+    role: 'user',
+    name: 'Explore',
+    eyebrow: 'For property seekers',
+    priceDetail: 'Always free',
+    description: 'A calmer way to discover places that feel right and keep every decision organised.',
+    features: ['Save and compare properties', 'Schedule property tours', 'Personalised matches', 'Private document vault'],
+    cta: 'Create free account',
+  },
+  {
+    role: 'agent',
+    name: 'Partner',
+    eyebrow: 'For property professionals',
+    // Prices are stored in USD so the shared currency formatter can convert them.
+    price: 50 / 18.5,
+    priceDetail: 'per confirmed lead',
+    description: 'A focused workspace for growing a credible property business and turning interest into action.',
+    features: ['Unlimited property listings', 'Lead and enquiry management', 'AI listing assistant', 'Performance analytics'],
+    cta: 'Join as an agent',
+    featured: true,
+  },
+  {
+    role: 'investor',
+    name: 'Investor Pro',
+    eyebrow: 'For serious investors',
+    price: 1490 / 18.5,
+    priceDetail: 'per month',
+    description: 'A premium decision suite for evaluating opportunities with clarity and confidence.',
+    features: ['Exclusive investment marketplace', 'Portfolio analysis', 'Advanced ROI tools', 'Investor community access'],
+    cta: 'Start investing',
+  },
 ];
-
-const featureComparison = [
-    { feature: 'Property Browsing & Saving', user: true, agent: true, investor: true },
-    { feature: 'Personalized Matches', user: true, agent: false, investor: true },
-    { feature: 'Property Alerts & Tour Scheduling', user: true, agent: false, investor: true },
-    { feature: 'Unlimited Property Listings', user: false, agent: true, investor: false },
-    { feature: 'Lead & Inquiry Management', user: false, agent: true, investor: false },
-    { feature: 'AI Listing Tools', user: false, agent: true, investor: true },
-    { feature: 'Agent Performance Analytics', user: false, agent: true, investor: false },
-    { feature: 'Access Investment Marketplace', user: false, agent: false, investor: true },
-    { feature: 'Advanced ROI Calculators', user: false, agent: false, investor: true },
-    { feature: 'Global Market Analysis', user: false, agent: false, investor: true },
-    { feature: 'Investor Community Access', user: false, agent: false, investor: true },
-];
-
-const faqs = [
-    { q: 'Can I change my plan later?', a: 'Yes, you can upgrade your account at any time from your dashboard settings. Downgrading is also possible at the end of your billing cycle.' },
-    { q: 'What counts as a "confirmed lead" for agents?', a: 'A confirmed lead is when a property seeker schedules a tour or initiates a direct message conversation with you through the platform for one of your listings.' },
-    { q: 'Is there a trial for the Investor Pro plan?', a: 'We do not offer a free trial, but we have a 14-day money-back guarantee. If you\'re not satisfied with the Investor Pro tools, you can request a full refund within the first 14 days.' },
-    { q: 'What payment methods do you accept?', a: 'We accept all major credit cards, as well as bank transfers for annual subscriptions.' },
-];
-
-const FaqItem: React.FC<{ question: string, children: React.ReactNode }> = ({ question, children }) => {
-    return (
-        <div className="border-t border-slate-200 dark:border-slate-700 py-5">
-            <h4 className="font-semibold text-slate-800 dark:text-white">{question}</h4>
-            <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm">{children}</p>
-        </div>
-    );
-};
-
 
 const PricingPage: React.FC<PricingPageProps> = ({ onPlanSelect }) => {
+  const { formatCurrency } = useCurrency();
+
   return (
-    <div className="animate-fade-in bg-slate-50 dark:bg-slate-900">
-      {/* Hero */}
-      <header className="glass-panel py-16 text-center">
-        <div className="container mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-brand-dark dark:text-white">Find the Perfect Plan</h1>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            Whether you're searching for a home, selling properties, or investing, we have a plan designed for your success.
+    <div className="animate-fade-in overflow-hidden bg-[#f7f8f6] text-brand-dark dark:bg-slate-950 dark:text-white">
+      <section className="relative isolate px-6 pb-16 pt-20 sm:pb-24 sm:pt-28">
+        <div className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(circle_at_50%_0%,rgba(16,132,115,0.20),transparent_62%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(45,212,191,0.14),transparent_62%)]" />
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary shadow-sm ring-1 ring-brand-primary/10 backdrop-blur dark:bg-slate-900/80">
+            <SparklesIcon className="h-4 w-4" /> Memberships made simple
+          </div>
+          <h1 className="mt-7 text-4xl font-black tracking-[-0.04em] sm:text-6xl">Find a plan built around your next move.</h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+            Start where you are today. Upgrade only when your property journey calls for more powerful tools.
           </p>
         </div>
-      </header>
-      
-      {/* Pricing Cards */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
-                {plans.map((plan) => (
-                    <div key={plan.role} className={`border rounded-xl p-8 flex flex-col relative transform transition-transform hover:scale-105 ${plan.isRecommended ? 'border-brand-primary border-2 bg-brand-light dark:bg-slate-800/50' : 'border-slate-200 dark:border-slate-700 glass-panel'}`}>
-                        {plan.isRecommended && (
-                            <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-brand-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Most Popular</div>
-                        )}
-                        <h3 className="text-2xl font-bold text-brand-dark dark:text-white text-center">{plan.name}</h3>
-                        <div className="text-center my-6">
-                            <span className="text-5xl font-extrabold text-brand-dark dark:text-white">{plan.price}</span>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm h-10">{plan.priceDetail}</p>
-                        </div>
-                        <ul className="space-y-4 mb-8 flex-grow">
-                            {plan.features.map((feature) => (
-                                <li key={feature} className="flex items-start">
-                                    <CheckBadgeIcon className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                                    <span className="text-slate-600 dark:text-slate-300">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={() => onPlanSelect(plan.role)} className={`w-full py-3 rounded-lg font-semibold transition-colors ${plan.isRecommended ? 'bg-brand-primary text-white hover:bg-opacity-90 shadow-lg' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'}`}>
-                            {plan.cta}
-                        </button>
-                    </div>
-                ))}
-            </div>
-        </div>
       </section>
-      
-      {/* App Mockups */}
-      <section className="py-16 glass-panel">
-        <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-bold text-brand-dark dark:text-white">Experience Your Dashboard</h2>
-            <p className="mt-3 text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Each plan comes with a powerful, tailored dashboard to help you achieve your goals.</p>
-            <div className="mt-10 grid md:grid-cols-3 gap-8 items-center">
-                <div>
-                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="User Dashboard" className="rounded-lg shadow-xl" />
-                    <p className="mt-4 font-semibold text-slate-700 dark:text-slate-200">Basic Analytics</p>
-                </div>
-                <div>
-                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="Agent Dashboard" className="rounded-lg shadow-xl border border-brand-primary" />
-                    <p className="mt-4 font-semibold text-brand-primary">Advanced CRM</p>
-                </div>
-                <div>
-                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80" alt="Investor Dashboard" className="rounded-lg shadow-xl" />
-                    <p className="mt-4 font-semibold text-slate-700 dark:text-slate-200">Financial Tools</p>
-                </div>
-            </div>
+
+      <section className="px-6 pb-24 sm:pb-32" aria-labelledby="plans-heading">
+        <h2 id="plans-heading" className="sr-only">AfriEstate plans</h2>
+        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-3 lg:items-stretch">
+          {plans.map((plan) => (
+            <article
+              key={plan.role}
+              className={`relative flex flex-col rounded-[2rem] p-7 shadow-[0_18px_55px_-30px_rgba(15,23,42,0.38)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_65px_-30px_rgba(15,23,42,0.5)] sm:p-9 ${
+                plan.featured
+                  ? 'bg-brand-dark text-white ring-1 ring-brand-primary/30 dark:bg-brand-primary'
+                  : 'bg-white dark:bg-slate-900'
+              }`}
+            >
+              {plan.featured && <span className="absolute right-7 top-7 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">Most popular</span>}
+              <p className={`text-xs font-bold uppercase tracking-[0.16em] ${plan.featured ? 'text-teal-200' : 'text-brand-primary'}`}>{plan.eyebrow}</p>
+              <h3 className="mt-4 text-3xl font-black tracking-tight">{plan.name}</h3>
+              <p className={`mt-4 min-h-14 text-sm leading-6 ${plan.featured ? 'text-slate-200' : 'text-slate-600 dark:text-slate-300'}`}>{plan.description}</p>
+              <div className="mt-8">
+                <span className="text-4xl font-black tracking-tight">{plan.price === undefined ? 'Free' : formatCurrency(plan.price)}</span>
+                <span className={`ml-2 text-sm font-medium ${plan.featured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>{plan.priceDetail}</span>
+              </div>
+              <ul className="mt-9 flex flex-1 flex-col gap-4" aria-label={`${plan.name} features`}>
+                {plan.features.map((feature) => (
+                  <li key={feature} className={`flex items-start gap-3 text-sm font-medium ${plan.featured ? 'text-white' : 'text-slate-700 dark:text-slate-200'}`}>
+                    <CheckIcon className={`mt-0.5 h-5 w-5 shrink-0 ${plan.featured ? 'text-teal-200' : 'text-brand-primary'}`} aria-hidden="true" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                onClick={() => onPlanSelect(plan.role)}
+                className={`mt-10 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 ${
+                  plan.featured
+                    ? 'bg-white text-brand-dark hover:bg-teal-50 focus:ring-white dark:bg-slate-950 dark:text-white'
+                    : 'bg-brand-primary text-white hover:bg-brand-secondary'
+                }`}
+              >
+                {plan.cta} <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </article>
+          ))}
+        </div>
+
+        <div className="mx-auto mt-14 flex max-w-3xl items-start justify-center gap-3 text-center text-sm leading-6 text-slate-500 dark:text-slate-400">
+          <ShieldCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-brand-primary" aria-hidden="true" />
+          <p>Clear pricing, no hidden platform fees. Your selected currency is reflected across the plans and your dashboard.</p>
         </div>
       </section>
     </div>
