@@ -1,7 +1,6 @@
 
 
 import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { Language } from '../types';
 import { translations as englishTranslations } from '../translations';
 
@@ -23,28 +22,6 @@ const LanguageContext = createContext<LanguageContextType>({
   isTranslating: false,
 });
 
-// Helper to deep merge the AI translation with the English fallback to prevent crashes from incomplete translations.
-const mergeTranslations = (base: any, incoming: any): any => {
-    const merged = { ...base };
-
-    for (const key in base) {
-        if (Object.prototype.hasOwnProperty.call(base, key)) {
-            const baseValue = base[key];
-            const incomingValue = incoming[key];
-            
-            if (
-                typeof baseValue === 'object' && baseValue !== null &&
-                typeof incomingValue === 'object' && incomingValue !== null
-            ) {
-                merged[key] = mergeTranslations(baseValue, incomingValue);
-            } else if (Object.prototype.hasOwnProperty.call(incoming, key) && typeof incomingValue === 'string') {
-                 merged[key] = incomingValue;
-            }
-        }
-    }
-    return merged;
-};
-
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const savedLang = localStorage.getItem('language');
@@ -65,77 +42,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setLanguageState(lang);
           return;
       }
-      
-      setIsTranslating(true);
-      try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string || 'dummy' });
-          
-          const languageMap: Record<string, string> = {
-              [Language.FR]: 'French',
-              [Language.PT]: 'Portuguese',
-              [Language.ES]: 'Spanish',
-              [Language.AR]: 'Arabic',
-          };
-          const targetLanguageName = languageMap[lang];
-
-          if (!targetLanguageName) {
-              setLanguageState(lang); // Should not happen with current setup
-              return;
-          }
-
-          const prompt = `Translate the values in this JSON object from English to ${targetLanguageName}. Keep the JSON structure and keys exactly the same. Only translate the string values. For strings with placeholders like {{placeholder}}, keep the placeholder exactly as is in the translated string.
-
-          ${JSON.stringify(defaultTranslations, null, 2)}
-          `;
-          
-          let translatedJson: any;
-          try {
-              const response = await ai.models.generateContent({
-                  model: "gemini-2.5-flash",
-                  contents: prompt,
-                  config: {
-                      responseMimeType: 'application/json',
-                  }
-              });
-              translatedJson = JSON.parse(response.text.trim());
-          } catch (apiError: any) {
-              console.warn(`Translation API unavailable for ${lang}, using mock translation. Error:`, apiError?.message || apiError);
-              
-              const createMockTranslations = (base: any, prefix: string): any => {
-                  const mocked = { ...base };
-                  for (const key in base) {
-                      if (Object.prototype.hasOwnProperty.call(base, key)) {
-                          const baseValue = base[key];
-                          if (typeof baseValue === 'object' && baseValue !== null) {
-                               mocked[key] = createMockTranslations(baseValue, prefix);
-                          } else if (typeof baseValue === 'string') {
-                               mocked[key] = `[${prefix}] ${baseValue}`;
-                          }
-                      }
-                  }
-                  return mocked;
-              };
-              
-              translatedJson = createMockTranslations(defaultTranslations, lang.toUpperCase());
-          }
-          
-          // Merge with English defaults to prevent crashes on incomplete AI response
-          const completeTranslations = mergeTranslations(defaultTranslations, translatedJson);
-
-          setTranslationsCache(prev => ({
-              ...prev,
-              [lang]: completeTranslations,
-          }));
-          setLanguageState(lang);
-
-      } catch (error) {
-          console.error(`Failed to translate to ${lang}:`, error);
-          // Fallback to English if translation fails
-          setLanguageState(Language.EN);
-          alert(`Sorry, we couldn't switch to that language. Please try again later.`);
-      } finally {
-          setIsTranslating(false);
-      }
+      // Translation content must be supplied by the application, not generated in a
+      // browser with a secret key. Until a locale bundle is shipped, retain the
+      // complete English bundle so every selected locale remains usable.
+      setTranslationsCache(prev => ({ ...prev, [lang]: defaultTranslations }));
+      setLanguageState(lang);
   };
 
   useEffect(() => {
@@ -143,6 +54,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = language;
     document.documentElement.dir = language === Language.AR ? 'rtl' : 'ltr';
   }, [language]);
+
+  useEffect(() => {
+    const syncLanguage = (event: StorageEvent) => {
+      if (event.key !== 'language' || !event.newValue || !Object.values(Language).includes(event.newValue as Language)) return;
+      setLanguageState(event.newValue as Language);
+    };
+    window.addEventListener('storage', syncLanguage);
+    return () => window.removeEventListener('storage', syncLanguage);
+  }, []);
 
   const t = useMemo(() => (translationsCache[language] || defaultTranslations), [language, translationsCache]);
 

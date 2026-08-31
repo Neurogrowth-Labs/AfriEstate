@@ -376,13 +376,16 @@ export const getTourRequests = async (username: string): Promise<TourRequest[]> 
         const { data, error } = await supabase
             .from('tour_requests')
             .select('*')
-            .eq('username', username);
+            .eq('client_username', username);
         
         if (error) return [];
         return data.map(r => ({
             ...r,
             propertyId: r.property_id || r.propertyId,
-            propertyTitle: r.property_title || r.propertyTitle
+            propertyTitle: r.property_title || r.propertyTitle,
+            username: r.client_username,
+            date: r.tour_date,
+            time: r.tour_time,
         })) || [];
     } catch (e) { return []; }
 };
@@ -411,11 +414,12 @@ export const addTourRequest = async (username: string, propertyId: string, prope
     const newRequest: any = {
         property_id: propertyId,
         property_title: propertyTitle,
-        username,
-        date,
-        time,
-        status: 'Pending',
-        timestamp: Date.now(),
+        client_username: username,
+        client_name: username,
+        client_email: username,
+        tour_date: date,
+        tour_time: time,
+        status: 'pending',
     };
     
     try {
@@ -439,7 +443,7 @@ export const getMessagesForUser = async (username: string): Promise<Message[]> =
         const { data, error } = await supabase
             .from('messages')
             .select('*')
-            .or(`sender_username.eq.${username},receiver_username.eq.${username}`)
+            .or(`sender.eq.${username},receiver.eq.${username}`)
             .order('timestamp', { ascending: true });
         
         if (error) return [];
@@ -447,8 +451,9 @@ export const getMessagesForUser = async (username: string): Promise<Message[]> =
             ...m,
             propertyId: m.property_id || m.propertyId,
             propertyTitle: m.property_title || m.propertyTitle,
-            senderUsername: m.sender_username || m.senderUsername,
-            receiverUsername: m.receiver_username || m.receiverUsername
+            senderUsername: m.sender || m.senderUsername,
+            receiverUsername: m.receiver || m.receiverUsername,
+            text: m.message || m.text,
         })) || [];
     } catch (e) { return []; }
 };
@@ -457,9 +462,9 @@ export const sendMessage = async (msgData: Omit<Message, 'id' | 'timestamp'>): P
     const newMessage: any = {
         property_id: msgData.propertyId,
         property_title: msgData.propertyTitle,
-        sender_username: msgData.senderUsername,
-        receiver_username: msgData.receiverUsername,
-        text: msgData.text,
+        sender: msgData.senderUsername,
+        receiver: msgData.receiverUsername,
+        message: msgData.text,
         timestamp: Date.now(),
     };
     try {
@@ -469,8 +474,9 @@ export const sendMessage = async (msgData: Omit<Message, 'id' | 'timestamp'>): P
             ...data,
             propertyId: data.property_id,
             propertyTitle: data.property_title,
-            senderUsername: data.sender_username,
-            receiverUsername: data.receiver_username
+            senderUsername: data.sender,
+            receiverUsername: data.receiver,
+            text: data.message,
         };
     } catch (error) {
         handleError(error, 'sending message');
@@ -644,10 +650,14 @@ export const saveInvestorSettings = async (username: string, settings: InvestorS
 };
 
 // --- Investment Requests ---
-export const getInvestmentRequests = async (): Promise<InvestmentRequest[]> => {
+export const getInvestmentRequests = async (username: string): Promise<InvestmentRequest[]> => {
     try {
-        const { data } = await supabase.from('investment_requests').select('*').order('timestamp', { ascending: false });
-        return data.map(r => ({
+        const { data, error } = await supabase.from('investment_requests')
+            .select('*')
+            .or(`investor_username.eq.${username},assigned_agent_username.eq.${username}`)
+            .order('timestamp', { ascending: false });
+        if (error) throw error;
+        return (data || []).map(r => ({
             ...r,
             investorUsername: r.investor_username,
             requestDetails: r.request_details
