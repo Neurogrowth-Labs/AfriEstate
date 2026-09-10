@@ -286,7 +286,7 @@ CREATE TABLE public.wellness_services (
 );
 
 -- --------------------------------------------------
--- D. ROW LEVEL SECURITY (RLS) & PUBLIC BYPASS POLICIES
+-- D. ROW LEVEL SECURITY (RLS) & SECURE POLICIES
 -- --------------------------------------------------
 
 -- Enable RLS on all tables
@@ -307,88 +307,140 @@ ALTER TABLE public.property_alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.car_rentals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.wellness_services ENABLE ROW LEVEL SECURITY;
 
--- Create ALL-PERMISSIVE public policies so that frontend can communicate fully and cleanly
--- (Ideal for rapid-prototype testing and command center management)
+-- --------------------------------------------------
+-- E. AUTHENTICATION HELPER FUNCTIONS
+-- --------------------------------------------------
 
-CREATE POLICY "Allow public select profiles" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert profiles" ON public.profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update profiles" ON public.profiles FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete profiles" ON public.profiles FOR DELETE USING (true);
+-- Helper function to get the authenticated user's username (email)
+-- Never trust a username supplied by the browser; always derive from auth.uid()
+CREATE OR REPLACE FUNCTION public.current_username()
+RETURNS text LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT email FROM auth.users WHERE id = auth.uid()
+$$;
 
-CREATE POLICY "Allow public select properties" ON public.properties FOR SELECT USING (true);
-CREATE POLICY "Allow public insert properties" ON public.properties FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update properties" ON public.properties FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete properties" ON public.properties FOR DELETE USING (true);
+-- Helper function to create profile for new authenticated users
+CREATE OR REPLACE FUNCTION public.create_profile_for_auth_user()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  INSERT INTO public.profiles (username, full_name, email, role, phone)
+  VALUES (
+    new.email,
+    COALESCE(new.raw_user_meta_data ->> 'full_name', new.email),
+    new.email,
+    COALESCE((new.raw_user_meta_data ->> 'role')::public.role_type, 'client'::public.role_type),
+    new.raw_user_meta_data ->> 'phone'
+  )
+  ON CONFLICT (username) DO UPDATE SET
+    full_name = EXCLUDED.full_name,
+    phone = COALESCE(EXCLUDED.phone, public.profiles.phone);
+  RETURN new;
+END;
+$$;
 
-CREATE POLICY "Allow public select agent_profiles" ON public.agent_profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert agent_profiles" ON public.agent_profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update agent_profiles" ON public.agent_profiles FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete agent_profiles" ON public.agent_profiles FOR DELETE USING (true);
+-- Trigger to automatically create profile when user signs up
+DROP TRIGGER IF EXISTS create_profile_on_auth_signup ON auth.users;
+CREATE TRIGGER create_profile_on_auth_signup
+  AFTER INSERT ON auth.users FOR EACH ROW EXECUTE PROCEDURE public.create_profile_for_auth_user();
 
-CREATE POLICY "Allow public select reviews" ON public.reviews FOR SELECT USING (true);
-CREATE POLICY "Allow public insert reviews" ON public.reviews FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update reviews" ON public.reviews FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete reviews" ON public.reviews FOR DELETE USING (true);
+-- --------------------------------------------------
+-- F. SECURE ROW LEVEL SECURITY POLICIES
+-- --------------------------------------------------
 
-CREATE POLICY "Allow public select saved_properties" ON public.saved_properties FOR SELECT USING (true);
-CREATE POLICY "Allow public insert saved_properties" ON public.saved_properties FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update saved_properties" ON public.saved_properties FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete saved_properties" ON public.saved_properties FOR DELETE USING (true);
+-- PROFILES: Users can only read and update their own profile
+CREATE POLICY "profiles: read own" ON public.profiles FOR SELECT TO authenticated 
+  USING (username = public.current_username());
+CREATE POLICY "profiles: update own" ON public.profiles FOR UPDATE TO authenticated 
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select saved_searches" ON public.saved_searches FOR SELECT USING (true);
-CREATE POLICY "Allow public insert saved_searches" ON public.saved_searches FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update saved_searches" ON public.saved_searches FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete saved_searches" ON public.saved_searches FOR DELETE USING (true);
+-- PROPERTIES: Public can read active properties, agents manage their own
+CREATE POLICY "properties: public active read" ON public.properties FOR SELECT 
+  USING (status = 'Active');
+CREATE POLICY "properties: agent manage own" ON public.properties FOR ALL TO authenticated
+  USING (agent_name = public.current_username()) WITH CHECK (agent_name = public.current_username());
 
-CREATE POLICY "Allow public select tour_requests" ON public.tour_requests FOR SELECT USING (true);
-CREATE POLICY "Allow public insert tour_requests" ON public.tour_requests FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update tour_requests" ON public.tour_requests FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete tour_requests" ON public.tour_requests FOR DELETE USING (true);
+-- AGENT_PROFILES: Public read, agents update their own
+CREATE POLICY "agent_profiles: public read" ON public.agent_profiles FOR SELECT 
+  USING (true);
+CREATE POLICY "agent_profiles: agent manage own" ON public.agent_profiles FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select messages" ON public.messages FOR SELECT USING (true);
-CREATE POLICY "Allow public insert messages" ON public.messages FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update messages" ON public.messages FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete messages" ON public.messages FOR DELETE USING (true);
+-- REVIEWS: Public read, authenticated users create under their own identity
+CREATE POLICY "reviews: public read" ON public.reviews FOR SELECT 
+  USING (true);
+CREATE POLICY "reviews: author creates" ON public.reviews FOR INSERT TO authenticated 
+  WITH CHECK (reviewer_username = public.current_username());
 
-CREATE POLICY "Allow public select calendar_events" ON public.calendar_events FOR SELECT USING (true);
-CREATE POLICY "Allow public insert calendar_events" ON public.calendar_events FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update calendar_events" ON public.calendar_events FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete calendar_events" ON public.calendar_events FOR DELETE USING (true);
+-- SAVED_PROPERTIES: Owner only
+CREATE POLICY "saved_properties: owner only" ON public.saved_properties FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select notifications" ON public.notifications FOR SELECT USING (true);
-CREATE POLICY "Allow public insert notifications" ON public.notifications FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update notifications" ON public.notifications FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete notifications" ON public.notifications FOR DELETE USING (true);
+-- SAVED_SEARCHES: Owner only
+CREATE POLICY "saved_searches: owner only" ON public.saved_searches FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select investor_settings" ON public.investor_settings FOR SELECT USING (true);
-CREATE POLICY "Allow public insert investor_settings" ON public.investor_settings FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update investor_settings" ON public.investor_settings FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete investor_settings" ON public.investor_settings FOR DELETE USING (true);
+-- TOUR_REQUESTS: Requester or listing agent can read/update, requester creates
+CREATE POLICY "tours: requester or listing agent reads" ON public.tour_requests FOR SELECT TO authenticated 
+  USING (
+    client_username = public.current_username() OR EXISTS (
+      SELECT 1 FROM public.properties p WHERE p.id = property_id AND p.agent_name = public.current_username()
+    )
+  );
+CREATE POLICY "tours: requester creates" ON public.tour_requests FOR INSERT TO authenticated
+  WITH CHECK (client_username = public.current_username());
+CREATE POLICY "tours: requester or listing agent updates" ON public.tour_requests FOR UPDATE TO authenticated 
+  USING (
+    client_username = public.current_username() OR EXISTS (
+      SELECT 1 FROM public.properties p WHERE p.id = property_id AND p.agent_name = public.current_username()
+    )
+  );
 
-CREATE POLICY "Allow public select investment_requests" ON public.investment_requests FOR SELECT USING (true);
-CREATE POLICY "Allow public insert investment_requests" ON public.investment_requests FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update investment_requests" ON public.investment_requests FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete investment_requests" ON public.investment_requests FOR DELETE USING (true);
+-- MESSAGES: Participants can read, sender creates, receiver updates read status
+CREATE POLICY "messages: participants read" ON public.messages FOR SELECT TO authenticated
+  USING (sender = public.current_username() OR receiver = public.current_username());
+CREATE POLICY "messages: sender creates" ON public.messages FOR INSERT TO authenticated
+  WITH CHECK (sender = public.current_username());
+CREATE POLICY "messages: receiver updates" ON public.messages FOR UPDATE TO authenticated
+  USING (receiver = public.current_username()) WITH CHECK (receiver = public.current_username());
 
-CREATE POLICY "Allow public select user_documents" ON public.user_documents FOR SELECT USING (true);
-CREATE POLICY "Allow public insert user_documents" ON public.user_documents FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update user_documents" ON public.user_documents FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete user_documents" ON public.user_documents FOR DELETE USING (true);
+-- CALENDAR_EVENTS: Owner only
+CREATE POLICY "calendar: owner only" ON public.calendar_events FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select property_alerts" ON public.property_alerts FOR SELECT USING (true);
-CREATE POLICY "Allow public insert property_alerts" ON public.property_alerts FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update property_alerts" ON public.property_alerts FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete property_alerts" ON public.property_alerts FOR DELETE USING (true);
+-- NOTIFICATIONS: Recipient only (read and update read status)
+CREATE POLICY "notifications: recipient only" ON public.notifications FOR SELECT TO authenticated 
+  USING (username = public.current_username());
+CREATE POLICY "notifications: recipient read state" ON public.notifications FOR UPDATE TO authenticated 
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select car_rentals" ON public.car_rentals FOR SELECT USING (true);
-CREATE POLICY "Allow public insert car_rentals" ON public.car_rentals FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update car_rentals" ON public.car_rentals FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete car_rentals" ON public.car_rentals FOR DELETE USING (true);
+-- INVESTOR_SETTINGS: Owner only
+CREATE POLICY "settings: owner only" ON public.investor_settings FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
 
-CREATE POLICY "Allow public select wellness_services" ON public.wellness_services FOR SELECT USING (true);
-CREATE POLICY "Allow public insert wellness_services" ON public.wellness_services FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update wellness_services" ON public.wellness_services FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete wellness_services" ON public.wellness_services FOR DELETE USING (true);
+-- INVESTMENT_REQUESTS: Investor or assigned agent reads, investor creates
+CREATE POLICY "investment_requests: investor or assigned agent reads" ON public.investment_requests FOR SELECT TO authenticated
+  USING (investor_username = public.current_username());
+CREATE POLICY "investment_requests: investor creates" ON public.investment_requests FOR INSERT TO authenticated
+  WITH CHECK (investor_username = public.current_username());
+
+-- USER_DOCUMENTS: Owner only
+CREATE POLICY "documents: owner only" ON public.user_documents FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
+
+-- PROPERTY_ALERTS: Owner only
+CREATE POLICY "alerts: owner only" ON public.property_alerts FOR ALL TO authenticated
+  USING (username = public.current_username()) WITH CHECK (username = public.current_username());
+
+-- CAR_RENTALS: Public can view active rentals, users manage their own
+CREATE POLICY "car_rentals: public view active" ON public.car_rentals FOR SELECT 
+  USING (status = 'active');
+CREATE POLICY "car_rentals: owner manage own" ON public.car_rentals FOR ALL TO authenticated
+  USING (user_id = public.current_username()) WITH CHECK (user_id = public.current_username());
+
+-- WELLNESS_SERVICES: Public can view active services, users manage their own
+CREATE POLICY "wellness_services: public view active" ON public.wellness_services FOR SELECT 
+  USING (status = 'active');
+CREATE POLICY "wellness_services: owner manage own" ON public.wellness_services FOR ALL TO authenticated
+  USING (user_id = public.current_username()) WITH CHECK (user_id = public.current_username());
 
 -- =======================================================================================
 -- SYSTEM INITIATION COMPLETE
