@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "../lib/ai";
 import { TrendingUpIcon } from './icons/NavIcons';
 import { CpuChipIcon } from './icons/ActionIcons';
 import { useTranslations } from '../contexts/LanguageContext';

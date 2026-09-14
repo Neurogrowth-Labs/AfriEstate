@@ -37,7 +37,7 @@ import { useTranslations } from './contexts/LanguageContext';
 import InvestmentRequestModal from './components/InvestmentRequestModal';
 import { useCurrency } from './contexts/CurrencyContext';
 import UpgradeToInvestorModal from './components/UpgradeToInvestorModal';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "./lib/ai";
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
 import CareersModal from './components/CareersModal';

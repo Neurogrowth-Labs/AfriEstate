@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality } from "../lib/ai";
 import type { Property, User } from '../types';
 import { ListingType, PropertyType, PropertyStatus } from '../types';
 import { CloseIcon } from './icons/NavIcons';

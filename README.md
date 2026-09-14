@@ -15,7 +15,7 @@ View your app in AI Studio: https://ai.studio/apps/431f6619-2bb6-47f8-88cb-c451b
 
 1. Install dependencies:
    `npm install`
-2. Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `GEMINI_API_KEY`.
+2. Copy `.env.example` to `.env.local`. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then configure `VITE_AI_GATEWAY_URL` for the production AI gateway. For local-only development, set both `VITE_OPENROUTER_API_KEY` and `VITE_GEMINI_API_KEY` to enable OpenRouter-first generation with Gemini failover.
 3. Run the app:
    `npm run dev`
 
@@ -33,6 +33,10 @@ Apply `supabase_production_hardening.sql` to remove the legacy plaintext passwor
 - `npm run typecheck`
 - `npm run build`
 - `npm test`
+
+## AI provider configuration
+
+All text AI features use the shared `lib/ai.ts` provider boundary. It sends requests to OpenRouter first and falls back to Gemini when OpenRouter is unavailable. Image, video, and realtime voice features use Gemini through that same boundary because they require Gemini-specific APIs. In production, point `VITE_AI_GATEWAY_URL` at an authenticated server-side gateway which holds both provider credentials; do not place provider secrets in `VITE_*` variables.
 
 ## Biometric KYC provider integration
 

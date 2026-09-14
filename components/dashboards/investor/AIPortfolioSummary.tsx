@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "../../../lib/ai";
 import type { Property } from '../../../types';
 import { SparklesIcon } from '../../icons/ActionIcons';
 

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from '../lib/ai';
 import type { TourRequest } from '../types';
 import { CloseIcon } from './icons/NavIcons';
 import { CpuChipIcon, ClipboardDocumentIcon } from './icons/ActionIcons';

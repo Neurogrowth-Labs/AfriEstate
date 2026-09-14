@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Modality, Blob } from '@google/genai';
+import { GoogleGenAI, Modality, Blob } from '../lib/ai';
 import { encode, decode, decodeAudioData } from '../lib/audioUtils';
 import { MicrophoneIcon, StopIcon } from './icons/ActionIcons';
 import { CloseIcon } from './icons/NavIcons';

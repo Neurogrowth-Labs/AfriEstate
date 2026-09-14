@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type } from '../lib/ai';
 import type { Property, ValuationResult, User, Review } from '../types';
 import { Language, ListingType } from '../types';
 import { CloseIcon, LocationPinIcon, GlobeAltIcon } from './icons/NavIcons';

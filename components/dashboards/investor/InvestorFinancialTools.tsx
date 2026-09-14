@@ -1,7 +1,7 @@
 
 
 import React, { useState, useMemo } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "../../../lib/ai";
 import type { TaxLegalInfo, Currency } from '../../../types';
 import { ToolsIcon, BuildingLibraryIcon } from '../../icons/InvestorDashboardIcons';
 // FIX: Imported the missing ChartBarIcon component.
