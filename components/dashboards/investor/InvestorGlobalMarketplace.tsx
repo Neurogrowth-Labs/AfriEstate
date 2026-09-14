@@ -1,7 +1,7 @@
 
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "../../../lib/ai";
 import type { MarketHotspot, Property, ExclusiveDeal, MarketComparison } from '../../../types';
 import { DealType } from '../../../types';
 import { MarketplaceIcon, TagIcon, ScaleIcon } from '../../icons/InvestorDashboardIcons';

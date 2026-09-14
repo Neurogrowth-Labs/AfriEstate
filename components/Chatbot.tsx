@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Chat } from "@google/genai";
+import { GoogleGenAI, Chat } from "../lib/ai";
 import { ChatIcon, CloseIcon, SendIcon } from './icons/NavIcons';
 import { useTranslations } from '../contexts/LanguageContext';
 

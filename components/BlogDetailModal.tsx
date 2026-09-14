@@ -5,7 +5,7 @@ import { CloseIcon } from './icons/NavIcons';
 import { EnvelopeIcon, SpeakerWaveIcon, PauseIcon } from './icons/ActionIcons';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
-import { GoogleGenAI, Modality } from '@google/genai';
+import { GoogleGenAI, Modality } from '../lib/ai';
 import { decode, decodeAudioData } from '../lib/audioUtils';
 
 interface BlogDetailModalProps {

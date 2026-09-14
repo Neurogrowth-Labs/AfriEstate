@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "../../../lib/ai";
 import type { User, KnowledgeBaseArticle, ForumPost } from '../../../types';
 import { KNOWLEDGE_BASE_ARTICLES, FORUM_POSTS } from '../../../constants';
 import { BookOpenIcon, UsersIcon, ChatBubbleLeftRightIcon } from '../../icons/AgentDashboardIcons';

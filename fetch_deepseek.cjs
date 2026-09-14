@@ -1,5 +1,9 @@
 const https = require('https');
 
+if (!process.env.RAPIDAPI_KEY) {
+  throw new Error('RAPIDAPI_KEY must be set before running this diagnostic script.');
+}
+
 const data = JSON.stringify({
   model: "DeepSeek-V3-0324",
   messages: [
@@ -17,7 +21,7 @@ const options = {
   headers: {
     'Content-Type': 'application/json',
     'x-rapidapi-host': 'deepseek-v31.p.rapidapi.com',
-    'x-rapidapi-key': 'cd707cd18emsha46a78d1c51103cp11a3eajsn047d42571f12',
+    'x-rapidapi-key': process.env.RAPIDAPI_KEY,
     'Content-Length': data.length
   }
 };

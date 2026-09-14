@@ -20,7 +20,7 @@ import {
 
 import { getUsers, getProperties } from "../../lib/data";
 import { supabase } from "../../lib/supabase";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "../../lib/ai";
 import { useAdminState } from "../../contexts/AdminStateContext";
 
 import UsersTab from "./superadmin/components/UsersTab";
@@ -561,12 +561,7 @@ export default function AfriEstateAdmin({ onClose }: { onClose?: () => void }) {
     setIsAiComputing(true);
 
     try {
-      const apiKey = (process.env.API_KEY || import.meta.env.VITE_GEMINI_API_KEY) as string;
-      if (!apiKey) {
-        throw new Error("API Key is missing from the environment configuration");
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI();
       const statsContext = `
 You are the AfriEstate Super Admin Sovereign AI Advisor (GopherML v3).
 Here is the real-time database state:

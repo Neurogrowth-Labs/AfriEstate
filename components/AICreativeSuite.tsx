@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "../lib/ai";
 import { blobToBase64 } from '../lib/utils';
 import { VideoCameraIcon, CameraIcon, SparklesIcon, CpuChipIcon } from './icons/ActionIcons';
 

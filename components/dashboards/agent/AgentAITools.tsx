@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "../../../lib/ai";
 import { blobToBase64 } from '../../../lib/utils';
 import { VideoCameraIcon, CameraIcon, SparklesIcon, CpuChipIcon } from '../../icons/ActionIcons';
 import { PropertyType } from '../../../types';

@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "../lib/ai";
 import { CpuChipIcon } from './icons/ActionIcons';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';

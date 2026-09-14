@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type } from '../lib/ai';
 import type { Property, User } from '../types';
 import PropertyList from './PropertyList';
 import { SparklesIcon } from './icons/ActionIcons';
