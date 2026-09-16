@@ -20,7 +20,7 @@ const RentACarListingForm: React.FC<RentACarListingFormProps> = ({ currentUser, 
         const formData = new FormData(e.currentTarget);
         
         const payload = {
-            user_id: currentUser.id,
+            owner_id: currentUser.id,
             business_name: formData.get('businessName') as string,
             trading_name: formData.get('tradingName') as string || null,
             registration_number: formData.get('registrationNumber') as string || null,

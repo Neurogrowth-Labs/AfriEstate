@@ -23,7 +23,8 @@ import PropertyFormModal from './components/PropertyFormModal';
 import ServiceListingFormModal from './components/ServiceListingFormModal';
 import FinancialServices from './components/FinancialServices';
 import AIResponseModal from './components/AIResponseModal';
-import { getProperties, saveProperties, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead, getKycVerificationForUser, isKycApproved } from './lib/data';
+import { getProperties, saveProperty, deleteProperty, incrementPropertySave, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead, getKycVerificationForUser, isKycApproved } from './lib/data';
+import { getPublishedAccommodationListings, getPublishedTransportListings, getPublishedWellnessListings, type AccommodationListing, type TransportListing, type WellnessListing } from './lib/serviceListings';
 import PersonalizedMatches from './components/PersonalizedMatches';
 import AgentContactModal from './components/AgentContactModal';
 import VRTourModal from './components/VRTourModal';
@@ -171,6 +172,9 @@ const App: React.FC = () => {
   
   const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [investmentProperties, setInvestmentProperties] = useState<Property[]>([]);
+  const [transportListings, setTransportListings] = useState<TransportListing[]>([]);
+  const [wellnessListings, setWellnessListings] = useState<WellnessListing[]>([]);
+  const [accommodationListings, setAccommodationListings] = useState<AccommodationListing[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [isLoadingProperties, setIsLoadingProperties] = useState(true);
   
@@ -441,11 +445,16 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
         setIsLoadingProperties(true);
-        const allProps = await getProperties(false);
+        const [allProps, transport, wellness, accommodation] = await Promise.all([
+          getProperties(false), getPublishedTransportListings(), getPublishedWellnessListings(), getPublishedAccommodationListings(),
+        ]);
         const investmentProps = allProps.filter(p => p.listingType === ListingType.FOR_INVESTMENT);
 
         setAllProperties(allProps);
         setInvestmentProperties(investmentProps);
+        setTransportListings(transport);
+        setWellnessListings(wellness);
+        setAccommodationListings(accommodation);
         setIsLoadingProperties(false);
 
         if (currentUser) {
@@ -681,7 +690,7 @@ The other fields should follow these rules:
         setSavedPropertyIds(newSaved);
         // FIX: Added explicit type cast to string[] for Array.from result to fix line 460 error
         await savePropertiesForUser(currentUser.username, Array.from(newSaved) as string[]);
-        await saveProperties(updatedProperties);
+        await incrementPropertySave(id, newSaved.has(id) ? 1 : -1);
         setAllProperties(updatedProperties);
     });
   };
@@ -773,13 +782,16 @@ The other fields should follow these rules:
 
   const handleDeleteProperty = async (propertyId: string) => {
       if (window.confirm("Are you sure you want to delete this property?")) {
-        const newProperties = allProperties.filter(p => p.id !== propertyId);
-        setAllProperties(newProperties);
-        await saveProperties(newProperties);
+        await deleteProperty(propertyId);
+        setAllProperties(prev => prev.filter(p => p.id !== propertyId));
       }
   };
 
   const handleSaveProperty = async (property: Property) => {
+    if (!currentUser?.id) {
+      addToast('Please sign in again before saving your listing.', 'error');
+      return;
+    }
     let newProperties;
     const existing = allProperties.find(p => p.id === property.id);
     if (existing) {
@@ -787,8 +799,8 @@ The other fields should follow these rules:
     } else {
         newProperties = [...allProperties, property];
     }
+    await saveProperty(property, currentUser.id);
     setAllProperties(newProperties);
-    await saveProperties(newProperties);
     setIsPropertyFormOpen(false);
     setIsDashboardOpen(true);
   };
@@ -1095,11 +1107,11 @@ The other fields should follow these rules:
       case 'pricing':
           return <PricingPage onPlanSelect={handlePlanSelect} />;
       case 'rent-a-car':
-          return <RentACarPage properties={allProperties.filter(p => p.propertyType === PropertyType.TRANSPORT)} />;
+          return <RentACarPage properties={allProperties.filter(p => p.propertyType === PropertyType.TRANSPORT)} transportListings={transportListings} />;
       case 'find-wellness':
-          return <FindWellnessPage properties={allProperties.filter(p => p.propertyType === PropertyType.WELLNESS)} />;
+          return <FindWellnessPage properties={allProperties.filter(p => p.propertyType === PropertyType.WELLNESS)} wellnessListings={wellnessListings} />;
       case 'book-a-stay':
-          return <BookAStayPage properties={allProperties.filter(p => [PropertyType.HOTEL, PropertyType.SHORT_TERM_RENTAL].includes(p.propertyType))} />;
+          return <BookAStayPage properties={allProperties.filter(p => [PropertyType.HOTEL, PropertyType.SHORT_TERM_RENTAL].includes(p.propertyType))} accommodationListings={accommodationListings} />;
       case 'home':
       default:
           return (

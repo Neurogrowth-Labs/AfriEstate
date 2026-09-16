@@ -41,6 +41,7 @@ export interface FinancialEvent {
 
 export interface Property {
   id: string;
+  ownerId?: string;
   title: string;
   listingType: ListingType;
   propertyType: PropertyType;

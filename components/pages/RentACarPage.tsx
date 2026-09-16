@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Property } from '../../types';
+import type { TransportListing } from '../../lib/serviceListings';
 
 const carRentals = [
   {
@@ -338,7 +339,7 @@ const featuredVehicles = [
   }
 ];
 
-const RentACarPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
+const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: TransportListing[] }> = ({ properties = [], transportListings = [] }) => {
   const [activeCategory, setActiveCategory] = useState('Luxury');
 
   const handleBookVehicle = async (vehicle: any) => {
@@ -365,7 +366,12 @@ const RentACarPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }
       }
   };
 
-  const displayVehicles = properties.length > 0 ? properties.map(p => ({
+  const displayVehicles = transportListings.length > 0 ? transportListings.map(listing => ({
+      make: listing.title.split(' ')[0] || listing.businessName,
+      model: listing.title.split(' ').slice(1).join(' ') || 'Vehicle',
+      image: listing.images[0] || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
+      rating: 4.8, reviews: 'New', specs: [listing.category, listing.pickupAddress], price: `${listing.currency} ${listing.dailyRate.toLocaleString()}`, category: listing.category,
+  })) : properties.length > 0 ? properties.map(p => ({
       make: p.title.split(' ')[0] || 'Transport',
       model: p.title.split(' ').slice(1).join(' ') || 'Vehicle',
       image: p.images?.[0] || 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',

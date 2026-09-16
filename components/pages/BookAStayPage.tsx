@@ -36,6 +36,7 @@ const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = (
 };
 
 import { Property } from '../../types';
+import type { AccommodationListing } from '../../lib/serviceListings';
 
 const categories = [
     { name: 'Hotels', subtitle: 'Business hotels, city hotels, luxury hotels', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80' },
@@ -51,12 +52,17 @@ const destinations = [
     { name: 'Zanzibar', stays: '300', price: 'R2,500' }
 ];
 
-const BookAStayPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
+const BookAStayPage: React.FC<{ properties?: Property[]; accommodationListings?: AccommodationListing[] }> = ({ properties = [], accommodationListings = [] }) => {
     const [selectedPropertyForDetails, setSelectedPropertyForDetails] = useState<any>(null);
     const [isChatBotOpen, setIsChatBotOpen] = useState(false);
 
     // Map `Property` interface from DB to the shape expected by BookAStayPage
-    const displayProperties = properties.length > 0 ? properties.map(p => ({
+    const displayProperties = accommodationListings.length > 0 ? accommodationListings.map(listing => ({
+        id: listing.id, name: listing.businessName, location: `${listing.city}${listing.address ? `, ${listing.address}` : ''}`,
+        type: listing.type.replace('_', ' '), rating: 4.5, price: `${listing.currency} ${listing.nightlyRate.toLocaleString()}`,
+        image: listing.images[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80', badge: 'Verified',
+        guests: listing.maxGuests, description: listing.description,
+    })) : properties.length > 0 ? properties.map(p => ({
         ...p, // keep original properties for downstream
         name: p.title,
         location: `${p.address.city}, ${p.address.street}`,

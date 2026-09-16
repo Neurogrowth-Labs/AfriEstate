@@ -173,6 +173,7 @@ export const getProperties = async (excludeMock = false): Promise<Property[]> =>
 
         const mappedData = data.map(p => ({
             ...p,
+            ownerId: p.ownerId ?? p.owner_id,
             dateListed: p.dateListed ?? p.date_listed ?? (p.created_at ? new Date(p.created_at).getTime() : Date.now()),
             listingType: p.listingType ?? p.listing_type,
             propertyType: p.propertyType ?? p.property_type,
@@ -249,6 +250,34 @@ export const saveProperties = async (properties: Property[]): Promise<void> => {
     } catch (error) {
         handleError(error, 'upserting properties');
     }
+};
+
+/** Persist one listing only. Bulk upserts are unsafe because they can overwrite concurrent edits. */
+export const saveProperty = async (property: Property, ownerId: string): Promise<void> => {
+    const payload = {
+        id: property.id, owner_id: ownerId, title: property.title, listing_type: property.listingType,
+        property_type: property.propertyType, address: property.address, coordinates: property.coordinates,
+        price: property.price, details: property.details, description: property.description,
+        neighborhood_info: property.neighborhoodInfo || null, amenities: property.amenities || [], images: property.images || [],
+        virtual_tour_url: property.virtualTourUrl || null, vr_tour_url: property.vrTourUrl || null,
+        agent_name: property.agent?.name || null, featured: false, verified: false, smart_contract_ready: false,
+        views: property.views || 0, status: property.status, date_listed: property.dateListed || Date.now(), saves: property.saves || 0,
+        purchase_price: property.purchasePrice || null, price_history: property.priceHistory || [], occupancy_rate: property.occupancyRate || null,
+        market_roi: property.marketROI || null, financials: property.financials || [], guests: property.guests || null,
+        vehicle_type: property.vehicleType || null, package_includes: property.packageIncludes || [], per_night_price: property.perNightPrice || false,
+    };
+    const { error } = await supabase.from('properties').upsert(payload, { onConflict: 'id' });
+    if (error) { handleError(error, 'saving property'); throw error; }
+};
+
+export const deleteProperty = async (propertyId: string): Promise<void> => {
+    const { error } = await supabase.from('properties').delete().eq('id', propertyId);
+    if (error) { handleError(error, 'deleting property'); throw error; }
+};
+
+export const incrementPropertySave = async (propertyId: string, incrementBy: 1 | -1): Promise<void> => {
+    const { error } = await supabase.rpc('increment_property_saves', { prop_id: propertyId, increment_by: incrementBy });
+    if (error) logger.warn('Unable to update property save count.', error);
 };
 
 export const incrementPropertyView = async (propertyId: string): Promise<void> => {
