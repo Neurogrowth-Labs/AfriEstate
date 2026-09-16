@@ -3,6 +3,7 @@ import { MagnifyingGlassIcon as SearchIcon, StarIcon, MapPinIcon, HeartIcon, Che
 import { wellnessDirectory } from '../../src/wellnessDirectory';
 import { Property } from '../../types';
 import { supabase } from '../../lib/supabase';
+import type { WellnessListing } from '../../lib/serviceListings';
 
 const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
     const [isVisible, setVisible] = useState(false);
@@ -60,12 +61,16 @@ const retreats = [
     'Wellness Retreats', 'Yoga Retreats', 'Healing Retreats', 'Detox Retreats', 'Executive Wellness Retreats', 'Meditation Retreats'
 ];
 
-const FindWellnessPage: React.FC<{ properties?: Property[] }> = ({ properties = [] }) => {
+const FindWellnessPage: React.FC<{ properties?: Property[]; wellnessListings?: WellnessListing[] }> = ({ properties = [], wellnessListings = [] }) => {
     const [visibleCount, setVisibleCount] = useState(12);
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [modalMode, setModalMode] = useState<'book' | 'enquire' | null>(null);
 
-    const displayCompanies = properties.length > 0 ? properties.map(p => ({
+    const displayCompanies = wellnessListings.length > 0 ? wellnessListings.map(listing => ({
+        name: listing.businessName, location: listing.city, rating: 4.7, category: listing.category,
+        image: listing.images[0] || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop',
+        notes: listing.description, phone: listing.contactPhone, website: listing.website || '',
+    })) : properties.length > 0 ? properties.map(p => ({
         name: p.title,
         location: p.address.city,
         rating: p.agent?.rating || 4.7,

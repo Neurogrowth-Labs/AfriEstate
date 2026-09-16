@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CloseIcon } from './icons/NavIcons';
 import RentACarListingForm from './RentACarListingForm';
 import WellnessListingForm from './WellnessListingForm';
+import AccommodationListingForm from './AccommodationListingForm';
 import type { User } from '../types';
 
 interface ServiceListingFormModalProps {
@@ -11,7 +12,7 @@ interface ServiceListingFormModalProps {
 }
 
 const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpen, onClose, currentUser }) => {
-    const [serviceType, setServiceType] = useState<'none' | 'car' | 'wellness'>('none');
+    const [serviceType, setServiceType] = useState<'none' | 'car' | 'wellness' | 'accommodation'>('none');
 
     if (!isOpen) return null;
 
@@ -38,13 +39,14 @@ const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpe
                     {serviceType === 'none' ? (
                         <div className="text-center py-12 px-4">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">What type of service do you want to list?</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <button 
                                     onClick={() => setServiceType('car')}
                                     className="p-8 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-brand-primary dark:hover:border-brand-primary hover:bg-brand-light dark:hover:bg-brand-primary/10 transition-all font-semibold text-lg text-slate-800 dark:text-slate-200"
                                 >
                                     🚗 Rent a Car Listing
                                 </button>
+                                <button onClick={() => setServiceType('accommodation')} className="p-8 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-brand-primary dark:hover:border-brand-primary hover:bg-brand-light dark:hover:bg-brand-primary/10 transition-all font-semibold text-lg text-slate-800 dark:text-slate-200">🏨 Accommodation Listing</button>
                                 <button 
                                     onClick={() => setServiceType('wellness')}
                                     className="p-8 border-2 border-slate-200 dark:border-slate-700 rounded-xl hover:border-brand-primary dark:hover:border-brand-primary hover:bg-brand-light dark:hover:bg-brand-primary/10 transition-all font-semibold text-lg text-slate-800 dark:text-slate-200"
@@ -59,12 +61,14 @@ const ServiceListingFormModal: React.FC<ServiceListingFormModalProps> = ({ isOpe
                             onSuccess={() => { setServiceType('none'); onClose(); }} 
                             onBack={() => setServiceType('none')} 
                         />
-                    ) : (
+                    ) : serviceType === 'wellness' ? (
                         <WellnessListingForm 
                             currentUser={currentUser} 
                             onSuccess={() => { setServiceType('none'); onClose(); }} 
                             onBack={() => setServiceType('none')} 
                         />
+                    ) : (
+                        <AccommodationListingForm currentUser={currentUser} onSuccess={() => { setServiceType('none'); onClose(); }} onBack={() => setServiceType('none')} />
                     )}
                 </div>
             </div>

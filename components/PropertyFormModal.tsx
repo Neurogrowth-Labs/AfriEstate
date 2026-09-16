@@ -167,7 +167,9 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({ isOpen, onClose, 
                 reviewCount: 0
             },
             featured: propertyToEdit?.featured || false,
-            verified: property.verified || false,
+            // Provider submission is never self-published; moderation promotes it to Active.
+            status: PropertyStatus.PENDING,
+            verified: false,
         };
         onSave(propertyData);
     };
@@ -330,7 +332,7 @@ const PropertyFormModal: React.FC<PropertyFormModalProps> = ({ isOpen, onClose, 
                  <footer className="bg-slate-50 dark:bg-slate-800 p-4 rounded-b-xl flex justify-end sticky bottom-0">
                     <div className="flex space-x-3">
                          <button type="button" onClick={onClose} className="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-5 py-2.5 rounded-lg font-semibold border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600">Cancel</button>
-                         <button type="submit" className="bg-brand-primary text-brand-gold border-2 border-brand-gold px-5 py-2.5 rounded-lg font-bold hover:bg-brand-gold hover:text-brand-dark transition-all shadow-xl uppercase tracking-widest text-xs">Publish Listing</button>
+                         <button type="submit" className="bg-brand-primary text-brand-gold border-2 border-brand-gold px-5 py-2.5 rounded-lg font-bold hover:bg-brand-gold hover:text-brand-dark transition-all shadow-xl uppercase tracking-widest text-xs">Submit for review</button>
                     </div>
                 </footer>
             </form>
