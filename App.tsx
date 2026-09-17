@@ -23,7 +23,7 @@ import PropertyFormModal from './components/PropertyFormModal';
 import ServiceListingFormModal from './components/ServiceListingFormModal';
 import FinancialServices from './components/FinancialServices';
 import AIResponseModal from './components/AIResponseModal';
-import { getProperties, saveProperty, deleteProperty, incrementPropertySave, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead, getKycVerificationForUser, isKycApproved } from './lib/data';
+import { getProperties, saveProperty, deleteProperty, getTourRequests, addTourRequest, getSavedPropertiesForUser, savePropertiesForUser, getInquiriesForSeller, getSavedSearchesForUser, saveSearchesForUser, incrementPropertyView, getMessagesForUser, sendMessage, addReview, getEvents, addEvent, updateEvent, deleteEvent, getAgentProfile, updateAgentProfile, getReviewsForAgent as getAllReviewsForAgent, getLeadsForAgent, getInvestorSettings, saveInvestorSettings, getInvestmentRequests, addInvestmentRequest, getNotifications, getReadNotificationIds, markNotificationsAsRead, getKycVerificationForUser, isKycApproved } from './lib/data';
 import { getPublishedAccommodationListings, getPublishedTransportListings, getPublishedWellnessListings, type AccommodationListing, type TransportListing, type WellnessListing } from './lib/serviceListings';
 import PersonalizedMatches from './components/PersonalizedMatches';
 import AgentContactModal from './components/AgentContactModal';
@@ -54,7 +54,6 @@ import { useToast } from './contexts/ToastContext';
 import { useAdminState } from './contexts/AdminStateContext';
 import MapInterface from './components/MapInterface';
 
-import SuperAdminDashboard from './components/dashboards/SuperAdminDashboard';
 
 // Page components
 import AboutPage from './components/pages/AboutPage';
@@ -275,7 +274,6 @@ const App: React.FC = () => {
   const [applyingForJob, setApplyingForJob] = useState('');
   const [savedNeighborhoodIds, setSavedNeighborhoodIds] = useState<Set<string>>(new Set());
   const [isMapView, setIsMapView] = useState(false);
-  const [isSuperAdminLoggedIn, setIsSuperAdminLoggedIn] = useState(false);
   const { t } = useTranslations();
   const { addToast } = useToast();
 
@@ -299,7 +297,10 @@ const App: React.FC = () => {
           username: session.user.email || session.user.id,
           fullName: session.user.user_metadata?.full_name || 'Supabase User',
           email: session.user.email || '',
-          role: session.user.user_metadata?.role || 'user',
+          // Roles used for authorization must come from server-controlled app_metadata.
+          role: session.user.app_metadata?.role === 'agent' || session.user.app_metadata?.role === 'investor'
+            ? session.user.app_metadata.role
+            : 'user',
           kycStatus: session.user.user_metadata?.kyc_status || 'Not Started',
         });
       } else {
@@ -690,7 +691,6 @@ The other fields should follow these rules:
         setSavedPropertyIds(newSaved);
         // FIX: Added explicit type cast to string[] for Array.from result to fix line 460 error
         await savePropertiesForUser(currentUser.username, Array.from(newSaved) as string[]);
-        await incrementPropertySave(id, newSaved.has(id) ? 1 : -1);
         setAllProperties(updatedProperties);
     });
   };
@@ -1353,9 +1353,6 @@ The other fields should follow these rules:
 
   return (
     <div className={`font-sans min-h-screen flex flex-col ${theme}`}>
-      {isSuperAdminLoggedIn ? (
-        <SuperAdminDashboard onClose={() => setIsSuperAdminLoggedIn(false)} />
-      ) : null}
       <Header
         currentUser={currentUser}
         notifications={notificationsWithReadStatus}
@@ -1411,10 +1408,6 @@ The other fields should follow these rules:
         onSwitchToPricing={() => {
             setIsAuthModalOpen(false);
             navigateToPage('pricing');
-        }}
-        onSuperAdminLogin={() => {
-          setIsAuthModalOpen(false);
-          setIsSuperAdminLoggedIn(true);
         }}
       />
       {currentUser && 

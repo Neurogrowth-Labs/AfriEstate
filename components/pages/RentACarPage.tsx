@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import React, { useMemo, useState } from 'react';
 import { Property } from '../../types';
 import type { TransportListing } from '../../lib/serviceListings';
 
@@ -339,31 +338,71 @@ const featuredVehicles = [
   }
 ];
 
+type BookingVehicle = {
+  id: string;
+  make: string;
+  model: string;
+  image: string;
+  price: string;
+  specs: string[];
+  category: string;
+};
+
+const parseRate = (price: string) => Number(price.replace(/[^0-9.]/g, '')) || 0;
+const formatZar = (amount: number) => `R${Math.round(amount).toLocaleString('en-ZA')}`;
+
+const CarBookingFlow: React.FC<{ vehicles: BookingVehicle[]; initialVehicle: BookingVehicle | null; onClose: () => void }> = ({ vehicles, initialVehicle, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [selectedVehicle, setSelectedVehicle] = useState<BookingVehicle | null>(initialVehicle);
+  const [booking, setBooking] = useState({ pickup: 'Cape Town Airport', returnLocation: 'Cape Town Airport', pickupDate: '2026-06-15', pickupTime: '10:00', returnDate: '2026-06-20', returnTime: '10:00' });
+  const [extras, setExtras] = useState({ additionalDriver: false, childSeat: false, gps: false, protection: true, delivery: false });
+  const [customer, setCustomer] = useState({ fullName: '', mobile: '', email: '', idNumber: '', licence: '' });
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [confirmation, setConfirmation] = useState('');
+
+  const days = Math.max(1, Math.ceil((new Date(`${booking.returnDate}T${booking.returnTime}`).getTime() - new Date(`${booking.pickupDate}T${booking.pickupTime}`).getTime()) / 86_400_000));
+  const vehicleTotal = selectedVehicle ? parseRate(selectedVehicle.price) * days : 0;
+  const extrasTotal = (extras.additionalDriver ? 180 * days : 0) + (extras.childSeat ? 85 * days : 0) + (extras.gps ? 75 * days : 0) + (extras.protection ? 220 * days : 0);
+  const deliveryFee = extras.delivery ? 350 : 0;
+  const deposit = selectedVehicle ? Math.max(1500, Math.round(parseRate(selectedVehicle.price) * 1.5)) : 0;
+  const total = vehicleTotal + extrasTotal + deliveryFee;
+  const updateBooking = (key: keyof typeof booking, value: string) => setBooking(current => ({ ...current, [key]: value }));
+  const updateCustomer = (key: keyof typeof customer, value: string) => setCustomer(current => ({ ...current, [key]: value }));
+  const canContinue = booking.pickup && booking.returnLocation && booking.pickupDate && booking.returnDate && new Date(`${booking.returnDate}T${booking.returnTime}`) > new Date(`${booking.pickupDate}T${booking.pickupTime}`);
+  const inputClass = 'mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-[#1D1D1D] outline-none focus:border-[#0F2D25] focus:ring-1 focus:ring-[#0F2D25]';
+
+  const next = () => setStep(current => Math.min(7, current + 1));
+  const selectVehicle = (vehicle: BookingVehicle) => { setSelectedVehicle(vehicle); setStep(3); };
+
+  return <div className="fixed inset-0 z-[200] overflow-y-auto bg-[#0F2D25]/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="car-booking-title">
+    <div className="mx-auto my-4 w-full max-w-5xl overflow-hidden rounded-2xl bg-[#FAF8F5] shadow-2xl">
+      <header className="flex items-start justify-between border-b border-gray-200 bg-white px-5 py-4 md:px-8">
+        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8A6C32]">Secure car rental</p><h2 id="car-booking-title" className="font-playfair text-2xl font-bold text-[#0F2D25]">Book your car</h2></div>
+        <button onClick={onClose} aria-label="Close booking" className="rounded-full p-2 text-xl text-gray-500 hover:bg-gray-100">×</button>
+      </header>
+      <div className="border-b border-gray-200 bg-white px-5 py-3 md:px-8"><ol className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-gray-500">{['Dates', 'Car', 'Customize', 'Details', 'Review', 'Payment', 'Confirmed'].map((label, index) => <li key={label} className={step === index + 1 ? 'text-[#0F2D25]' : step > index + 1 ? 'text-[#1FA971]' : ''}>{step > index + 1 ? '✓ ' : `${index + 1}. `}{label}</li>)}</ol></div>
+      <main className="p-5 md:p-8">
+        {step === 1 && <section><h3 className="font-playfair text-3xl font-bold">Start your booking</h3><p className="mt-1 text-gray-600">Choose where and when you need your car.</p><div className="mt-6 grid gap-4 md:grid-cols-2"><label>Pick-up location<input value={booking.pickup} onChange={e => updateBooking('pickup', e.target.value)} className={inputClass} required /></label><label>Return location<input value={booking.returnLocation} onChange={e => updateBooking('returnLocation', e.target.value)} className={inputClass} required /></label><label>Pick-up date<input type="date" value={booking.pickupDate} onChange={e => updateBooking('pickupDate', e.target.value)} className={inputClass} required /></label><label>Pick-up time<input type="time" value={booking.pickupTime} onChange={e => updateBooking('pickupTime', e.target.value)} className={inputClass} required /></label><label>Return date<input type="date" value={booking.returnDate} onChange={e => updateBooking('returnDate', e.target.value)} className={inputClass} required /></label><label>Return time<input type="time" value={booking.returnTime} onChange={e => updateBooking('returnTime', e.target.value)} className={inputClass} required /></label></div><button disabled={!canContinue} onClick={next} className="mt-7 rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D] disabled:cursor-not-allowed disabled:opacity-50">Search Cars</button>{!canContinue && <p className="mt-2 text-sm text-red-600">Return date and time must be after pick-up.</p>}</section>}
+        {step === 2 && <section><h3 className="font-playfair text-3xl font-bold">Choose your car</h3><p className="mt-1 text-gray-600">{days} rental day{days === 1 ? '' : 's'} · {booking.pickup} to {booking.returnLocation}</p><div className="mt-6 grid gap-5 md:grid-cols-2">{vehicles.map(vehicle => { const rate = parseRate(vehicle.price); const automatic = vehicle.specs.find(spec => /automatic|manual/i.test(spec)) || 'Automatic'; const seats = vehicle.specs.find(spec => /seat/i.test(spec)) || '5 Seats'; return <article key={vehicle.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white"><img src={vehicle.image} alt={`${vehicle.make} ${vehicle.model}`} className="h-44 w-full object-cover" referrerPolicy="no-referrer" /><div className="p-4"><h4 className="font-playfair text-xl font-bold">{vehicle.make} {vehicle.model}</h4><p className="mt-2 text-sm text-gray-600">{automatic} · {seats} · 2 luggage</p><div className="mt-4 grid grid-cols-2 gap-2 text-sm"><span>Daily rate <strong className="block text-[#0F2D25]">{vehicle.price}</strong></span><span>Total rental <strong className="block text-[#0F2D25]">{formatZar(rate * days)}</strong></span><span>Refundable deposit <strong className="block text-[#0F2D25]">{formatZar(Math.max(1500, Math.round(rate * 1.5)))}</strong></span></div><button onClick={() => selectVehicle(vehicle)} className="mt-4 w-full rounded-lg bg-[#0F2D25] py-2.5 font-bold text-[#C9A35D]">Select Car</button></div></article>; })}</div></section>}
+        {step === 3 && <section><h3 className="font-playfair text-3xl font-bold">Customize your rental</h3><p className="mt-1 text-gray-600">Add only what you need. You can review all charges before paying.</p><div className="mt-6 space-y-3">{([{ key: 'additionalDriver', label: `Additional driver · ${formatZar(180)}/day` }, { key: 'childSeat', label: `Child seat · ${formatZar(85)}/day` }, { key: 'gps', label: `GPS / Wi-Fi · ${formatZar(75)}/day` }, { key: 'protection', label: `Premium insurance & protection · ${formatZar(220)}/day` }, { key: 'delivery', label: `Delivery / alternative pick-up · ${formatZar(350)} once` }] as const).map(option => <label key={option.key} className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-4"><span className="font-medium">{option.label}</span><input type="checkbox" checked={extras[option.key]} onChange={e => setExtras(current => ({ ...current, [option.key]: e.target.checked }))} className="h-5 w-5 accent-[#0F2D25]" /></label>)}</div><div className="mt-7 flex gap-3"><button onClick={() => setStep(2)} className="rounded-lg border border-gray-300 px-5 py-3 font-semibold">Back</button><button onClick={next} className="rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D]">Continue</button></div></section>}
+        {step === 4 && <section><h3 className="font-playfair text-3xl font-bold">Customer details</h3><p className="mt-1 text-gray-600">Your documents are required to validate the driver before collection.</p><div className="mt-6 grid gap-4 md:grid-cols-2">{([{ key: 'fullName', label: 'Full name', type: 'text' }, { key: 'mobile', label: 'Mobile / WhatsApp', type: 'tel' }, { key: 'email', label: 'Email address', type: 'email' }, { key: 'idNumber', label: 'ID or passport number', type: 'text' }, { key: 'licence', label: "Driver's licence number", type: 'text' }] as const).map(field => <label key={field.key}>{field.label}<input required type={field.type} value={customer[field.key]} onChange={e => updateCustomer(field.key, e.target.value)} className={inputClass} /></label>)}</div><div className="mt-7 flex gap-3"><button onClick={() => setStep(3)} className="rounded-lg border border-gray-300 px-5 py-3 font-semibold">Back</button><button disabled={Object.values(customer).some(value => !value.trim())} onClick={next} className="rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D] disabled:opacity-50">Review booking</button></div></section>}
+        {step === 5 && <section><h3 className="font-playfair text-3xl font-bold">Review & confirm</h3><div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]"><div className="rounded-xl border border-gray-200 bg-white p-5"><h4 className="font-bold">{selectedVehicle?.make} {selectedVehicle?.model}</h4><p className="mt-1 text-sm text-gray-600">{booking.pickupDate} {booking.pickupTime} → {booking.returnDate} {booking.returnTime}</p><p className="text-sm text-gray-600">Pick-up: {booking.pickup}{extras.delivery ? ' · Delivery selected' : ''}</p><p className="mt-4 border-t pt-4 text-sm">Driver: {customer.fullName} · {customer.mobile}</p></div><aside className="rounded-xl bg-[#0F2D25] p-5 text-white"><h4 className="font-bold text-[#C9A35D]">Price breakdown</h4><dl className="mt-4 space-y-3 text-sm"><div className="flex justify-between"><dt>Vehicle rental</dt><dd>{formatZar(vehicleTotal)}</dd></div><div className="flex justify-between"><dt>Extras</dt><dd>{formatZar(extrasTotal)}</dd></div><div className="flex justify-between"><dt>Delivery fee</dt><dd>{formatZar(deliveryFee)}</dd></div><div className="flex justify-between"><dt>Refundable deposit</dt><dd>{formatZar(deposit)}</dd></div><div className="flex justify-between border-t border-white/20 pt-3 text-base font-bold"><dt>Total</dt><dd>{formatZar(total)}</dd></div></dl></aside></div><div className="mt-7 flex gap-3"><button onClick={() => setStep(4)} className="rounded-lg border border-gray-300 px-5 py-3 font-semibold">Back</button><button onClick={next} className="rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D]">Confirm & Pay</button></div></section>}
+        {step === 6 && <section><h3 className="font-playfair text-3xl font-bold">Payment</h3><p className="mt-1 text-gray-600">Choose a supported payment method. Amount due now: <strong>{formatZar(total)}</strong>.</p><div className="mt-6 grid gap-3 md:grid-cols-3">{['card', 'eft', 'other'].map(method => <button key={method} onClick={() => setPaymentMethod(method)} className={`rounded-xl border p-5 text-left font-bold capitalize ${paymentMethod === method ? 'border-[#0F2D25] bg-[#0F2D25] text-[#C9A35D]' : 'border-gray-200 bg-white'}`}>{method === 'eft' ? 'EFT / bank transfer' : method === 'card' ? 'Card' : 'Other supported method'}</button>)}</div><p className="mt-5 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">Payment is represented in this booking flow. Connect a PCI-compliant payment provider before processing real card or EFT payments.</p><div className="mt-7 flex gap-3"><button onClick={() => setStep(5)} className="rounded-lg border border-gray-300 px-5 py-3 font-semibold">Back</button><button onClick={() => { setConfirmation(`AE-${Date.now().toString(36).toUpperCase()}`); next(); }} className="rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D]">Pay {formatZar(total)}</button></div></section>}
+        {step === 7 && <section className="text-center"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1FA971]/15 text-3xl text-[#1FA971]">✓</div><h3 className="mt-4 font-playfair text-3xl font-bold">Booking confirmed</h3><p className="mt-2 text-gray-600">Your booking reference is <strong>{confirmation}</strong>.</p><div className="mx-auto mt-6 max-w-lg rounded-xl border border-gray-200 bg-white p-5 text-left"><dl className="space-y-3 text-sm"><div className="flex justify-between gap-4"><dt>Vehicle</dt><dd>{selectedVehicle?.make} {selectedVehicle?.model}</dd></div><div className="flex justify-between gap-4"><dt>Dates & times</dt><dd className="text-right">{booking.pickupDate} {booking.pickupTime}<br />{booking.returnDate} {booking.returnTime}</dd></div><div className="flex justify-between gap-4"><dt>Pick-up location</dt><dd className="text-right">{booking.pickup}</dd></div><div className="flex justify-between"><dt>Amount paid</dt><dd>{formatZar(total)}</dd></div><div className="flex justify-between"><dt>Refundable deposit</dt><dd>{formatZar(deposit)}</dd></div><div className="flex justify-between"><dt>Customer support</dt><dd>support@afriestate.com</dd></div></dl></div><button onClick={onClose} className="mt-7 rounded-lg bg-[#0F2D25] px-6 py-3 font-bold text-[#C9A35D]">Manage My Booking</button></section>}
+      </main>
+    </div>
+  </div>;
+};
+
 const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: TransportListing[] }> = ({ properties = [], transportListings = [] }) => {
   const [activeCategory, setActiveCategory] = useState('Luxury');
 
-  const handleBookVehicle = async (vehicle: any) => {
-      try {
-          const { data: { user } } = await supabase.auth.getUser();
-          const username = user?.email || 'guest';
-          
-          const bookingTitle = `${vehicle.make} ${vehicle.model}`;
-          const newBooking = {
-              property_id: 'transport_' + Math.random().toString(36).substring(7), // simulated ID if none
-              property_title: bookingTitle,
-              username: username,
-              date: new Date().toISOString().split('T')[0],
-              time: '10:00',
-              status: 'Pending',
-              timestamp: Date.now()
-          };
+  const [bookingVehicle, setBookingVehicle] = useState<any | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
-          await supabase.from('tour_requests').insert(newBooking);
-          alert('Vehicle booking requested successfully!');
-      } catch (error) {
-          console.error("Booking error:", error);
-          alert('Error processing booking.');
-      }
+  const startBooking = (vehicle?: any) => {
+    setBookingVehicle(vehicle || null);
+    setIsBookingOpen(true);
   };
 
   const displayVehicles = transportListings.length > 0 ? transportListings.map(listing => ({
@@ -412,6 +451,9 @@ const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: Tran
     category: 'Luxury'
   }
 ];
+
+
+  const bookingVehicles = useMemo(() => displayVehicles.map((vehicle, index) => ({ ...vehicle, id: `${vehicle.make}-${vehicle.model}-${index}` })), [displayVehicles]);
 
   return (
     <div className="bg-[#FAF8F5] text-[#1D1D1D] font-sans antialiased">
@@ -487,8 +529,8 @@ const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: Tran
                 </div>
               </div>
             </div>
-            <button className="bg-[#0F2D25] text-[#C9A35D] font-semibold px-8 py-4 rounded-lg w-full lg:w-auto mt-4 lg:mt-0 whitespace-nowrap hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
-              <span>🔍</span> Search
+            <button onClick={() => startBooking()} className="bg-[#0F2D25] text-[#C9A35D] font-semibold px-8 py-4 rounded-lg w-full lg:w-auto mt-4 lg:mt-0 whitespace-nowrap hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
+              <span>🔍</span> Search Cars
             </button>
           </div>
           
@@ -554,7 +596,7 @@ const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: Tran
                     </div>
                   ))}
                 </div>
-                <button onClick={() => handleBookVehicle(vehicle)} className="w-full bg-white border-2 border-[#0F2D25] text-[#0F2D25] font-semibold py-3 rounded-lg hover:bg-[#0F2D25] hover:text-[#C9A35D] transition-colors">
+                <button onClick={() => startBooking(vehicle)} className="w-full bg-white border-2 border-[#0F2D25] text-[#0F2D25] font-semibold py-3 rounded-lg hover:bg-[#0F2D25] hover:text-[#C9A35D] transition-colors">
                   Book Now
                 </button>
               </div>
@@ -771,6 +813,7 @@ const RentACarPage: React.FC<{ properties?: Property[]; transportListings?: Tran
       </section>
 
 
+      {isBookingOpen && <CarBookingFlow vehicles={bookingVehicles} initialVehicle={bookingVehicle} onClose={() => setIsBookingOpen(false)} />}
     </div>
   );
 };

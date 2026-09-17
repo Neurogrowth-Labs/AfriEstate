@@ -8,7 +8,8 @@ begin;
 -- be removed before this migration is applied to a production database.
 alter table public.profiles drop column if exists password;
 
--- Keep the three application roles aligned with the frontend.
+-- New sign-ups are always unprivileged. A trusted backend may promote a verified
+-- user by updating public.profiles and auth.users.app_metadata after review.
 alter type public.role_type rename value 'client' to 'user';
 alter table public.profiles alter column role set default 'user';
 
@@ -44,7 +45,7 @@ begin
     new.email,
     coalesce(new.raw_user_meta_data ->> 'full_name', new.email),
     new.email,
-    coalesce((new.raw_user_meta_data ->> 'role')::public.role_type, 'user'::public.role_type),
+    'user'::public.role_type,
     new.raw_user_meta_data ->> 'phone'
   )
   on conflict (username) do update set
@@ -60,7 +61,7 @@ create trigger create_profile_on_auth_signup
 
 insert into public.profiles (username, full_name, email, role)
 select email, coalesce(raw_user_meta_data ->> 'full_name', email), email,
-       coalesce((raw_user_meta_data ->> 'role')::public.role_type, 'user'::public.role_type)
+       'user'::public.role_type
 from auth.users
 where email is not null
 on conflict (username) do nothing;
