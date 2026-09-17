@@ -36,16 +36,28 @@ create index if not exists car_rentals_public_listing_idx on public.car_rentals 
 create index if not exists wellness_services_public_listing_idx on public.wellness_services (city, created_at desc) where status = 'active';
 create index if not exists accommodation_services_public_listing_idx on public.accommodation_services (city, created_at desc) where status = 'active';
 
-create or replace function public.increment_property_saves(prop_id text, increment_by integer)
-returns void language plpgsql security definer set search_path = public as $$
+-- Keep denormalized save counts in sync on the database, rather than exposing a
+-- caller-controlled RPC that could be repeatedly invoked to manipulate ranking.
+create or replace function public.sync_property_save_count()
+returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  if increment_by not in (-1, 1) then raise exception 'Invalid save increment'; end if;
-  update public.properties set saves = greatest(0, saves + increment_by)
-  where id = prop_id and status = 'Active';
+  if tg_op = 'INSERT' then
+    update public.properties set saves = saves + 1 where id = new.property_id;
+  elsif tg_op = 'DELETE' then
+    update public.properties set saves = greatest(0, saves - 1) where id = old.property_id;
+  end if;
+  return null;
 end;
 $$;
-revoke all on function public.increment_property_saves(text, integer) from public;
-grant execute on function public.increment_property_saves(text, integer) to anon, authenticated;
+revoke all on function public.sync_property_save_count() from public;
+drop trigger if exists sync_property_save_count_on_insert on public.saved_properties;
+create trigger sync_property_save_count_on_insert
+  after insert on public.saved_properties
+  for each row execute function public.sync_property_save_count();
+drop trigger if exists sync_property_save_count_on_delete on public.saved_properties;
+create trigger sync_property_save_count_on_delete
+  after delete on public.saved_properties
+  for each row execute function public.sync_property_save_count();
 
 -- Moderation must happen through a trusted administrator claim, never through
 -- a mutable browser field. Set app_metadata.role only from a service-role backend.
