@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CloseIcon } from './icons/NavIcons';
 import { supabase } from '../lib/supabase';
-import { upsertProfileFromAuth } from '../lib/data';
 import type { User } from '../types';
 import { GoogleIcon, AppleIcon } from './icons/SocialIcons';
 import { EyeIcon, EyeSlashIcon, CheckIcon, CameraIcon, ArrowUpTrayIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
@@ -16,7 +15,6 @@ interface AuthModalProps {
   onLogin: () => void;
   initialView?: AuthView;
   onSwitchToPricing?: () => void;
-  onSuperAdminLogin?: () => void;
 }
 
 // --- Helper Components ---
@@ -121,7 +119,7 @@ const PasswordStrengthMeter: React.FC<{ criteria: PasswordCriteria }> = ({ crite
 
 // --- Sub-components for each view ---
 
-const LoginView: React.FC<{onLoginSuccess: () => void, onSwitchToSignup: () => void, onSwitchToForgotPassword: () => void, setError: (e: string) => void, onSuperAdminLogin?: () => void}> = ({ onLoginSuccess, onSwitchToSignup, onSwitchToForgotPassword, setError, onSuperAdminLogin }) => {
+const LoginView: React.FC<{onLoginSuccess: () => void, onSwitchToSignup: () => void, onSwitchToForgotPassword: () => void, setError: (e: string) => void}> = ({ onLoginSuccess, onSwitchToSignup, onSwitchToForgotPassword, setError }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -129,11 +127,6 @@ const LoginView: React.FC<{onLoginSuccess: () => void, onSwitchToSignup: () => v
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-
-        if (email === 'simao@neurogrowthlabs.co.za' && password === 'AfriEstate2@') {
-            if (onSuperAdminLogin) onSuperAdminLogin();
-            return;
-        }
 
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
@@ -281,7 +274,7 @@ const UserSignupView: React.FC<{onSignupSuccess: () => void, onRequireEmailConfi
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        role: 'user',
+                        requested_role: 'user',
                     }
                 }
             });
@@ -291,16 +284,6 @@ const UserSignupView: React.FC<{onSignupSuccess: () => void, onRequireEmailConfi
             if (data.user && data.user.identities && data.user.identities.length === 0) {
                  setError('This email is already in use. Please log in.');
                  return;
-            }
-
-            if (data.user?.email) {
-                await upsertProfileFromAuth({
-                    id: data.user.id,
-                    username: data.user.email,
-                    fullName: formData.fullName,
-                    email: data.user.email,
-                    role: 'user',
-                });
             }
 
             if (!data.session) {
@@ -351,7 +334,7 @@ const AgentSignupView: React.FC<{ onSignupSuccess: () => void, onSwitchToLogin: 
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        role: 'agent',
+                        requested_role: 'agent',
                         phone: formData.phone,
                         officeAddress: formData.officeAddress,
                         businessRegNumber: formData.businessRegNumber,
@@ -365,19 +348,6 @@ const AgentSignupView: React.FC<{ onSignupSuccess: () => void, onSwitchToLogin: 
             if (data.user && data.user.identities && data.user.identities.length === 0) {
                  setError('This email is already in use. Please log in.');
                  return;
-            }
-
-            if (data.user?.email) {
-                await upsertProfileFromAuth({
-                    id: data.user.id,
-                    username: data.user.email,
-                    fullName: formData.fullName,
-                    email: data.user.email,
-                    role: 'agent',
-                    phone: formData.phone,
-                    officeAddress: formData.officeAddress,
-                    kycStatus: 'Pending Review',
-                });
             }
 
             onSignupSuccess(); 
@@ -441,7 +411,7 @@ const InvestorSignupView: React.FC<{ onSignupSuccess: () => void, setError: (e: 
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        role: 'investor',
+                        requested_role: 'investor',
                         phone: formData.phone,
                         investment_type: formData.investmentType,
                         company_name: formData.companyName,
@@ -455,19 +425,6 @@ const InvestorSignupView: React.FC<{ onSignupSuccess: () => void, setError: (e: 
                  setError('This email is already in use. Please log in.');
                  setStep(1);
                  return;
-            }
-
-            if (data.user?.email) {
-                await upsertProfileFromAuth({
-                    id: data.user.id,
-                    username: data.user.email,
-                    fullName: formData.fullName,
-                    email: data.user.email,
-                    role: 'investor',
-                    phone: formData.phone,
-                    companyName: formData.companyName,
-                    kycStatus: 'Pending Review',
-                });
             }
 
             onSignupSuccess(); 
@@ -578,7 +535,7 @@ const ResetConfirmationView: React.FC<{ onSwitchToLogin: () => void }> = ({ onSw
 );
 
 // Main AuthModal component
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initialView, onSwitchToPricing, onSuperAdminLogin }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, initialView, onSwitchToPricing }) => {
     const [view, setView] = useState<AuthView>(initialView || 'login');
     const [error, setError] = useState('');
     
@@ -652,7 +609,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLogin, 
                 <div className="px-8 pb-8 sm:px-12 sm:pb-12 overflow-y-auto flex-1 custom-scrollbar">
                     {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded shadow-sm mb-6 text-sm flex items-center gap-3 animate-fade-in" role="alert"><svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path></svg> <span>{error}</span></div>}
 
-                {view === 'login' && <LoginView onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => switchView('signup')} onSwitchToForgotPassword={() => switchView('forgotPassword')} setError={setError} onSuperAdminLogin={onSuperAdminLogin} />}
+                {view === 'login' && <LoginView onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => switchView('signup')} onSwitchToForgotPassword={() => switchView('forgotPassword')} setError={setError} />}
                 {view === 'signup' && <SignupView onSwitchToLogin={() => switchView('login')} onSignupRole={handleSignupRole} />}
                 {view === 'userSignup' && <UserSignupView onSignupSuccess={handleLoginSuccess} onRequireEmailConfirmation={() => switchView('confirmEmail')} onSwitchToLogin={() => switchView('login')} setError={setError} />}
                 {view === 'agentSignup' && <AgentSignupView onSignupSuccess={() => switchView('pendingVerificationAgent')} onSwitchToLogin={() => switchView('login')} setError={setError} />}

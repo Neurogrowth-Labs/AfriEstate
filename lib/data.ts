@@ -275,10 +275,6 @@ export const deleteProperty = async (propertyId: string): Promise<void> => {
     if (error) { handleError(error, 'deleting property'); throw error; }
 };
 
-export const incrementPropertySave = async (propertyId: string, incrementBy: 1 | -1): Promise<void> => {
-    const { error } = await supabase.rpc('increment_property_saves', { prop_id: propertyId, increment_by: incrementBy });
-    if (error) logger.warn('Unable to update property save count.', error);
-};
 
 export const incrementPropertyView = async (propertyId: string): Promise<void> => {
     try {
